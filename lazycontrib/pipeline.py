@@ -63,10 +63,14 @@ def scan(profile: Profile, gh: GitHub | None = None, assess_limit: int = 20, pla
     facts_by_repo = {}
     opportunities, skipped = [], []
     for candidate in candidates[:assess_limit]:
-        enrich(gh, candidate)
-        if candidate.repo not in policies:
-            facts_by_repo[candidate.repo] = repo_facts(gh, candidate.repo)
-            policies[candidate.repo] = assess_policy(facts_by_repo[candidate.repo])
+        try:
+            enrich(gh, candidate)
+            if candidate.repo not in policies:
+                facts_by_repo[candidate.repo] = repo_facts(gh, candidate.repo)
+                policies[candidate.repo] = assess_policy(facts_by_repo[candidate.repo])
+        except Exception as error:
+            skipped.append(Skipped(url=candidate.url, title=candidate.title, reason=f"could not read it: {error}"[:160]))
+            continue
         policy = policies[candidate.repo]
         if policy.stance == "prohibited":
             skipped.append(Skipped(url=candidate.url, title=candidate.title,
@@ -78,7 +82,11 @@ def scan(profile: Profile, gh: GitHub | None = None, assess_limit: int = 20, pla
             skipped.append(Skipped(url=candidate.url, title=candidate.title,
                                    reason="left for newcomers: you already contribute here"))
             continue
-        verdict = assess_issue(candidate, profile, now)
+        try:
+            verdict = assess_issue(candidate, profile, now)
+        except Exception as error:
+            skipped.append(Skipped(url=candidate.url, title=candidate.title, reason=f"could not read it: {error}"[:160]))
+            continue
         log(f"  {candidate.repo}#{candidate.number}: {verdict.status}, fit {verdict.draft.fit}, "
             f"effort {verdict.draft.effort}")
         if verdict.status in ("claimed", "in_progress"):

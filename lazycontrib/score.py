@@ -97,17 +97,15 @@ def tabpfn_token() -> str | None:
 
 
 def make_model(kind: str = "auto"):
-    if kind in ("auto", "tabpfn") and tabpfn_token():
-        os.environ["TABPFN_TOKEN"] = tabpfn_token()
+    if kind in ("auto", "tabpfn"):
+        if tabpfn_token():
+            os.environ["TABPFN_TOKEN"] = tabpfn_token()
         try:
             from tabpfn import TabPFNClassifier
-            return "tabpfn", TabPFNClassifier(device="cpu")
+            return "tabpfn", TabPFNClassifier(device="cpu", ignore_pretraining_limits=True)
         except ImportError:
             if kind == "tabpfn":
                 raise
-    if kind == "tabpfn":
-        raise RuntimeError("TabPFN needs a token: accept the license at https://ux.priorlabs.ai and save the key "
-                           f"in {HOME / 'tabpfn_token'} or TABPFN_TOKEN")
     from sklearn.linear_model import LogisticRegression
     from sklearn.pipeline import make_pipeline
     from sklearn.preprocessing import StandardScaler

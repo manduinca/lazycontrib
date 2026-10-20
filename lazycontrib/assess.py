@@ -41,7 +41,7 @@ POLICY_PROMPT = """You read a project's contribution guidelines and extract its 
 Reply with JSON only: {"rules": [{"flag": ..., "quote": ..., "source": ...}]}.
 Flags:
 - ai_welcome: AI tools are explicitly allowed or welcome
-- ai_discouraged: AI use is discouraged but not banned
+- ai_discouraged: the project discourages AI use in general (not a rule about one specific use)
 - ai_prohibited: AI-generated contributions are not accepted
 - must_disclose: contributors must say when and how AI was used
 - human_testing_required: the contributor must run or test the change personally, or attach screenshots or video

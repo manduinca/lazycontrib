@@ -27,8 +27,8 @@ def chat(messages: list[dict[str, str]], schema: dict[str, Any] | None = None, t
     """One completion from a local Ollama server or any OpenAI-compatible endpoint."""
     with httpx.Client(timeout=timeout) as client:
         if _ollama():
-            body = {"model": MODEL, "messages": messages, "stream": False,
-                    "options": {"temperature": 0.1, "num_ctx": CONTEXT}}
+            body = {"model": MODEL, "messages": messages, "stream": False, "think": False,
+                    "options": {"temperature": 0.1, "num_ctx": CONTEXT, "num_predict": 2048}}
             if schema is not None:
                 body["format"] = schema
             response = client.post(f"{BASE_URL.rstrip('/')}/api/chat", json=body)
