@@ -1,0 +1,255 @@
+{
+  "summary": {
+    "model": "gemma4:e4b",
+    "set": "test",
+    "repos": 11,
+    "model_with_grounding": {
+      "precision": 0.677,
+      "recall": 1.0,
+      "f1": 0.808,
+      "repos_fully_right": "4/11"
+    },
+    "keyword_baseline": {
+      "precision": 0.824,
+      "recall": 0.667,
+      "f1": 0.737,
+      "repos_fully_right": "4/11"
+    },
+    "stance_accuracy": "10/11",
+    "quotes_kept": 31,
+    "quotes_dropped_as_ungrounded": 1,
+    "quotes_rejected_on_second_check": 4
+  },
+  "rows": [
+    {
+      "repo": "matplotlib/matplotlib",
+      "expected": [
+        "must_disclose",
+        "own_words_only"
+      ],
+      "stance_expected": "conditions",
+      "model": [
+        "must_disclose",
+        "own_words_only"
+      ],
+      "stance": "conditions",
+      "dropped_quotes": 0,
+      "rejected_on_check": 0,
+      "kept_quotes": 2,
+      "seconds": 3.4,
+      "keywords": [
+        "must_disclose",
+        "own_words_only"
+      ]
+    },
+    {
+      "repo": "scikit-learn/scikit-learn",
+      "expected": [
+        "must_disclose"
+      ],
+      "stance_expected": "conditions",
+      "model": [
+        "must_disclose"
+      ],
+      "stance": "conditions",
+      "dropped_quotes": 0,
+      "rejected_on_check": 1,
+      "kept_quotes": 1,
+      "seconds": 4.1,
+      "keywords": [
+        "must_disclose"
+      ]
+    },
+    {
+      "repo": "sympy/sympy",
+      "expected": [
+        "must_disclose",
+        "own_words_only"
+      ],
+      "stance_expected": "conditions",
+      "model": [
+        "ai_prohibited",
+        "must_disclose",
+        "own_words_only"
+      ],
+      "stance": "prohibited",
+      "dropped_quotes": 0,
+      "rejected_on_check": 1,
+      "kept_quotes": 3,
+      "seconds": 13.4,
+      "keywords": [
+        "must_disclose"
+      ]
+    },
+    {
+      "repo": "godotengine/godot",
+      "expected": [
+        "must_disclose"
+      ],
+      "stance_expected": "conditions",
+      "model": [
+        "ai_welcome",
+        "must_disclose",
+        "no_autonomous_agents",
+        "own_words_only"
+      ],
+      "stance": "conditions",
+      "dropped_quotes": 0,
+      "rejected_on_check": 0,
+      "kept_quotes": 4,
+      "seconds": 5.7,
+      "keywords": [
+        "ai_prohibited",
+        "must_disclose"
+      ]
+    },
+    {
+      "repo": "zed-industries/zed",
+      "expected": [
+        "ai_welcome",
+        "own_words_only",
+        "human_testing_required"
+      ],
+      "stance_expected": "conditions",
+      "model": [
+        "ai_welcome",
+        "human_testing_required",
+        "no_autonomous_agents",
+        "own_words_only"
+      ],
+      "stance": "conditions",
+      "dropped_quotes": 1,
+      "rejected_on_check": 1,
+      "kept_quotes": 4,
+      "seconds": 7.4,
+      "keywords": [
+        "ai_welcome",
+        "human_testing_required",
+        "must_disclose"
+      ]
+    },
+    {
+      "repo": "astral-sh/ruff",
+      "expected": [
+        "ai_welcome",
+        "own_words_only",
+        "no_autonomous_agents"
+      ],
+      "stance_expected": "conditions",
+      "model": [
+        "ai_prohibited",
+        "ai_welcome",
+        "must_disclose",
+        "no_autonomous_agents",
+        "own_words_only"
+      ],
+      "stance": "conditions",
+      "dropped_quotes": 0,
+      "rejected_on_check": 0,
+      "kept_quotes": 5,
+      "seconds": 5.6,
+      "keywords": [
+        "ai_welcome",
+        "must_disclose",
+        "no_autonomous_agents",
+        "own_words_only"
+      ]
+    },
+    {
+      "repo": "pydata/xarray",
+      "expected": [
+        "must_disclose",
+        "no_autonomous_agents",
+        "human_testing_required"
+      ],
+      "stance_expected": "conditions",
+      "model": [
+        "ai_welcome",
+        "human_testing_required",
+        "must_disclose",
+        "no_autonomous_agents"
+      ],
+      "stance": "conditions",
+      "dropped_quotes": 0,
+      "rejected_on_check": 1,
+      "kept_quotes": 4,
+      "seconds": 4.7,
+      "keywords": [
+        "must_disclose"
+      ]
+    },
+    {
+      "repo": "numpy/numpy",
+      "expected": [
+        "must_disclose"
+      ],
+      "stance_expected": "conditions",
+      "model": [
+        "ai_welcome",
+        "must_disclose"
+      ],
+      "stance": "conditions",
+      "dropped_quotes": 0,
+      "rejected_on_check": 0,
+      "kept_quotes": 2,
+      "seconds": 3.8,
+      "keywords": [
+        "must_disclose"
+      ]
+    },
+    {
+      "repo": "pandas-dev/pandas",
+      "expected": [
+        "must_disclose"
+      ],
+      "stance_expected": "conditions",
+      "model": [
+        "ai_welcome",
+        "must_disclose"
+      ],
+      "stance": "conditions",
+      "dropped_quotes": 0,
+      "rejected_on_check": 0,
+      "kept_quotes": 2,
+      "seconds": 4.8,
+      "keywords": []
+    },
+    {
+      "repo": "servo/servo",
+      "expected": [],
+      "stance_expected": "unspecified",
+      "model": [],
+      "stance": "unspecified",
+      "dropped_quotes": 0,
+      "rejected_on_check": 0,
+      "kept_quotes": 0,
+      "seconds": 0.0,
+      "keywords": []
+    },
+    {
+      "repo": "jj-vcs/jj",
+      "expected": [
+        "ai_welcome",
+        "must_disclose",
+        "own_words_only",
+        "no_autonomous_agents"
+      ],
+      "stance_expected": "conditions",
+      "model": [
+        "ai_welcome",
+        "must_disclose",
+        "no_autonomous_agents",
+        "own_words_only"
+      ],
+      "stance": "conditions",
+      "dropped_quotes": 0,
+      "rejected_on_check": 0,
+      "kept_quotes": 4,
+      "seconds": 5.6,
+      "keywords": [
+        "ai_welcome",
+        "must_disclose"
+      ]
+    }
+  ]
+}

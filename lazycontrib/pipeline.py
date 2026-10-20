@@ -72,10 +72,6 @@ def scan(profile: Profile, gh: GitHub | None = None, assess_limit: int = 20, pla
             skipped.append(Skipped(url=candidate.url, title=candidate.title, reason=f"could not read it: {error}"[:160]))
             continue
         policy = policies[candidate.repo]
-        if policy.stance == "prohibited":
-            skipped.append(Skipped(url=candidate.url, title=candidate.title,
-                                   reason="the project does not accept AI-assisted contributions"))
-            continue
         lower = {label.lower() for label in candidate.labels}
         if (profile.leave_newcomer_issues and "good first issue" in lower and candidate.welcomed_before
                 and not lower & {"help wanted", "bug"}):
@@ -119,7 +115,7 @@ def scan(profile: Profile, gh: GitHub | None = None, assess_limit: int = 20, pla
             odds = o.merge_odds if o.merge_odds is not None else 0.5
             o.score = round(odds * FIT[o.verdict.draft.fit] * CLARITY[o.verdict.draft.clarity]
                             * EFFORT[o.verdict.draft.effort] * (0.7 if o.verdict.status == "stale_claim" else 1.0)
-                            * (0.8 if o.policy.stance == "discouraged" else 1.0), 3)
+                            * {"discouraged": 0.8, "prohibited": 0.15}.get(o.policy.stance, 1.0), 3)
         opportunities.sort(key=lambda o: -o.score)
         for o in opportunities[:plans]:
             log(f"Planning {o.candidate.repo}#{o.candidate.number}")

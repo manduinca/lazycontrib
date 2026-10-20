@@ -8,7 +8,7 @@ from .pipeline import Opportunity, Report
 from .profile import HOME
 
 STANCE = {"welcome": "AI help welcome", "conditions": "AI help allowed, with conditions",
-          "discouraged": "AI help discouraged", "prohibited": "AI help not accepted",
+          "discouraged": "AI help discouraged", "prohibited": "AI help may not be accepted: read the quote",
           "unspecified": "no AI policy found"}
 
 
