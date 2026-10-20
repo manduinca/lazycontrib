@@ -1,43 +1,8 @@
 # Your lazycontrib digest, 2026-10-20
 
-Looked at 40 open issues, read 20 closely, kept 10. Model: gemma4:e4b. Ranking: tabpfn on 369 outside pull requests. Took 161 s.
+Looked at 40 open issues, read 20 closely, kept 10. Model: gemma4:e4b. Ranking: tabpfn on 369 outside pull requests. Took 150 s.
 
-## 1. open-telemetry/opentelemetry.io#7841: [es] Spanish folder localization zero-code
-
-<https://github.com/open-telemetry/opentelemetry.io/issues/7841>
-
-- **Status:** stale claim (@immavalls said they would take it 79 days ago)
-- **They know you:** 2 of your PRs merged here
-- **Fit:** strong
-- **Effort:** M · **clarity:** clear
-- **Merge odds:** 94% · the repo merges 98% of outside PRs · maintainers reply in ~8 h
-- **Policy:** AI help allowed, with conditions; say how you used AI; write the PR text and replies yourself
-
-**What it asks:** This is a documentation translation task focused on the 'zero-code' section, primarily requiring translation into Spanish. The contributor has skills in documentation and has experience with multiple languages (Python, Java, etc.), making them a good fit for this task.
-
-**A complete fix:**
-- Translate the remaining untranslated pages listed in the issue body (e.g., `zero-code/go/autosdk/`, `zero-code/dotnet/configuration`, `zero-code/Python/configuration`, etc.) into Spanish.
-- Ensure each translation is submitted as a unique Pull Request, as requested in the original issue body.
-
-**Plan:**
-1. The task requires translating specific documentation pages into Spanish, as indicated by the issue summary and 'must_do' list.
-2. The provided code snippets do not contain the documentation files that need translation (e.g., `zero-code/go/autosdk/`, `zero-code/dotnet/configuration`, etc.).
-3. The existing files (`LICENSE-CODE`, `.github/component-owners.yml`, `.github/CODEOWNERS`, `.github/component-label-map.yml`, `content/en/blog/2024/spring-starter-stable/index.md`, `assets/js/dcConverter.js`) are configuration or code files and do not contain the content to be translated.
-4. Therefore, the implementation plan focuses on the *process* required to fulfill the 'must_do' items, assuming the contributor will perform the translation in the correct file structure.
-
-Build on: `No existing helper files were found that directly assist in the translation process, as the task is purely content translation.`
-Risks: The contributor must ensure that each translation is submitted as a unique Pull Request, as specified in the 'must_do' list, to avoid merging multiple translations into one PR.
-
-<details><summary>Policy quotes</summary>
-
-- `must_disclose`: "I used AI and I have read and followed the [Generative AI Contribution Policy](https://opentelemetry.io/docs/contributing/pull-requests/#using-ai)."
-- `own_words_only`: "Yes, I can answer maintainer questions about the content of this PR, without using AI."
-
-</details>
-
-Start: `lazycontrib start open-telemetry/opentelemetry.io#7841`
-
-## 2. open-telemetry/opentelemetry.io#8450: Setup i18n entries for alert tags
+## 1. open-telemetry/opentelemetry.io#8450: Setup i18n entries for alert tags
 
 <https://github.com/open-telemetry/opentelemetry.io/issues/8450>
 
@@ -54,11 +19,9 @@ Start: `lazycontrib start open-telemetry/opentelemetry.io#7841`
 - Create i18n entries for alert tags (e.g., caution: Caution, important: Important, note: Note, tip: Tip, warning: Warning) in the relevant i18n files.
 
 **Plan:**
-1. The contributor needs to add i18n entries for specific alert tags into the relevant i18n files.
-2. The required tags are: 'caution', 'important', 'note', 'tip', and 'warning'.
-3. The corresponding English translations are: 'Caution', 'Important', 'Note', 'Tip', and 'Warning'.
+1. Add 'caution: Caution', 'important: Important', 'note: Note', 'tip: Tip', and 'warning: Warning' entries to the appropriate i18n files to support internationalization for alert tags.
 
-Risks: Without the structure of the i18n files, the exact location for modification cannot be determined, potentially leading to incorrect file changes.
+Risks: Missing the correct i18n file or key structure.
 
 <details><summary>Policy quotes</summary>
 
@@ -69,7 +32,7 @@ Risks: Without the structure of the i18n files, the exact location for modificat
 
 Start: `lazycontrib start open-telemetry/opentelemetry.io#8450`
 
-## 3. dapr/java-sdk#1655: Calling sdk's invokeMethod raise DaprException: UNKNOWN: HTTP status code: 400
+## 2. dapr/java-sdk#1655: Calling sdk's invokeMethod raise DaprException: UNKNOWN: HTTP status code: 400
 
 <https://github.com/dapr/java-sdk/issues/1655>
 
@@ -83,22 +46,21 @@ Start: `lazycontrib start open-telemetry/opentelemetry.io#8450`
 **What it asks:** Investigate a 400 Bad Request error during service invocation in the Java SDK after upgrading Dapr, specifically when running in Kubernetes.
 
 **A complete fix:**
-- Determine if the 400 error is related to changes in Dapr 1.16.8 that affect HTTP request construction or payload handling in the Java SDK.
-- Check if the issue is specific to the environment (e.g., Kubernetes networking, configuration) or the SDK usage itself.
+- Determine if the 400 error is related to changes in Dapr 1.16.8 that affect HTTP request construction or validation from the Java SDK.
+- Check if the issue is specific to the environment (e.g., Kubernetes networking, Dapr sidecar configuration) or the SDK usage itself.
 
 **Plan:**
-1. Investigate the potential cause of the 400 Bad Request error during service invocation in the Java SDK, focusing on changes related to Dapr 1.16.8.
-2. Examine `sdk/src/main/java/io/dapr/client/DaprHttp.java` to see how HTTP requests are constructed and headers are added.
-3. Review `sdk/src/main/java/io/dapr/client/domain/HttpExtension.java` to understand the structure of HTTP extensions.
-4. The 400 error often relates to incorrect request structure or payload. I will focus on how `DaprHttp` builds the request.
-5. If the issue is related to how HTTP methods are used or how headers are set, I will look for places where the HTTP method is determined and used in `DaprHttp.java`.
+1. Change sdk/src/main/java/io/dapr/client/DaprHttp.java line 320 to use a switch expression or equivalent logic to handle HTTP methods instead of string comparison for GET and DELETE.
+2. Change sdk/src/main/java/io/dapr/client/DaprHttp.java line 321 to handle other HTTP methods (PUT, POST, etc.) using the `HttpMethods` enum from `HttpExtension` if possible, or by extending the existing conditional structure to cover all methods defined in `HttpExtension`.
+3. Review sdk/src/main/java/io/dapr/client/DaprHttp.java lines 319-321 to ensure that the HTTP method setting logic correctly utilizes the `HttpExtension` object passed into the method, rather than relying solely on `HttpMethods.GET.name().equals(method)` or similar string comparisons.
+4. If the HTTP method logic needs to be generalized, introduce a helper method or modify the existing structure to correctly set the HTTP method on `HttpRequest.Builder` based on the `HttpExtension` provided to the method call.
+5. Test the service invocation path with various HTTP methods (GET, POST, PUT, DELETE) to verify that the correct HTTP method is set on the `HttpRequest.Builder` when using the SDK's methods.
 
 Files: `sdk/src/main/java/io/dapr/client/DaprHttp.java`, `sdk/src/main/java/io/dapr/client/domain/HttpExtension.java`
-Risks: Modifying request building logic in `DaprHttp.java` without a clear specification of the 1.16.8 change might introduce regressions.; The provided snippets do not show the full context of the `invokeMethod` call or the error handling path, limiting the scope of the fix.
 
 Start: `lazycontrib start dapr/java-sdk#1655`
 
-## 4. dapr/java-sdk#1509: Support Native compilation for the Java SDK
+## 3. dapr/java-sdk#1509: Support Native compilation for the Java SDK
 
 <https://github.com/dapr/java-sdk/issues/1509>
 
@@ -113,19 +75,21 @@ Start: `lazycontrib start dapr/java-sdk#1655`
 
 **A complete fix:**
 - Investigate dependency issues preventing native compilation.
-- Ensure Spring applications using the Java SDK can be compiled natively.
+- Test and ensure a Spring application can be compiled natively with the Java SDK.
 
 **Plan:**
-1. Investigate dependency issues preventing native compilation by reviewing the current `pom.xml` and related build configurations for potential incompatibilities with GraalVM.
-2. Focus the investigation on dependencies that might require runtime reflection or dynamic loading, as these are common blockers for native compilation.
-3. If specific dependencies are identified as problematic, propose necessary adjustments (e.g., using specific versions, providing native-friendly alternatives, or adding required build-time configuration).
+1. Investigate the current dependencies in the project to identify any that might prevent successful native compilation (e.g., those relying on reflection or dynamic class loading in a way that is incompatible with GraalVM).
+2. If incompatible dependencies are found, propose and implement necessary workarounds or replacements to ensure compatibility with GraalVM.
+3. Create a minimal Spring Boot application example that uses the Java SDK.
+4. Attempt to compile this minimal Spring Boot application using GraalVM native image tooling.
+5. If compilation fails, use the generated error logs to pinpoint the exact cause (e.g., missing reflection configuration, unsupported language feature).
+6. Modify the build configuration (e.g., Maven/Gradle setup) or add necessary configuration files (like `reflect-config.json`) to address the identified issues, ensuring the SDK is correctly configured for native compilation.
+7. Test the final setup by successfully building and running the minimal Spring Boot application as a native executable.
 
-Files: `pom.xml`
-Risks: The investigation might reveal that the issue is outside the scope of the Java SDK's direct control (e.g., a dependency's design), requiring external coordination.
 
 Start: `lazycontrib start dapr/java-sdk#1509`
 
-## 5. fatiando/harmonica#586: harmonica.reduction_to_pole  flipping the output in north-south
+## 4. fatiando/harmonica#586: harmonica.reduction_to_pole  flipping the output in north-south
 
 <https://github.com/fatiando/harmonica/issues/586>
 
@@ -136,11 +100,21 @@ Start: `lazycontrib start dapr/java-sdk#1509`
 - **Merge odds:** 92% · the repo merges 86% of outside PRs · maintainers reply in ~13 h
 - **Policy:** AI help discouraged; say how you used AI; no agents opening PRs or commenting
 
-**What it asks:** A bug where `harmonica.reduction_to_pole` flips the output data when processing North-South data, which has been reproduced by another contributor.
+**What it asks:** A bug where `harmonica.reduction_to_pole` flips the output data when processing North Hemisphere data.
 
 **A complete fix:**
 - Fix the data flipping issue in `harmonica.reduction_to_pole` for North-South data.
-- Ensure the fix maintains correct spatial attributes, especially when the CRS is dropped in the output.
+- Ensure the fix handles the loss of CRS information in the output correctly.
+
+**Plan:**
+1. Change the signature of `reduction_to_pole` in `src/harmonica/_transformations.py` to accept an optional `is_north_hemisphere` boolean argument, defaulting to `True`.
+2. Inside `reduction_to_pole` in `src/harmonica/_transformations.py`, after the Fourier Transform and before the inverse Fourier Transform, check the value of `is_north_hemisphere`.
+3. If `is_north_hemisphere` is `False` (indicating South Hemisphere data), negate the real and imaginary components of the resulting complex data array before the inverse Fourier Transform.
+4. In `src/harmonica/_transformations.py`, update the docstring for `reduction_to_pole` to describe the new `is_north_hemisphere` parameter and its effect.
+5. Update the call to `reduction_to_pole` in `src/harmonica/filters/_transformations.py` (line 451) to pass the necessary hemisphere information, assuming the calling context can determine it, or modify the function signature in `src/harmonica/filters/_transformations.py` to pass it through if it's relevant for the kernel application.
+6. Add a test case in `test/filters/test_padding.py` to verify that the output of `reduction_to_pole` is correctly flipped when processing South Hemisphere data.
+
+Files: `src/harmonica/_transformations.py`, `test/filters/test_padding.py`
 
 <details><summary>Policy quotes</summary>
 
@@ -153,7 +127,7 @@ Start: `lazycontrib start dapr/java-sdk#1509`
 
 Start: `lazycontrib start fatiando/harmonica#586`
 
-## 6. testcontainers/testcontainers-go#3871: [Bug]: basic clickhouse ping failed
+## 5. testcontainers/testcontainers-go#3871: [Bug]: basic clickhouse ping failed
 
 <https://github.com/testcontainers/testcontainers-go/issues/3871>
 
@@ -167,9 +141,8 @@ Start: `lazycontrib start fatiando/harmonica#586`
 **What it asks:** A bug report regarding a basic ping failure with ClickHouse in `testcontainers-go`.
 
 **A complete fix:**
-- Investigate the reported failure of the ClickHouse ping.
-- Verify if the issue is reproducible given the provided environment details (Testcontainers 0.44.0, Go 1.26, Docker 29.1.3 on Windows/x86).
-- Ensure the fix maintains compatibility with the Go ecosystem and Docker interaction patterns.
+- Investigate the reported failure of the basic ClickHouse ping.
+- Ensure the fix works across different Docker/OS configurations.
 
 <details><summary>Policy quotes</summary>
 
@@ -180,7 +153,7 @@ Start: `lazycontrib start fatiando/harmonica#586`
 
 Start: `lazycontrib start testcontainers/testcontainers-go#3871`
 
-## 7. open-telemetry/opentelemetry.io#7932: [android] [registry] Add Android instrumentation to registry
+## 6. open-telemetry/opentelemetry.io#7932: [android] [registry] Add Android instrumentation to registry
 
 <https://github.com/open-telemetry/opentelemetry.io/issues/7932>
 
@@ -191,11 +164,11 @@ Start: `lazycontrib start testcontainers/testcontainers-go#3871`
 - **Merge odds:** 95% · the repo merges 98% of outside PRs · maintainers reply in ~8 h
 - **Policy:** AI help allowed, with conditions; say how you used AI; write the PR text and replies yourself
 
-**What it asks:** This issue requires defining how to categorize Android-specific OpenTelemetry instrumentations within the existing registry structure, specifically whether to create a new 'Android' language category.
+**What it asks:** Add Android instrumentation information to the OpenTelemetry registry.
 
 **A complete fix:**
-- Implement the addition of Android instrumentation information to the registry.
-- Decide on the correct categorization strategy (e.g., creating an 'Android' language tag) as discussed in the comments.
+- Add 'android' as a language in the registry.
+- Address the potential future need to rethink the 'android' categorization in relation to the collector and other labeling quirks.
 
 <details><summary>Policy quotes</summary>
 
@@ -206,7 +179,7 @@ Start: `lazycontrib start testcontainers/testcontainers-go#3871`
 
 Start: `lazycontrib start open-telemetry/opentelemetry.io#7932`
 
-## 8. open-telemetry/opentelemetry.io#7535: [es] Spanish folder localization blogs
+## 7. open-telemetry/opentelemetry.io#7535: [es] Spanish folder localization blogs
 
 <https://github.com/open-telemetry/opentelemetry.io/issues/7535>
 
@@ -217,11 +190,11 @@ Start: `lazycontrib start open-telemetry/opentelemetry.io#7932`
 - **Merge odds:** 94% · the repo merges 98% of outside PRs · maintainers reply in ~8 h
 - **Policy:** AI help allowed, with conditions; say how you used AI; write the PR text and replies yourself
 
-**What it asks:** This is a documentation translation task for the Spanish localization of the blogs section. It is low-risk and fits well with a contributor who has experience with documentation or Spanish.
+**What it asks:** This is a documentation translation task for the Spanish localization of the blogs section. It is a good fit for a contributor with documentation skills, although the specific technical domains (geophysics, etc.) are not directly relevant to the task itself.
 
 **A complete fix:**
-- Translate the remaining blog pages listed in the issue body.
-- Open a unique PR for each translated page.
+- Translate the remaining blog pages into Spanish.
+- Open a unique Pull Request for each translated page.
 
 <details><summary>Policy quotes</summary>
 
@@ -231,6 +204,33 @@ Start: `lazycontrib start open-telemetry/opentelemetry.io#7932`
 </details>
 
 Start: `lazycontrib start open-telemetry/opentelemetry.io#7535`
+
+## 8. open-telemetry/opentelemetry.io#7841: [es] Spanish folder localization zero-code
+
+<https://github.com/open-telemetry/opentelemetry.io/issues/7841>
+
+- **Status:** stale claim (@abalso0 said they would take it 370 days ago)
+- **They know you:** 2 of your PRs merged here
+- **Fit:** ok
+- **Effort:** M · **clarity:** clear
+- **Merge odds:** 94% · the repo merges 98% of outside PRs · maintainers reply in ~8 h
+- **Policy:** AI help allowed, with conditions; say how you used AI; write the PR text and replies yourself
+
+**What it asks:** This is a documentation translation task focused on the 'zero-code' section, specifically for Spanish localization. The contributor has a background in scientific/technical domains and has experience with documentation/localization.
+
+**A complete fix:**
+- Translate the remaining untranslated pages listed in the issue body (e.g., `zero-code/go/autosdk/`, `zero-code/dotnet/configuration`, `zero-code/Python/configuration`, etc.) into Spanish.
+- Ensure each translation is submitted as a unique Pull Request, as requested in the original issue.
+- Maintain the practice of keeping some English technical words for clarity, as noted by @abrahamVado.
+
+<details><summary>Policy quotes</summary>
+
+- `must_disclose`: "I used AI and I have read and followed the [Generative AI Contribution Policy](https://opentelemetry.io/docs/contributing/pull-requests/#using-ai)."
+- `own_words_only`: "Yes, I can answer maintainer questions about the content of this PR, without using AI."
+
+</details>
+
+Start: `lazycontrib start open-telemetry/opentelemetry.io#7841`
 
 ## 9. OpenAPITools/openapi-generator#23274: Add scalafmt (plugin) to scala (client/server) generators
 
@@ -243,10 +243,10 @@ Start: `lazycontrib start open-telemetry/opentelemetry.io#7535`
 - **Merge odds:** 88% · the repo merges 88% of outside PRs · maintainers reply in ~3 h
 - **Policy:** no AI policy found
 
-**What it asks:** The issue is about adding a 'scalafmt' plugin to Scala generators for OpenAPI, and there are multiple contributors interested.
+**What it asks:** The issue is about adding scalafmt support to Scala generators, and there are multiple contributors interested.
 
 **A complete fix:**
-- Implement the addition of the scalafmt plugin to both client and server Scala generators.
+- Implement the addition of scalafmt (plugin) to scala (client/server) generators.
 
 Start: `lazycontrib start OpenAPITools/openapi-generator#23274`
 
@@ -261,12 +261,12 @@ Start: `lazycontrib start OpenAPITools/openapi-generator#23274`
 - **Merge odds:** 91% · the repo merges 86% of outside PRs · maintainers reply in ~13 h
 - **Policy:** AI help discouraged; say how you used AI; no agents opening PRs or commenting
 
-**What it asks:** The issue is a dependency problem where `xrft` version 1.0.2 is not correctly recognized as installed (appearing as 0.0.0) during conda-forge builds, preventing the release of `harmonica`. Solutions discussed include changing the `xrft` feedstock to use PyPI instead of GitHub, or internalizing the necessary FFT functionality from `xrft` into `harmonica`.
+**What it asks:** The issue is a dependency problem where `xrft` version 1.0.2 is not correctly recognized as installed (appearing as 0.0.0) during conda-forge builds, preventing the release of `harmonica`. Solutions discussed include changing the `xrft` recipe to fetch from PyPI or internalizing the necessary FFT functionality from `xrft`.
 
 **A complete fix:**
-- Investigate the suggestion to change the `xrft` feedstock to fetch from PyPI instead of GitHub.
-- Evaluate the feasibility of internalizing the required FFT functions from `xrft` into `harmonica` to resolve the dependency issue.
-- Determine if the issue is critical for the next release or if a temporary workaround (like version pinning) is sufficient.
+- Investigate the suggestion to change the `xrft` feedstock to fetch from PyPI.
+- Evaluate the feasibility of internalizing the required FFT functions from `xrft` to resolve the dependency issue.
+- Address the dependency issue before the v0.8 release.
 
 <details><summary>Policy quotes</summary>
 
