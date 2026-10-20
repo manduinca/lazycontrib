@@ -53,11 +53,67 @@ The model drafts; the code decides.
 
 Project files sometimes contain instructions aimed at AI agents. lazycontrib treats them as data: the model is only asked whether they state a rule.
 
-## How well it reads policies
+## How well it works
 
-`eval/run_policy_eval.py` compares lazycontrib against a keyword baseline on hand-labelled AI policies. The `dev` set (16 projects) was used to write the prompts and keywords; the `test` set (11 other projects) was labelled before running anything and never tuned on.
+Everything below runs on a MacBook (M3 Pro, 18 GB) with Gemma 4 e4B on Ollama. Each evaluation has a `dev` set I
+looked at while writing prompts and a `test` set I labelled before running anything and never tuned on. Raw results
+are in `eval/results/`.
 
-EVAL_TABLE
+### Reading AI policies
+
+Eight rules per project (welcome, discouraged, prohibited, disclose, test it yourself, own words, no agents,
+beginner issues reserved), against a keyword baseline I wrote while reading the `dev` projects.
+
+| Test set: 11 projects | lazycontrib | keywords |
+| --- | ---: | ---: |
+| Rules caught (recall) | **100%** | 67% |
+| Rules flagged that are really there (precision) | 68% | 82% |
+| F1 | **0.81** | 0.74 |
+| Overall stance right | 10/11 | |
+
+Missing a rule is the expensive mistake (you open a PR the project told you not to), so the caution rules keep every
+grounded yes, and an extra one is a checklist item with its quote next to it. Only the three stance rules get a second
+check, because they decide what you see first. How it got here, on the same test set:
+
+| Version | Precision | Recall | F1 |
+| --- | ---: | ---: | ---: |
+| One prompt for all rules (dev set only) | 0.57 | 0.63 | 0.60 |
+| One question per rule | 0.60 | 1.00 | 0.75 |
+| + second check on every rule | 0.74 | 0.81 | 0.77 |
+| + second check on stance rules only (current) | 0.68 | 1.00 | 0.81 |
+
+The one stance it gets wrong is sympy: "do not use AI-generated text to complete the PR description" reads to it as
+"no AI at all". That's why a project that seems to refuse AI help is shown last with its quote, not hidden.
+
+### Is the issue still free?
+
+Threads where no open pull request is linked (those are read from the timeline, not the model).
+
+| | dev, 17 threads | test, 15 threads |
+| --- | ---: | ---: |
+| lazycontrib: free vs taken right | 16/17 | 11/15 |
+| claim regex: free vs taken right | 10/17 | 12/15 |
+| lazycontrib: said free, but someone had claimed it | **0** | **0** |
+| claim regex: said free, but someone had claimed it | 7 | 3 |
+
+lazycontrib's misses on the test set are all the cheap kind: old, vague offers it reads as a stale claim, which only
+lowers the issue in the list. The regex misses "May I try to contribute", "I can take the rest" and "can i  work on
+this" with two spaces.
+
+### Merge odds
+
+1,595 pull requests that outside contributors opened in 39 repositories. The oldest 75% of each repository's pull
+requests train, its newest 25% test.
+
+| | ROC AUC | Brier |
+| --- | ---: | ---: |
+| The repo's merge rate alone | 0.739 | 0.143 |
+| Logistic regression | 0.742 | 0.177 |
+| **TabPFN 2.0** | **0.776** | **0.128** |
+
+Five-fold cross-validation agrees (0.756, 0.768, **0.829**). A single global time split does not: its test set is the
+last week across all repositories, mostly quick merges, because rejections take longer to close, and there the merge
+rate alone wins (0.879 against TabPFN's 0.832). Both are in `eval/results/ranking.json`.
 
 ## Limits
 
