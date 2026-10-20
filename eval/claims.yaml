@@ -1,0 +1,36 @@
+# Hand-labelled issue threads, read on 2026-10-20. Status as a contributor would need it that day:
+# in_progress = an open pull request is linked; claimed = someone said they would take it in the last 45 days;
+# stale_claim = the last such claim is older; free = nobody did. Claims on single pages of an umbrella issue count.
+# Comments by the person running lazycontrib (manduinca) are never claims against them.
+now: "2026-10-20T06:00:00Z"
+issues:
+  - {ref: "open-telemetry/opentelemetry.io#7932", status: stale_claim}
+  - {ref: "OpenAPITools/openapi-generator#23274", status: stale_claim}
+  - {ref: "open-telemetry/opentelemetry.io#7114", status: claimed}
+  - {ref: "open-telemetry/opentelemetry.io#7535", status: stale_claim}
+  - {ref: "open-telemetry/opentelemetry.io#7117", status: in_progress}
+  - {ref: "open-telemetry/opentelemetry.io#7115", status: in_progress}
+  - {ref: "open-telemetry/opentelemetry.io#11927", status: in_progress}
+  - {ref: "open-telemetry/opentelemetry.io#7544", status: in_progress}
+  - {ref: "open-telemetry/opentelemetry.io#9427", status: in_progress}
+  - {ref: "open-telemetry/opentelemetry.io#6899", status: in_progress}
+  - {ref: "open-telemetry/opentelemetry.io#7545", status: claimed}
+  - {ref: "fatiando/harmonica#586", status: free}
+  - {ref: "open-telemetry/opentelemetry.io#7841", status: claimed}
+  - {ref: "dapr/java-sdk#1509", status: free}
+  - {ref: "fatiando/harmonica#646", status: stale_claim}
+  - {ref: "testcontainers/testcontainers-go#3867", status: in_progress}
+  - {ref: "GlacioHack/xdem#986", status: stale_claim}
+  - {ref: "GlacioHack/xdem#943", status: free}
+  - {ref: "wailsapp/wails#6215", status: free}
+  - {ref: "wailsapp/wails#5160", status: in_progress}
+  - {ref: "wailsapp/wails#5799", status: in_progress}
+  - {ref: "testcontainers/testcontainers-go#3157", status: free}
+  - {ref: "GlacioHack/xdem#942", status: in_progress}
+  - {ref: "openrewrite/rewrite-testing-frameworks#723", status: free}
+  - {ref: "GlacioHack/xdem#760", status: in_progress}
+  - {ref: "tesseract-ocr/tesseract#4580", status: free}
+  - {ref: "dapr/python-sdk#853", status: claimed}
+  - {ref: "dapr/python-sdk#836", status: stale_claim}
+  - {ref: "open-telemetry/opentelemetry-collector#16164", status: in_progress}
+  - {ref: "open-telemetry/opentelemetry-collector-contrib#51982", status: in_progress}
