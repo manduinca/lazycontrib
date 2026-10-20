@@ -115,7 +115,11 @@ class GitHub:
                 if response.status_code >= 500:
                     time.sleep(2 * (attempt + 1))
                     continue
-                body = response.json()
+                try:
+                    body = response.json()
+                except ValueError:
+                    time.sleep(2 * (attempt + 1))
+                    continue
                 if response.status_code >= 400 or body.get("errors"):
                     raise GitHubError(f"graphql: {str(body.get('errors') or response.text)[:300]}")
                 return body["data"]

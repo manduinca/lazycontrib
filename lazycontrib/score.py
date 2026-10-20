@@ -26,7 +26,7 @@ PULLS = """
 query($owner: String!, $name: String!) {
   repository(owner: $owner, name: $name) {
     stargazerCount
-    pullRequests(last: 100, states: [MERGED, CLOSED], orderBy: {field: CREATED_AT, direction: ASC}) {
+    pullRequests(last: 60, states: [MERGED, CLOSED], orderBy: {field: CREATED_AT, direction: ASC}) {
       nodes {
         createdAt merged authorAssociation additions deletions
         author { login }
