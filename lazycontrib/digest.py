@@ -64,7 +64,7 @@ def markdown(report: Report) -> str:
             out += [""]
         if o.policy.rules:
             out += ["<details><summary>Policy quotes</summary>", ""]
-            out += [f"- `{r.flag}` ({r.source}): \"{r.quote}\"" for r in o.policy.rules] + ["", "</details>", ""]
+            out += [f"- `{r.flag}`: \"{r.quote}\"" for r in o.policy.rules] + ["", "</details>", ""]
         out += [f"Start: `lazycontrib start {c.repo}#{c.number}`", ""]
     if report.skipped:
         out += ["## Skipped, and why", ""] + [f"- [{s.title}]({s.url}): {s.reason}" for s in report.skipped]
@@ -122,7 +122,7 @@ def write(report: Report, folder: Path | None = None) -> dict[str, Path]:
     folder.mkdir(parents=True, exist_ok=True)
     stamp = datetime.fromisoformat(report.created_at).strftime("%Y-%m-%d-%H%M")
     paths = {"md": folder / f"{stamp}.md", "html": folder / f"{stamp}.html", "json": folder / f"{stamp}.json"}
+    paths["json"].write_text(report.model_dump_json(indent=1))
     paths["md"].write_text(markdown(report))
     paths["html"].write_text(html_page(report))
-    paths["json"].write_text(report.model_dump_json(indent=1))
     return paths
