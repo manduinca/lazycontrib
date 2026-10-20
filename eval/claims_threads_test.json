@@ -1,0 +1,1970 @@
+{
+ "jaegertracing/jaeger#9789": {
+  "repo": "jaegertracing/jaeger",
+  "number": 9789,
+  "url": "https://github.com/jaegertracing/jaeger/issues/9789",
+  "title": "ClickHouse spans table omits schema_url, flags and dropped counts from the OTLP span",
+  "body": "## Problem\n\nThe ClickHouse `spans` table (`internal/storage/v2/clickhouse/sql/create_spans_table.sql`) stores nearly every OTLP span field, but the writer (`dbmodel/to.go`) and reader (`dbmodel/from.go`) have no column for these, so a span written to ClickHouse and read back loses them:\n\n| OTLP field | Level |\n|---|---|\n| `schema_url` | resource |\n| `schema_url` | scope |\n| `flags` | span |\n| `dropped_attributes_count` | span, event, link, scope |\n| `dropped_events_count` | span |\n| `dropped_links_count` | span |\n| `flags` | link |\n\nThe two `schema_url` fields matter beyond fidelity: RFC 0005 lists `resource.schemaURL` and `scope.schemaURL` as built-in filter fields, and ClickHouse is the only backend that declares all five levels, so these are the only two RFC 0005 built-in fields whose absence is a schema gap rather than unfinished lowering (#9701 maps five fields and can add the rest from existing columns).\n\nThe dropped counts and flags carry no filter use, but a round trip through storage should not silently zero them, and the v1 storage integration suite does not notice because its fixtures leave them at zero.\n\n## Proposal\n\nAdd the missing columns to the spans table and wire them through `SpanRow`, `ToDBModel` and `FromDBModel`:\n\n- `resource_schema_url String`, `scope_schema_url String`\n- `flags UInt32`, `dropped_attributes_count UInt32`, `dropped_events_count UInt32`, `dropped_links_count UInt32`\n- `events.dropped_attributes_count`, `links.dropped_attributes_count`, `links.flags`, `scope_dropped_attributes_count`\n\nA corpus fixture with non-zero values for each field makes the round trip a shared integration assertion rather than a ClickHouse-only test.\n\n## Schema migration\n\nThis is the first change to the ClickHouse schema after it reached users, so it has to establish how the schema is amended. Today `newSchemaBuilder` (`internal/storage/v2/clickhouse/factory.go`) runs one set of `CREATE ... IF NOT EXISTS` statements at startup; against an existing deployment those are no-ops, so the new columns would never appear and the writer would fail on the first insert.\n\nThe mechanism should be forward-only numbered migrations that the binary applies itself at startup, with a table recording which ones have run, as Flyway and golang-migrate do, rather than operator-run scripts in the style of the Cassandra `migration/` directory. Adopt [golang-migrate](https://github.com/golang-migrate/migrate) for it:\n\n- Import only `migrate/v4`, `database/clickhouse` and `source/iofs`. Drivers are opt-in by import path, so the build compiles seven packages from the module and no third-party module beyond it; the other databases' drivers stay out of the build and of `go.sum`.\n- Migration files live in an `embed.FS` beside the current SQL, named `000001_initial_schema.up.sql`, `000002_otlp_span_fields.up.sql`, and so on. Forward-only: no `down` files, since dropping a column that has received data is never something the binary should do on its own.\n- The driver connects through `database/sql`; `clickhouse.OpenDB` from clickhouse-go v2 produces that handle from the same options the factory already parses, and `WithInstance` takes it.\n- Behind the existing `create_schema` flag: when it is on, the binary runs `Up()` and applies pending steps; when it is off, the operator applies the same files by hand and the binary only checks the recorded version and refuses to start if it is newer than the one it ships with. No new configuration.\n- Each step is limited to metadata-only changes (`ALTER TABLE ... ADD COLUMN IF NOT EXISTS`, which does not rewrite MergeTree parts) and to dropping and recreating materialized views. A change that would rewrite a table is not a startup migration and stops with instructions for the operator.\n\nTwo settings to decide when the first migration lands:\n\n- The version table `schema_migrations` defaults to the `TinyLog` engine, which is right for a single node; a replicated deployment needs a `MergeTree` family engine, and the driver's `ClusterName` option adds `ON CLUSTER` to its own statements.\n- A file with several statements needs the driver's multi-statement mode (`x-multi-statement`), which splits on `;` with a size cap.\n\n## Concurrent instances\n\ngolang-migrate's ClickHouse driver gives idempotence, not mutual exclusion. Its `Lock()` is a process-local atomic flag, so it serializes `Up()` calls inside one process only; the Postgres and MySQL drivers take a database lock (`pg_advisory_lock`, `GET_LOCK`), but ClickHouse has no advisory locks and the driver does not emulate one. Two Jaeger instances starting against the same database can therefore both read version 1 and both run step 2. What follows:\n\n- `ALTER TABLE ... ADD COLUMN IF NOT EXISTS` is idempotent and ClickHouse serializes `ALTER`s on a table, so the schema is correct whoever finishes second.\n- `schema_migrations` is append-only with a `sequence` column and `Version()` reads the newest row, so two instances recording version 2 leave a harmless duplicate.\n- An instance that reads the version while another has written its \"version 2, dirty\" row fails to start with `ErrDirty`. That is one replica failing startup, not corruption, and it clears on its next restart.\n- A non-idempotent step, such as dropping and recreating a materialized view, is where a race could lose data, and that step is unsafe even single-process because inserts during the gap bypass the view.\n\nJaeger closes the gap with two measures:\n\n1. **Every step is idempotent and re-runnable.** Columns are added with `IF NOT EXISTS`, views are created with `IF NOT EXISTS` or changed with `ALTER TABLE ... MODIFY QUERY` rather than dropped and recreated, and the smoke test applies each migration twice and requires the second run to be a no-op.\n2. **A dirty or locked version at startup means another instance is migrating.** The binary re-reads the version with backoff for a bounded time before failing, instead of failing on the first `ErrDirty`. For large fleets the docum",
+  "labels": [
+   "help wanted",
+   "area/storage",
+   "storage/clickhouse"
+  ],
+  "created_at": "2026-10-07T22:51:33Z",
+  "updated_at": "2026-10-19T12:57:34Z",
+  "comments_count": 5,
+  "stars": 0,
+  "language": null,
+  "repo_description": "",
+  "watched": false,
+  "welcomed_before": 0,
+  "signals": [
+   "open pull request linked: https://github.com/jaegertracing/jaeger/pull/9796, https://github.com/jaegertracing/jaeger/pull/9797, https://github.com/jaegertracing/jaeger/pull/9798"
+  ],
+  "comments": [
+   {
+    "author": "alishair7071",
+    "type": "User",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-10-07T23:06:31Z",
+    "body": "i have reviewed this issue and started working on it"
+   },
+   {
+    "author": "Kartikupadhyay44",
+    "type": "User",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-10-09T09:01:02Z",
+    "body": "Hi @yurishkuro,\n\nI have implemented the work planned for this issue across the proposed PRs:\n\n- **PR 1 (Migration Framework):** #9796 adopts `golang-migrate`, moves the baseline DDL to `000001_initial_schema.up.sql`, and adds the smoke test harness.\n- **PR 2 (Missing Columns):** #9799 introduces `000002_otlp_span_fields.up.sql`, updates `SpanRow` / model conversions, and includes round-trip test assertions.\n- **PR 3 (Filter Lowering):** Ready to follow / land once the column additions merge to route `resource.schemaURL` and `scope.schemaURL` into `builtinFieldColumns` for #9675.\n\nCould you please take a look at #9796 and #9799 when you get a chance? Thanks!"
+   },
+   {
+    "author": "alishair7071",
+    "type": "User",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-10-19T12:35:59Z",
+    "body": "Hi @yurishkuro,\n\nI wanted to ask for some clarification about how we should handle the three parts of issue #9789.\n\nI commented on October 7 that I had reviewed the issue and started working on it. When @Kartikupadhyay44 opened Part 1 (#9796), I accepted that contribution and continued with Parts 2 and 3, opening #9797 and #9798 on October 8.\n\nLater, duplicate PRs were opened for Part 2 (#9799) and Part 3 (#9816). My PRs were opened before those corresponding PRs, but I haven't received review feedback on mine, while the duplicate PRs have received feedback.\n\nI'm not raising this to create any conflict with another contributor. I understand that the goal is to get the best solution merged. However, working on the same changes in multiple PRs creates unnecessary duplication and makes it unclear where I should focus my effort.\n\nI also read the discussion in #9536 about handling duplicate PRs, and I wanted to ask how that approach should apply in this situation.\n\nCould you please clarify how you would like to handle these PRs? I would appreciate a review of my contributions and guidance on whether I should continue updating #9797 and #9798 or coordinate my changes with the other PRs.\n\nThanks for your time."
+   },
+   {
+    "author": "Kartikupadhyay44",
+    "type": "User",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-10-19T12:45:16Z",
+    "body": "Hi @alishair7071,\n\nThanks for raising this. There was certainly no intention to step on anyone's toes or duplicate work. When @yurishkuro outlined the delivery plan into three distinct stages in the issue description, I jumped in to implement the full end-to-end flow alongside Part 1 ([#9796](https://github.com/jaegertracing/jaeger/pull/9796)), as the schema changes in Part 2 and the query routing in Part 3 naturally build directly on top of the Part 1 migration harness.\n\nI completely agree that duplicating effort isn’t productive for the project or maintainers. I'm very happy to follow whatever direction @yurishkuro prefers:\n\nIf Yuri prefers to review and land your PRs ([#9797](https://github.com/jaegertracing/jaeger/pull/9797), [#9798](https://github.com/jaegertracing/jaeger/pull/9798)), I'll gladly close mine or help review yours.\n\nIf it makes more sense to consolidate changes or proceed with the ones that are already wired with Part 1 and under review, we can do that as well.\n\nUltimately, my goal is just to help get this feature cleanly landed in Jaeger. Happy to adapt however works best for the maintainers!"
+   },
+   {
+    "author": "alishair7071",
+    "type": "User",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-10-19T12:57:34Z",
+    "body": "Thanks @Kartikupadhyay44  for clarifying. I understand your reasoning, and I appreciate your willingness to coordinate and avoid duplicate work.\n\nI'm happy to follow Yuri's direction on which PRs we should proceed with. My main concern was to avoid duplicated effort and make sure the work already done is considered.\n\nThanks for being open to coordinating on this."
+   }
+  ],
+  "open_prs": [
+   "https://github.com/jaegertracing/jaeger/pull/9796",
+   "https://github.com/jaegertracing/jaeger/pull/9797",
+   "https://github.com/jaegertracing/jaeger/pull/9798",
+   "https://github.com/jaegertracing/jaeger/pull/9799",
+   "https://github.com/jaegertracing/jaeger/pull/9816",
+   "https://github.com/jaegertracing/jaeger/pull/9843"
+  ],
+  "closed_prs": [],
+  "heuristic": 0.0
+ },
+ "jaegertracing/jaeger#9631": {
+  "repo": "jaegertracing/jaeger",
+  "number": 9631,
+  "url": "https://github.com/jaegertracing/jaeger/issues/9631",
+  "title": "[Feature]: Support pagination in query APIs",
+  "body": "## Requirement\n\nA client of the trace search API must be able to retrieve every matching trace, not only the first page. Today `FindTraces` and `FindTraceSummaries` return one page capped by `search_depth`, and everything past the cap is unreachable. The UI cannot offer \"load more\", and a program walking a time window cannot know whether it saw the whole result.\n\n## Design\n\n[RFC 0014](https://github.com/jaegertracing/jaeger/blob/main/docs/rfc/0014-search-result-pagination.md) settles how this is done: an opaque `page_token` the caller echoes back for the next page, a `next_page_token` on the response, and a `paginated` capability that a backend declares so that one which cannot paginate serves a single capped page and says so, rather than returning a wrong one. Offset paging (`limit`/`offset` as in the v1 API) was weighed there and rejected (§3, §10), so a PR adding an `offset` parameter will be closed.\n\n## Status\n\nDelivered:\n- M1 protos, in https://github.com/jaegertracing/jaeger-idl/pull/213.\n- M2 storage contract, query-service admission and the `PageChunk` response envelope, in #9570, #9450 and #9585.\n\nOpen, in order:\n- The `paginated` entry in the capabilities the UI reads, and the §3.2 token fingerprint once a backend mints tokens.\n- M3 Elasticsearch/OpenSearch, the first paginating backend.\n- M4 remote-storage gRPC.\n- M5 UI \"load more\".\n\nEach milestone in the RFC has an exit bar. Pick one, say so here before starting, and keep one milestone per PR.\n\nSupersedes #9369 and #2027, which asked for this with the v1 `offset` model.\n",
+  "labels": [
+   "enhancement",
+   "help wanted"
+  ],
+  "created_at": "2026-09-23T16:55:31Z",
+  "updated_at": "2026-10-15T16:25:38Z",
+  "comments_count": 7,
+  "stars": 0,
+  "language": null,
+  "repo_description": "",
+  "watched": false,
+  "welcomed_before": 0,
+  "signals": [
+   "open pull request linked: https://github.com/jaegertracing/jaeger/pull/9635, https://github.com/jaegertracing/jaeger/pull/9644"
+  ],
+  "comments": [
+   {
+    "author": "AirbusA321NX",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2026-09-23T18:14:28Z",
+    "body": "hey i think i can propose an approach on fixing M3 \n\nfirstly we need to replace aggregation with Field Collapse where we need to change FindTraceIDs in the Elasticsearch query builder. Remove the legacy terms aggregation and replace it with Elasticsearch Field Collapse on traceID (\"collapse\": {\"field\": \"traceID\"}).\n\nAfter this we apply keyset sorting in which we add a sort clause to order the collapsed results by [{ \"startTime\": \"desc\" }, { \"traceID\": \"asc\" }].\nthen we extract and mint cursor, in this we read the last returned hit from the Elasticsearch response. Extract its (startTime, traceID) and encode it into a stateless base64 string to serve as the next_page_token.\ncontinuing further we resume traversal, in this step when a request includes a page_token, decode it back into the (startTime, traceID) tuple and pass it into the elasticsearch search_after parameter to fetch the next page.\nin our second last step we Isolate cursors which will ensure this result-set trace cursor is kept separate from the internal multiRead span cursor (which paginates spans within a single trace).\nat last declare capability in which we update the elasticsearch/openSearch storage factory to declare SearchCapabilities.Paginated = true.\n\nif there is any doubt on my approach, i am open for discussion , else i can start working on it "
+   },
+   {
+    "author": "iammdzaidalam",
+    "type": "User",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-09-23T18:34:41Z",
+    "body": "I'll take the first open item, the paginated entry in the capabilities blob the UI reads, which is the last piece of the M2 exit bar now that #9630 records the rest. The value reported is the reader's declaration combined with the jaeger.query.pagination gate, since the gate refuses any Pagination before the reader is consulted and the UI should not offer a \"load more\" the query service would reject. PR to follow shortly; the §3.2 fingerprint stays with M3 as #9630 notes."
+   },
+   {
+    "author": "alishair7071",
+    "type": "User",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-09-23T20:26:42Z",
+    "body": "I would like to help with the Elasticsearch/OpenSearch pagination milestone. I noticed a possible design conflict: the proposal collapses on traceID but needs to sort and paginate by (startTime, traceID). Elasticsearch and OpenSearch document that collapse with search_after requires sorting by the collapse field alone. Could we discuss a supported approach for meeting the RFC’s ordering requirements before implementation? I am happy to help investigate."
+   },
+   {
+    "author": "yurishkuro",
+    "type": "User",
+    "association": "MEMBER",
+    "created_at": "2026-09-25T01:48:57Z",
+    "body": "@alishair7071 confirmed the conflict, but do you have a proposal how to solve this?"
+   },
+   {
+    "author": "alishair7071",
+    "type": "User",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-09-25T06:45:25Z",
+    "body": "@yurishkuro after checking the options, I don’t see a query-only way to keep both exact trace pagination and the current newest-first ordering on the existing span documents.\n\nElasticsearch/OpenSearch require `collapse` and `search_after` to sort by the same field. So collapsing on `traceID` can page traces, but it cannot also sort by `(max(startTime), traceID)`. Composite aggregation can page trace-ID buckets, but it likewise cannot order those buckets by the `max(startTime)` metric.\n\nI see two viable directions:\n\n1. Preserve newest-first ordering by introducing a trace-level search representation with the ordering key stored per trace, then paginate that representation by `(startTime, traceID)`. This is a larger change involving indexing and likely backfill.\n2. Keep the existing span index and use collapse plus `search_after` on `traceID` alone. That is supported, but changes the result ordering and would require an explicit change to the RFC’s ordering requirement.\n\nI don’t think either trade-off should be chosen implicitly. Which requirement would you prefer to prioritize for M3? I am happy to help investigate or prototype the agreed direction."
+   },
+   {
+    "author": "AirbusA321NX",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2026-09-25T06:48:06Z",
+    "body": "@yurishkuro hey i have already pushed a PR regarding M3, can you review it, if any issues in that i can fix it \n"
+   },
+   {
+    "author": "rahimuddin140",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2026-10-15T16:25:38Z",
+    "body": "Hi — I read the pagination feature issue: FindTraces and FindTraceSummaries only return the first page capped by search_depth, and RFC 0014 settles the opaque page_token design with milestones per backend. I'm new to open source and exploring Jaeger. The open milestones (like M3 for Elasticsearch/OpenSearch) caught my eye — is one still unclaimed, and would a PR be welcome?"
+   }
+  ],
+  "open_prs": [
+   "https://github.com/jaegertracing/jaeger/pull/9635",
+   "https://github.com/jaegertracing/jaeger/pull/9644"
+  ],
+  "closed_prs": [
+   "https://github.com/jaegertracing/jaeger/pull/9630 (merged)"
+  ],
+  "heuristic": 0.0
+ },
+ "usebruno/bruno#5456": {
+  "repo": "usebruno/bruno",
+  "number": 5456,
+  "url": "https://github.com/usebruno/bruno/issues/5456",
+  "title": "Show Final Request Variables",
+  "body": "### I have checked the following:\n\n- [x] I've searched existing issues and found nothing related to my issue.\n\n### This feature\n\n- [ ] blocks me from using Bruno\n- [x] would improve my quality of life in Bruno\n- [x] is something I've never seen an API client do before\n\n### Describe the feature you want to add, and how it would change your usage of Bruno\n\nIn the Request → Variables tab, display a table with:\n\n1. Variable Name – effective name used in the request\n2. Value – resolved final value after applying precedence\n3. Source – origin of the variable (Collection, Folder, Request, or Environment)\n\nNotes:\n2. Precedence: Request > Folder > Collection > Environment\n3. View updates automatically when request or environment context changes\n\n### Mockups or Images of the feature\n\n<img width=\"935\" height=\"1071\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/4ca67c08-98e7-4bb7-b118-7e09fcdafc5d\" />\n\n[JIRA](https://usebruno.atlassian.net/browse/BRU-2066)",
+  "labels": [
+   "enhancement",
+   "good first issue",
+   "help wanted",
+   "has-pr",
+   "status-tracking"
+  ],
+  "created_at": "2025-08-29T18:47:47Z",
+  "updated_at": "2026-10-02T06:34:08Z",
+  "comments_count": 5,
+  "stars": 0,
+  "language": null,
+  "repo_description": "",
+  "watched": false,
+  "welcomed_before": 0,
+  "signals": [
+   "open pull request linked: https://github.com/usebruno/bruno/pull/5457, https://github.com/usebruno/bruno/pull/7789"
+  ],
+  "comments": [
+   {
+    "author": "helloanoop",
+    "type": "User",
+    "association": "CONTRIBUTOR",
+    "created_at": "2025-08-29T21:43:15Z",
+    "body": "Bruno has a variable viewer. You can access this by clicking on the eye icon. \n\n<img width=\"550\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/c43552ba-d8c4-45a9-8ef5-ddffc0547633\" />\n\n\nThat said, I think the ask of \"I want to see the list of all variables that are in the scope of this request\" is valid.\n\nBut I am not sure if this is the right UI. One problem with this is that when you have a sufficiently large number of environment, folder and collection variables, this table becomes pretty lengthy.\n\nWe would also not want to keep the UI minimal - one option could be to have the table hidden by default and show only on expanding it.\n\nWould love to see more UX options.\n\n"
+   },
+   {
+    "author": "jayakrishnancn",
+    "type": "User",
+    "association": "CONTRIBUTOR",
+    "created_at": "2025-08-30T05:43:36Z",
+    "body": "Hi @helloanoop , \n\n>  one option could be to have the table hidden by default and show only on expanding it.\n\nThis is the current expectation, and the PR #5457  already addresses it. There's a show/hide button to expand and collapse the table. by default its in \"hide\" mode. \n\n\nhttps://github.com/user-attachments/assets/16cf884b-9aff-43c5-a4fe-8b7fd54fc8a7\n\nAgreed, A refined UX concept would make this even more effective"
+   },
+   {
+    "author": "justinTangren",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2025-09-05T16:08:44Z",
+    "body": "> Bruno has a variable viewer. You can access this by clicking on the eye icon.\n\nIn my experiance the variable view only shows runtime variables and collection-environment variables. It does NOT show \n- global-environment variables\n- collection pre-request/post-request variables\n- folder pre-request/post-request variables\n\nThis severly limits the usefullnes of the variable viewer\n\n---\n\n> I think the ask of \"I want to see the list of all variables that are in the scope of this request\" is valid.\n\nDefinetly yes. In my opinion the proposed `final variables` table is a major improvement over the existing variable viewer\n\n---\n\nThis ask is very similar to a my enhancement request — a way to see all the headers that are in the scope of a request\nhttps://github.com/usebruno/bruno/issues/4485\n\nI assume that the work to add a \"Final Headers\" table to the headers tab would be similar to what was done here to add a  `final variables` table"
+   },
+   {
+    "author": "justinTangren",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2025-09-05T16:21:02Z",
+    "body": "> Would love to see more UX options.\n\nThe existing variable viewer (when you click on the the eye icon) opens a new tab. Since you can only view a single tab at a time, you can either view the variable viewer or a request, but not both.\n\nIf the varaible viewer opened up as a side panel that could be viewed at the same time as a request, then you could add the `final variables` details to the variable viewer\n\n---\n\nPostman has a variable viewer that opens as a side panel. \n<img width=\"2210\" height=\"804\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/06d90b2b-ff5f-4437-b74b-3390fcc46481\" />\n\nThis image came from the following page of Postmans documentation\nhttps://learning.postman.com/docs/sending-requests/variables/variables/"
+   },
+   {
+    "author": "wolfinj",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2026-10-02T06:34:08Z",
+    "body": "I would love to see all variables used by a request in one place.\n\nIt would also be useful to have an option to copy all of them at once.\n\nAnother useful feature would be a button that toggles between the variable and resolved-value views. When enabled, all variables would be displayed as their resolved values while still keeping a visual indication that the value comes from a variable."
+   }
+  ],
+  "open_prs": [
+   "https://github.com/usebruno/bruno/pull/5457",
+   "https://github.com/usebruno/bruno/pull/7789"
+  ],
+  "closed_prs": [],
+  "heuristic": 0.0
+ },
+ "usebruno/bruno#737": {
+  "repo": "usebruno/bruno",
+  "number": 737,
+  "url": "https://github.com/usebruno/bruno/issues/737",
+  "title": "[Feature request] Add save-all command",
+  "body": "In addition to the suggested save prompt #477 on window close, i would also suggest to add these extension regarding unsaved changes:\n\n- Provide a **Save all** command, like VSCode does. Preferably as keyboard shortcut (maybe `Ctrl+Shift+S`) and via menu.\n- Add a small indicator in the tree for all requests with unsaved changes.\n\nCurrently it is hard to *not* loose changes of requests when closing Bruno. I have to manually go through all requests to see if there are unsaved changes.\n\n[JIRA](https://usebruno.atlassian.net/browse/BRU-1017)",
+  "labels": [
+   "enhancement",
+   "good first issue",
+   "help wanted",
+   "module-qol"
+  ],
+  "created_at": "2023-10-23T12:57:57Z",
+  "updated_at": "2026-09-26T16:35:33Z",
+  "comments_count": 17,
+  "stars": 0,
+  "language": null,
+  "repo_description": "",
+  "watched": false,
+  "welcomed_before": 0,
+  "signals": [
+   "open pull request linked: https://github.com/usebruno/bruno/pull/3912, https://github.com/usebruno/bruno/pull/7779",
+   "possible claim by @junglesub on 2025-03-29"
+  ],
+  "comments": [
+   {
+    "author": "bvsvntv",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2023-10-23T14:35:29Z",
+    "body": "I would like to work on this. Is it available ?"
+   },
+   {
+    "author": "helloanoop",
+    "type": "User",
+    "association": "CONTRIBUTOR",
+    "created_at": "2023-10-23T15:22:34Z",
+    "body": "@iamsampang . You can work on it. There is no process of assigning tickets. \r\n\r\nIf you choose to work on it, just keep sharing updates as you make progress and raise a PR when ready."
+   },
+   {
+    "author": "whoshriyansh",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2023-11-03T04:47:21Z",
+    "body": "@helloanoop,\r\nI would like to work on this issue but I'm little inexperience with large code-bases.\r\nCan you please guide me in which file I have to add the feature."
+   },
+   {
+    "author": "bvsvntv",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2023-11-05T05:29:44Z",
+    "body": "@whoshriyansh You can work on this if you have already explored the code base. I just started to explore it but it's quite overwhelming for me because of no prior knowledge about the electronjs."
+   },
+   {
+    "author": "whoshriyansh",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2023-11-05T06:49:22Z",
+    "body": "Ok @iamsampang,\r\nI have made this functionality and raised a PR  #890 .\r\nLooking forward to more contributions."
+   },
+   {
+    "author": "ItsJustRuby",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2024-03-10T08:51:53Z",
+    "body": "@whoshriyansh, thanks for taking this on!\r\n\r\nDo you have any updates on the progress of this feature?"
+   },
+   {
+    "author": "junglesub",
+    "type": "User",
+    "association": "CONTRIBUTOR",
+    "created_at": "2025-01-29T09:16:07Z",
+    "body": "Hi is this currently worked on? I am seeing #890 but it wasn't merged. Thanks!"
+   },
+   {
+    "author": "symtalha14",
+    "type": "User",
+    "association": "CONTRIBUTOR",
+    "created_at": "2025-03-28T09:48:16Z",
+    "body": "Can someone please confirm the latest status of this feat. Is this ready to merge or yet to be implemented?"
+   },
+   {
+    "author": "junglesub",
+    "type": "User",
+    "association": "CONTRIBUTOR",
+    "created_at": "2025-03-29T06:53:16Z",
+    "body": "> Can someone please confirm the latest status of this feat. Is this ready to merge or yet to be implemented?\n\nI opened a PR and asked for a merge in Discord but haven’t gotten any response 😢"
+   },
+   {
+    "author": "anusree-bruno",
+    "type": "User",
+    "association": "COLLABORATOR",
+    "created_at": "2025-04-02T09:14:11Z",
+    "body": "@junglesub\nApologies for that! I'll check with the team and update you on when we can merge this PR.\n"
+   },
+   {
+    "author": "anusree-bruno",
+    "type": "User",
+    "association": "COLLABORATOR",
+    "created_at": "2025-04-08T13:30:40Z",
+    "body": "Hi @junglesub,\nI discussed this with the team — we’ll be reviewing the PR, and we're aiming to have this feature available by the end of April."
+   },
+   {
+    "author": "anusree-bruno",
+    "type": "User",
+    "association": "COLLABORATOR",
+    "created_at": "2025-05-13T11:14:34Z",
+    "body": "We were occupied with other priorities in April and, unfortunately, were unable to allocate time to review this. We plan to review it during May"
+   },
+   {
+    "author": "ade",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2025-12-05T13:44:29Z",
+    "body": "This would be nice but I would actually expect bruno to auto-save everything, or at least have an option for that - since files are typically tracked by Git anyway"
+   },
+   {
+    "author": "anusree-bruno",
+    "type": "User",
+    "association": "COLLABORATOR",
+    "created_at": "2025-12-09T06:38:00Z",
+    "body": "Hi All\n\nThis PR implements autosave https://github.com/usebruno/bruno/pull/6225 and the auto save feature will be available from v3 onwards"
+   },
+   {
+    "author": "deeTEEcee",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2026-02-17T21:23:17Z",
+    "body": "The autosave feature is nice but I would still appreciate the save-all option!"
+   },
+   {
+    "author": "Rohan-Bruno",
+    "type": "User",
+    "association": "COLLABORATOR",
+    "created_at": "2026-09-22T06:55:44Z",
+    "body": "We now have the \"Save All\" command.\n\nmacOS - `⌘ Shift S`\nWindows - `Ctrl Shift S`\n\nCould you please try and let us know if anyone is facing any issues with this?"
+   },
+   {
+    "author": "tanNicolas",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2026-09-26T16:35:33Z",
+    "body": "> We now have the \"Save All\" command.\n> \n> macOS - `⌘ Shift S` Windows - `Ctrl Shift S`\n> \n> Could you please try and let us know if anyone is facing any issues with this?\n\nworking on windows! thanks!"
+   }
+  ],
+  "open_prs": [
+   "https://github.com/usebruno/bruno/pull/3912",
+   "https://github.com/usebruno/bruno/pull/7779"
+  ],
+  "closed_prs": [
+   "https://github.com/usebruno/bruno/pull/890"
+  ],
+  "heuristic": 0.0
+ },
+ "gofr-dev/gofr#629": {
+  "repo": "gofr-dev/gofr",
+  "number": 629,
+  "url": "https://github.com/gofr-dev/gofr/issues/629",
+  "title": "Refactor metrics implementation",
+  "body": "Extension of #529 \r\n- A new counter metric needs to be added which represents server errors (`app_server_error`)\r\n- A new counter metric for circuit open counts (`app_circuit_open_count`)\r\n\r\nCurrent metrics implementation makes it harder to use in different packages as it requires an instance of metricsManager everywhere, need to think of a better solution and implement in such a way that a copy of metricsManager should not be required to pass everywhere.",
+  "labels": [
+   "help wanted",
+   "Observability"
+  ],
+  "created_at": "2024-05-17T06:12:52Z",
+  "updated_at": "2026-08-05T14:19:54Z",
+  "comments_count": 4,
+  "stars": 0,
+  "language": null,
+  "repo_description": "",
+  "watched": false,
+  "welcomed_before": 0,
+  "signals": [
+   "possible claim by @Himanshu197200 on 2025-12-04"
+  ],
+  "comments": [
+   {
+    "author": "Himanshu197200",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2025-12-04T19:06:31Z",
+    "body": "could you please assign this issue to me \ni would like to work on this issue as this issue is still open"
+   },
+   {
+    "author": "om7057",
+    "type": "User",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-08-05T03:08:05Z",
+    "body": "@coolwednesday @srijan-27 @Umang01-hash Picking this one up!"
+   },
+   {
+    "author": "Umang01-hash",
+    "type": "User",
+    "association": "MEMBER",
+    "created_at": "2026-08-05T04:58:09Z",
+    "body": "Hey @om7057 ! This issue was not only to add the new counters but to think of a better solid metrics implementation for GoFr. See (Current metrics implementation makes it harder to use in different packages as it requires an instance of metricsManager everywhere, need to think of a better solution and implement in such a way that a copy of metricsManager should not be required to pass everywhere.)\n\nLet me know if you have any ideas/thoughts of how can we improve / make it better ? Happy to help!"
+   },
+   {
+    "author": "om7057",
+    "type": "User",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-08-05T14:19:54Z",
+    "body": "> Hey [@om7057](https://github.com/om7057) ! This issue was not only to add the new counters but to think of a better solid metrics implementation for GoFr. See (Current metrics implementation makes it harder to use in different packages as it requires an instance of metricsManager everywhere, need to think of a better solution and implement in such a way that a copy of metricsManager should not be required to pass everywhere.)\n> \n> Let me know if you have any ideas/thoughts of how can we improve / make it better ? Happy to help!\n\nThanks for the context, @Umang01-hash. \n\nFor the threading problem: GoFr already has a precedent for this exact situation. Tracer avoids passing an instance around by using OTel's global registry (otel.Tracer(\"name\"), set once via otel.SetTracerProvider), and the exporters subsystem has its own mutex-guarded package-level registry. I followed that same approach: a global Manager in pkg/gofr/metrics, installed once by Container, exposing package-level helpers like metrics.IncrementCounter(...). New code (or anything without easy access to Container) can call these directly, no constructor param needed.\n\nI intentionally didn't cover the 30 datasource packages (redis, sql, mongo, kafka, etc.) that currently take a Metrics instance via constructor. Their tests are built around mocking that injected value, so removing it would mean rework on test coverage.\n\nSo this gives us the option to move away from threading metricsManager everywhere, without forcing"
+   }
+  ],
+  "open_prs": [],
+  "closed_prs": [
+   "https://github.com/gofr-dev/gofr/pull/3856 (merged)"
+  ],
+  "heuristic": 0.0
+ },
+ "gofr-dev/gofr#2480": {
+  "repo": "gofr-dev/gofr",
+  "number": 2480,
+  "url": "https://github.com/gofr-dev/gofr/issues/2480",
+  "title": "Add response time unit in json logs",
+  "body": "**Describe the bug**\nRight now json logs dont have the unit for the response time, latency etc but the prettyprinted logs in terminal do have, JSON logs should also have the unit to make it pretty clear for debugging purpose.\n\nMoreover an extension to this would be keeping consistent unit across, but this needs to be thought throughly as gofr has different units, it would be for a reason.",
+  "labels": [
+   "good first issue",
+   "go"
+  ],
+  "created_at": "2025-10-28T09:00:26Z",
+  "updated_at": "2026-10-15T17:21:36Z",
+  "comments_count": 25,
+  "stars": 0,
+  "language": null,
+  "repo_description": "",
+  "watched": false,
+  "welcomed_before": 0,
+  "signals": [
+   "open pull request linked: https://github.com/Ishiezz/gofr/pull/1, https://github.com/gofr-dev/gofr/pull/4253",
+   "possible claim by @DevaanshKathuria on 2025-11-25",
+   "possible claim by @202378030317 on 2026-04-26",
+   "possible claim by @202378030317 on 2026-04-26",
+   "possible claim by @Fah218 on 2026-05-31",
+   "possible claim by @krishachra on 2026-06-26",
+   "possible claim by @khushi0515 on 2026-07-17",
+   "possible claim by @hsdfat on 2026-07-18",
+   "possible claim by @Vaibhavsaini14 on 2026-07-21",
+   "possible claim by @obaid1dev on 2026-09-05",
+   "possible claim by @202378030317 on 2026-09-05",
+   "possible claim by @hsdfat on 2026-09-05",
+   "possible claim by @be-student on 2026-09-06",
+   "possible claim by @202378030317 on 2026-09-07",
+   "possible claim by @202378030317 on 2026-09-07",
+   "possible claim by @nikolas-sapa on 2026-09-19",
+   "possible claim by @202378030317 on 2026-09-19"
+  ],
+  "comments": [
+   {
+    "author": "0xEbrahim",
+    "type": "User",
+    "association": "CONTRIBUTOR",
+    "created_at": "2025-11-06T10:42:27Z",
+    "body": "Can you define the scope that needs to be edited, I don't clearly understand but i want to contribute here again, sorry"
+   },
+   {
+    "author": "gizmo-rt",
+    "type": "User",
+    "association": "CONTRIBUTOR",
+    "created_at": "2025-11-06T11:25:26Z",
+    "body": "What purpose does this serve  given we already have metrics ?"
+   },
+   {
+    "author": "aryanmehrotra",
+    "type": "User",
+    "association": "MEMBER",
+    "created_at": "2025-11-06T17:12:50Z",
+    "body": "@0xEbrahim we need to first decide if we want to do this as its in triage phase right now."
+   },
+   {
+    "author": "aryanmehrotra",
+    "type": "User",
+    "association": "MEMBER",
+    "created_at": "2025-11-06T17:13:34Z",
+    "body": "@gizmo-rt \n1. Parity between json and terminal logs\n2. Metrics bucket are capped at 30 seconds, so any response time above that comes in 30s only."
+   },
+   {
+    "author": "aaryyya",
+    "type": "User",
+    "association": "CONTRIBUTOR",
+    "created_at": "2025-11-16T14:55:52Z",
+    "body": "take\n"
+   },
+   {
+    "author": "gizmo-rt",
+    "type": "User",
+    "association": "CONTRIBUTOR",
+    "created_at": "2025-11-17T05:38:31Z",
+    "body": "Parity between logs is fine, though if it is solely due to metrics bucket cap then we should explore making https://github.com/gofr-dev/gofr/blob/4e9dd129983c5e5c0a6d093b863c42730a300a62/pkg/gofr/container/container.go#L262 configurable for users "
+   },
+   {
+    "author": "aryanmehrotra",
+    "type": "User",
+    "association": "MEMBER",
+    "created_at": "2025-11-19T03:00:57Z",
+    "body": "> Parity between logs is fine\n\nwe dont have unit of time in json logs but we have them in terminal pretty printed logs"
+   },
+   {
+    "author": "DevaanshKathuria",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2025-11-25T15:30:39Z",
+    "body": "Hi @aryanmehrotra!\nI’ve opened a PR to add human-readable response time units to the JSON logs while keeping the existing numeric field for backward compatibility.\nThis improves parity between JSON logs and the pretty-printed terminal logs, and aligns with the discussion in the related issue.\nWhenever you get a moment, could you please review it?"
+   },
+   {
+    "author": "202378030317",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2026-04-26T07:23:39Z",
+    "body": "I'd like to work on this. Please assign it to me."
+   },
+   {
+    "author": "202378030317",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2026-04-26T07:26:15Z",
+    "body": "I'm a new contributor and would like to work on this issue. Could you please assign it to me? Thanks!"
+   },
+   {
+    "author": "Fah218",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2026-05-31T17:36:35Z",
+    "body": "Hi! I would like to work on this issue. Could you please assign it to me?\n"
+   },
+   {
+    "author": "krishachra",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2026-06-26T11:51:27Z",
+    "body": "Hi! I'd like to work on this issue.\n\nI'm a first-time contributor to GoFr and would like to implement the JSON response time unit while keeping the existing behavior in mind. If there isn't already someone actively working on it, I'll start investigating the logging code and submit a PR.\n\nThanks!\n"
+   },
+   {
+    "author": "khushi0515",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2026-07-17T17:06:27Z",
+    "body": "Hi @maintainers,\n\nI would like to work on this issue. Could you please assign it to me?\n\nThanks!"
+   },
+   {
+    "author": "hsdfat",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2026-07-18T10:36:11Z",
+    "body": "Hi — I’d like to take this on. Before coding I want to lock the approach, since #2597 was closed pending discussion.\n\nTwo options:\n1. Additive (non-breaking): keep response_time/latency as-is and add sibling response_time_unit/latency_unit: \"µs\" fields. Nothing downstream breaks.\n2. Rename to embed the unit: response_time → response_time_us, etc. — matches the existing remotelogger (response_time_us) precedent, but it's a breaking JSON change (the TestRequestLogSchemaSnaps...\ncomment explicitly warns aggregators/dashboards break on rename).\n\nScope question: just the HTTP/gRPC/service request logs (3 structs), or should I also cover the ~25 datasource duration/time fields (SQL, Redis, Mongo, GraphQL, InfluxDB, …) so the convention is consistent everywhere?\n\nMy lean is option 1 for the request logs first, with the datasources as a follow-up — but I’ll do whatever fits your vision. Could you confirm the approach + scope and assign it to me?"
+   },
+   {
+    "author": "Vaibhavsaini14",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2026-07-21T13:48:22Z",
+    "body": "Hi! I'd like to work on this issue. If it's still available, I'd be happy to take it.\n"
+   },
+   {
+    "author": "obaid1dev",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2026-09-05T05:17:07Z",
+    "body": "Hi! I'd like to work on this issue. I’ll investigate the existing JSON logging and response-time formatting, implement the change, and add/update the relevant tests. Thanks!"
+   },
+   {
+    "author": "202378030317",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2026-09-05T06:02:04Z",
+    "body": "Okay, approved. Please complete the modifications and submit the push promptly\r\n\r\n\r\n\r\n---Original---\r\nFrom: ***@***.***&gt;\r\nDate: Sat, Sep 5, 2026 13:17 PM\r\nTo: ***@***.***&gt;;\r\nCc: ***@***.******@***.***&gt;;\r\nSubject: Re: [gofr-dev/gofr] Add response time unit in json logs (Issue #2480)\r\n\r\n\r\nobaid1dev left a comment (gofr-dev/gofr#2480)\r\n \r\nHi! I'd like to work on this issue. I’ll investigate the existing JSON logging and response-time formatting, implement the change, and add/update the relevant tests. Thanks!\r\n \r\n—\r\nReply to this email directly, view it on GitHub, or unsubscribe.\r\nTriage notifications, keep track of coding agent tasks and review pull requests on the go with GitHub Mobile for iOS and Android. Download it today! \r\nYou are receiving this because you commented.Message ID: ***@***.***&gt;"
+   },
+   {
+    "author": "hsdfat",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2026-09-05T14:18:23Z",
+    "body": "@aryanmehrotra — following up on my question from July. This is still in triage, and I think the\nthing blocking it is a decision rather than a lack of volunteers: eight people have offered to take\nit since November, and #2597 was closed because the approach had not been settled rather than\nbecause the patch was wrong. So rather than add a ninth \"please assign me\", here is the decision\nlaid out as concretely as I can, and I will implement whichever you pick.\n\n**Option 1 — additive, non-breaking.** Keep `response_time` / `responseTime` / `latency` exactly as\nthey are, and add an `omitempty` sibling: `response_time_unit` / `responseTimeUnit` / `latencyUnit`,\nset to `\"µs\"`. Nothing downstream breaks, and log consumers that ignore the new key are unaffected.\nCosts one extra field per log line.\n\n**Option 2 — rename to embed the unit.** `response_time` → `response_time_us`, and so on. No extra\nfield, and it matches what `remotelogger` already emits — but it breaks every existing dashboard,\nalert and log query that reads the current key.\n\nI have option 1 implemented against the three request-log structs (http middleware, gRPC, service),\nwith tests. I have deliberately not opened a PR, because #2597 showed that is the wrong order here.\n\n**On @gizmo-rt's point**, which I think is still open and worth resolving first: if the real driver\nis the 30s metrics bucket cap, then making the bucket configurable is a different fix and this issue\nmay not be the right place for it. Your reply was t"
+   },
+   {
+    "author": "be-student",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2026-09-06T20:08:33Z",
+    "body": "I'd like to work on this. I plan to identify the JSON request-log boundary, add an explicit unit alongside the response-time value without changing the existing numeric field, and cover the serialized output with focused tests. Could you assign this issue to me?\n"
+   },
+   {
+    "author": "202378030317",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2026-09-07T09:20:56Z",
+    "body": "可以，没问题，修完提交完记得提醒我审核\r\n\r\n\r\n\r\n---Original---\r\nFrom: ***@***.***&gt;\r\nDate: Mon, Sep 7, 2026 04:08 AM\r\nTo: ***@***.***&gt;;\r\nCc: ***@***.******@***.***&gt;;\r\nSubject: Re: [gofr-dev/gofr] Add response time unit in json logs (Issue #2480)\r\n\r\n\r\nbe-student left a comment (gofr-dev/gofr#2480)\r\n \r\nI'd like to work on this. I plan to identify the JSON request-log boundary, add an explicit unit alongside the response-time value without changing the existing numeric field, and cover the serialized output with focused tests. Could you assign this issue to me?\r\n \r\n—\r\nReply to this email directly, view it on GitHub, or unsubscribe.\r\nTriage notifications, keep track of coding agent tasks and review pull requests on the go with GitHub Mobile for iOS and Android. Download it today! \r\nYou are receiving this because you commented.Message ID: ***@***.***&gt;"
+   },
+   {
+    "author": "202378030317",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2026-09-07T09:22:26Z",
+    "body": "我觉得这个等待考虑和讨论\r\n\r\n\r\n\r\n---Original---\r\nFrom: ***@***.***&gt;\r\nDate: Sat, Sep 5, 2026 22:18 PM\r\nTo: ***@***.***&gt;;\r\nCc: ***@***.******@***.***&gt;;\r\nSubject: Re: [gofr-dev/gofr] Add response time unit in json logs (Issue #2480)\r\n\r\n\r\nhsdfat left a comment (gofr-dev/gofr#2480)\r\n \r\n@aryanmehrotra — following up on my question from July. This is still in triage, and I think the\r\n thing blocking it is a decision rather than a lack of volunteers: eight people have offered to take\r\n it since November, and #2597 was closed because the approach had not been settled rather than\r\n because the patch was wrong. So rather than add a ninth \"please assign me\", here is the decision\r\n laid out as concretely as I can, and I will implement whichever you pick.\r\n \r\nOption 1 — additive, non-breaking. Keep response_time / responseTime / latency exactly as\r\n they are, and add an omitempty sibling: response_time_unit / responseTimeUnit / latencyUnit,\r\n set to \"µs\". Nothing downstream breaks, and log consumers that ignore the new key are unaffected.\r\n Costs one extra field per log line.\r\n \r\nOption 2 — rename to embed the unit. response_time → response_time_us, and so on. No extra\r\n field, and it matches what remotelogger already emits — but it breaks every existing dashboard,\r\n alert and log query that reads the current key.\r\n \r\nI have option 1 implemented against the three request-log structs (http middleware, gRPC, service),\r\n with tests. I have deliberately not opened a PR, because #2597 showed that i"
+   },
+   {
+    "author": "nikolas-sapa",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2026-09-19T14:07:01Z",
+    "body": "Hi @aryanmehrotra and maintainers! I'd like to work on this issue. I plan to add a  field (value: `µs`) to the  struct in , bringing JSON log output into parity with the terminal pretty-printed output which already includes the `µs` unit. This is an additive, non-breaking change — the existing `response_time` field remains as a numeric value. I'll update the schema snapshot test accordingly. Could you confirm this approach is acceptable, or let me know if you'd prefer a different direction (e.g. the renaming approach)?"
+   },
+   {
+    "author": "202378030317",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2026-09-19T14:12:25Z",
+    "body": "我觉得可行，先试试吧\r\n\r\n\r\n\r\n---Original---\r\nFrom: \"Nikolas ***@***.***&gt;\r\nDate: Sat, Sep 19, 2026 22:07 PM\r\nTo: ***@***.***&gt;;\r\nCc: ***@***.******@***.***&gt;;\r\nSubject: Re: [gofr-dev/gofr] Add response time unit in json logs (Issue #2480)\r\n\r\n\r\nnikolas-sapa left a comment (gofr-dev/gofr#2480)\r\n \r\nHi @aryanmehrotra and maintainers! I'd like to work on this issue. I plan to add a  field (value: µs) to the  struct in , bringing JSON log output into parity with the terminal pretty-printed output which already includes the µs unit. This is an additive, non-breaking change — the existing response_time field remains as a numeric value. I'll update the schema snapshot test accordingly. Could you confirm this approach is acceptable, or let me know if you'd prefer a different direction (e.g. the renaming approach)?\r\n \r\n—\r\nReply to this email directly, view it on GitHub, or unsubscribe.\r\nTriage notifications, keep track of coding agent tasks and review pull requests on the go with GitHub Mobile for iOS and Android. Download it today! \r\nYou are receiving this because you commented.Message ID: ***@***.***&gt;"
+   },
+   {
+    "author": "nikolas-sapa",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2026-09-30T16:45:35Z",
+    "body": "Digging into the `remotelogger` precedent that @aryanmehrotra flagged on #4253 — the commit message on that PR cites it as justification for an additive `response_time_unit` field, but on checking, it doesn't support that. Recording the inventory here so the decision has the actual data in front of it.\n\n**On the precedent claim:** `pkg/gofr/logging/remotelogger/dynamic_level_logger.go:29` is\n\n```go\nResponseTime  int64  `json:\"response_time_us\"`\n```\n\ni.e. unit in the key name, no sibling field. That's the *other* option from the one #4253 implements. `rg '\"[a-z_]*_unit\"'` across `pkg/` currently returns zero hits, so an additive `_unit` field would be new precedent in this codebase rather than alignment with an existing pattern. Flagging that so the decision isn't made on a false premise.\n\n**Where the gap actually is** — everything below emits a bare integer with no unit, all currently in microseconds:\n\n*gRPC* — `pkg/gofr/grpc/log.go:46`, `ResponseTime int64 \\`json:\"responseTime\"\\``, assigned via `.Microseconds()` at `log.go:214` and `log.go:237`.\n\n*Outbound HTTP client* — `pkg/gofr/service/logger.go:15`, `ResponseTime int64 \\`json:\"latency\"\\`` (note the Go field name and JSON key already differ). `PrettyPrint` at `logger.go:22` already prints `µs`.\n\n*Datasources* — 22 structs define `json:\"duration\"`:\n\n| Struct | Assigned from |\n|---|---|\n| `sql/db.go:40` | `sql/db.go:63` |\n| `redis/hook.go:26` | `redis/hook.go:68` |\n| `mongo/logger.go:19` | `mongo/mongo.go:193` |\n| `clickhou"
+   },
+   {
+    "author": "aryanmehrotra",
+    "type": "User",
+    "association": "MEMBER",
+    "created_at": "2026-10-15T17:21:36Z",
+    "body": "Decision on the approach: **the value and the unit stay separate.** JSON keys do not carry units.\n\n- Keep the existing numeric field unchanged (`response_time`, `responseTime`, `latency`, `duration`).\n- Add a sibling string field with the unit, named `<field>_unit` (for example `response_time_unit: \"µs\"`).\n- This is non-breaking for existing parsers and dashboards.\n- Each log struct states its own unit, so a struct that is not in µs is labelled correctly. This matters for `influxdb`, whose `duration` is in milliseconds.\n\n`remotelogger`'s `response_time_us` is the only key in `pkg/` that embeds a unit. It is not the convention to copy.\n\n#4253 is the HTTP server log and is the reference for the naming. gRPC, the outbound HTTP client and the datasources follow in separate PRs. Please follow the same naming in those."
+   }
+  ],
+  "open_prs": [
+   "https://github.com/Ishiezz/gofr/pull/1",
+   "https://github.com/gofr-dev/gofr/pull/4253"
+  ],
+  "closed_prs": [
+   "https://github.com/gofr-dev/gofr/pull/2597"
+  ],
+  "heuristic": 0.0
+ },
+ "grpc-ecosystem/grpc-gateway#7281": {
+  "repo": "grpc-ecosystem/grpc-gateway",
+  "number": 7281,
+  "url": "https://github.com/grpc-ecosystem/grpc-gateway/issues/7281",
+  "title": "Insecure default header matcher",
+  "body": "## 🐛 Bug Report\n\nWe recently had a very serious CVE in our project https://docs.velociraptor.app/announcements/advisories/cve-2026-18972/ due to the default header matcher in grpc gateway. \n\nThe default header matcher copies all HTTP headers into the grpc metadata without filtering, allowing arbitrary metadata items to be added unexpectedly. If the user of grpc gateway does not set a specific header matcher with runtime.WithIncomingHeaderMatcher() option this can pollute the metadata with unexpected values injected by the http header.\n\nI think a better more secure design is a noop header matcher which requires deliberately accepting some headers to be forwarded to the metadata.  (i.e. opt in rather than opt out). If the user is trying to capture specific headers then they should declare those specific headers to be injected into the grpc metadata.\n\n## To Reproduce\n\nThe default runtime.NewServeMux( ) installs a default header matcher which copies all headers to the grpc metadata.\n\n## Expected behavior\n\nIf a new user does not carefully review all documentation they would expect the grpc metadata to be clean and free for spurious values.\n\n## Actual Behavior\n\nIn the default configuration, grpc metadata items can be injected by external HTTP headers.\n\n## Your Environment\n\nAll supported Go versions and OSs.",
+  "labels": [
+   "bug",
+   "help wanted"
+  ],
+  "created_at": "2026-08-25T05:42:44Z",
+  "updated_at": "2026-09-01T23:12:17Z",
+  "comments_count": 5,
+  "stars": 0,
+  "language": null,
+  "repo_description": "",
+  "watched": false,
+  "welcomed_before": 0,
+  "signals": [],
+  "comments": [
+   {
+    "author": "johanbrandhorst",
+    "type": "User",
+    "association": "COLLABORATOR",
+    "created_at": "2026-08-28T02:45:11Z",
+    "body": "Hi, thanks for your issue. I'm sorry to hear that you had an issue with the gateway. We've just [started working](https://github.com/grpc-ecosystem/grpc-gateway/pull/7282) on a Security Considerations section of our docs, this sounds like something that belongs on there. Do you think there is anything else we can do to help others avoid this issue? I am not convinced this behaviour is in itself a security issue. Changing the behavior would risk breaking existing users, obviously."
+   },
+   {
+    "author": "scudette",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2026-08-30T03:48:26Z",
+    "body": "Let me try to convince you why this is insecure. There are two use cases:\n\n## Use case 1: Say I am a dev that wants to pass some HTTP headers to the grpc metadata. Since this is 2026 I will ask AI:\n\n```\n> use grpc-gateway to write sample code where http headers are passed to the grpc metadata\n``` \n\n```\nTo pass HTTP headers into gRPC metadata using grpc-gateway, you use the runtime.WithMetadata option when initializing your ServeMux. This option registers a custom header matcher function that inspects incoming HTTP headers and decides which ones to forward to the gRPC context as metadata.\n\nBy default, grpc-gateway prefixes forwarded headers with grpcgateway- unless you explicitly handle them in a custom matcher.\n\nStep-by-Step Implementation\n1. Define the Custom Header Matcher\nWrite a function with the signature func(string) (string, bool) to filter and transform HTTP header keys.\n\n```\n\n```go\n// CustomHeaderMatcher determines which HTTP headers get mapped to gRPC metadata\nfunc CustomHeaderMatcher(key string) (string, bool) {\n\tswitch key {\n\t// Pass specific headers through as exact gRPC metadata keys\n\tcase \"X-User-Id\", \"X-Request-Id\", \"Authorization\":\n\t\treturn key, true\n\t\n\t// Default behavior: let grpc-gateway use its standard matching (prefixes with 'grpcgateway-')\n\tdefault:\n\t\treturn runtime.DefaultHeaderMatcher(key)\n\t}\n}\n```\n\nSo this answer suggests to me that to map say \"Authorization\" HTTP header to \"Authorization\" gRPC metadata I add the above custom header matcher. The cod"
+   },
+   {
+    "author": "johanbrandhorst",
+    "type": "User",
+    "association": "COLLABORATOR",
+    "created_at": "2026-09-01T21:24:45Z",
+    "body": "Thanks for your thoughtful reply. I don't know how many of our users rely on the automatic HTTP header conversion, but I'm tempted to agree that we should change it, at least the `MetadataHeaderPrefix` stripping logic. We could introduce a new `WithLegacyHeaderMatching` option to restore the old behavior. Would you be interested in helping contribute a fix for this?"
+   },
+   {
+    "author": "scudette",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2026-09-01T23:08:33Z",
+    "body": "Happy to prepare a PR. I propose the following changes\n\n1. The default header matcher should be a noop header matcher which does not propagate anything.\n2. The WithLegacyHeaderMatching will install the current default with the current behavior.\n\nIf users need to pass a specific header they will need to install a custom header matchers (like the example above). This might also require a documentation change.\n\nThis change is not backwards compatible and will result in a breakage upon upgrade for people who currently rely on the current behavior - but this is good IMHO because if they are relying on it , further review might determine they are susceptible to an auth bypass vulnerability. \n"
+   },
+   {
+    "author": "johanbrandhorst",
+    "type": "User",
+    "association": "COLLABORATOR",
+    "created_at": "2026-09-01T23:12:17Z",
+    "body": "Alright go for it"
+   }
+  ],
+  "open_prs": [],
+  "closed_prs": [
+   "https://github.com/grpc-ecosystem/grpc-gateway/pull/7401 (merged)",
+   "https://github.com/grpc-ecosystem/grpc-gateway/pull/7540 (merged)"
+  ],
+  "heuristic": 0.0
+ },
+ "grpc-ecosystem/grpc-gateway#2833": {
+  "repo": "grpc-ecosystem/grpc-gateway",
+  "number": 2833,
+  "url": "https://github.com/grpc-ecosystem/grpc-gateway/issues/2833",
+  "title": "Investigate whether HTTPRule parser allows invalid templates",
+  "body": "As part of #2825, @oyvindwe mentioned that the HTTPRule parser may allow templates that will cause the OpenAPIv2 generator to generate invalid paths. Specifically:\r\n\r\n> Does the HttpRule parser also allow other path templates outside the specification? Specifically `:` before a variable? The reason I am asking is that the the joining of the path in the generator assumes that only the last part can start with `:`.\r\n\r\nWe should investigate whether this is the case, and if so, probably patch the openapiv2 generator to remove this assumption, as introducing errors for these templates now is a backwards incompatible change.\r\n\r\nRelated to #2824.",
+  "labels": [
+   "bug",
+   "help wanted",
+   "question"
+  ],
+  "created_at": "2022-08-03T21:35:11Z",
+  "updated_at": "2026-08-04T15:15:08Z",
+  "comments_count": 3,
+  "stars": 0,
+  "language": null,
+  "repo_description": "",
+  "watched": false,
+  "welcomed_before": 0,
+  "signals": [
+   "possible claim by @allenbiji on 2026-07-31"
+  ],
+  "comments": [
+   {
+    "author": "allenbiji",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2026-07-31T15:49:43Z",
+    "body": "Can I work on this?"
+   },
+   {
+    "author": "johanbrandhorst",
+    "type": "User",
+    "association": "COLLABORATOR",
+    "created_at": "2026-07-31T16:26:47Z",
+    "body": "Go for it"
+   },
+   {
+    "author": "ritik-kumar-dev",
+    "type": "User",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-08-04T15:15:07Z",
+    "body": "Pull request: https://github.com/grpc-ecosystem/grpc-gateway/pull/7191\nfix for this "
+   }
+  ],
+  "open_prs": [],
+  "closed_prs": [
+   "https://github.com/grpc-ecosystem/grpc-gateway/pull/2825 (merged)"
+  ],
+  "heuristic": 0.0
+ },
+ "obspy/obspy#2685": {
+  "repo": "obspy/obspy",
+  "number": 2685,
+  "url": "https://github.com/obspy/obspy/issues/2685",
+  "title": "Bug in Inventory.plot_response() when selection filters match not a single channel",
+  "body": "I use the IRIS_Webinar files to learn how to use ObsPy in my MAC, but there is a problem that confused me a lot.\r\n\r\n> inv.plot_response(min_freq=0.001,station=\"637A\")\r\n\r\nThen error occurred:\r\n\r\n> No handles with labels found to put in legend.\r\n> ---------------------------------------------------------------------------\r\n> ValueError                                Traceback (most recent call last)\r\n>  in \r\n>       1 import numpy as np\r\n> ----> 2 inv.plot_response(min_freq=0.001,station=\"637A\")\r\n> \r\n> /usr/local/lib/python3.7/site-packages/obspy/core/inventory/inventory.py in plot_response(self, min_freq, output, network,  station, location, channel, time, starttime, endtime, axes, unwrap_phase, plot_degrees, show, outfile)\r\n>     884         if not axes:\r\n>     885             from obspy.core.inventory.response import _adjust_bode_plot_figure\r\n> --> 886             _adjust_bode_plot_figure(fig, plot_degrees, show=False)\r\n>     887         if outfile:\r\n>     888             fig.savefig(outfile)\r\n> \r\n> /usr/local/lib/python3.7/site-packages/obspy/core/inventory/response.py in _adjust_bode_plot_figure(fig, plot_degrees, grid,   show)\r\n>    1966         minmax2 = ax2.yaxis.get_data_interval()\r\n>    1967         yticks2 = np.arange(minmax2[0] - minmax2[0] % (pi / 2),\r\n> -> 1968                             minmax2[1] - minmax2[1] % (pi / 2) + pi, pi / 2)\r\n>    1969         ax2.set_yticks(yticks2)\r\n>    1970         ax2.set_yticklabels([_pitick2latex(x) for x in yticks2])\r\n> \r\n> ValueError: arange: cannot compute length\r\n\r\nWhat should I do?\r\nThanks!",
+  "labels": [
+   "bug",
+   ".core.inventory",
+   "Good First Issue"
+  ],
+  "created_at": "2020-07-27T07:30:12Z",
+  "updated_at": "2023-06-16T11:00:08Z",
+  "comments_count": 7,
+  "stars": 0,
+  "language": null,
+  "repo_description": "",
+  "watched": false,
+  "welcomed_before": 0,
+  "signals": [
+   "open pull request linked: https://github.com/obspy/obspy/pull/2701"
+  ],
+  "comments": [
+   {
+    "author": "AmbroseTeo",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2020-07-27T07:31:29Z",
+    "body": ">No handles with labels found to put in legend.\r\n>---------------------------------------------------------------------------\r\n>ValueError                                Traceback (most recent call last)\r\n\r\n\r\nand\r\n\r\n\r\n>ValueError: arange: cannot compute length"
+   },
+   {
+    "author": "megies",
+    "type": "User",
+    "association": "MEMBER",
+    "created_at": "2020-07-28T08:57:09Z",
+    "body": "You'll have to provide a [reproducable example](http://sscce.org/), or it will cost way more time for people to debug."
+   },
+   {
+    "author": "megies",
+    "type": "User",
+    "association": "MEMBER",
+    "created_at": "2020-07-28T09:04:05Z",
+    "body": "OK, nevermind, it's easy to reproduce, the problem occurs when the specified filters do not match any channel in the Inventory.\r\n\r\n```python\r\nfrom obspy import read_inventory\r\ninv = read_inventory()\r\ninv.plot_response(min_freq=0.001,station=\"ABCDE\")\r\n```"
+   },
+   {
+    "author": "megies",
+    "type": "User",
+    "association": "MEMBER",
+    "created_at": "2020-07-28T09:05:57Z",
+    "body": "Should be an easy fix, I guess we'll just want to raise an exception with a meaningful message in that case."
+   },
+   {
+    "author": "gbbofh",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2020-08-18T21:49:07Z",
+    "body": "Currently working on a fix to throw a more meaningful exception."
+   },
+   {
+    "author": "dsentinel",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2020-08-18T23:09:41Z",
+    "body": "@megies do we really want an exception here?\r\nOR a would an empty or unaltered passed figure with a warning?\r\nI would think operating on an empty \"thing\" would just return and empty."
+   },
+   {
+    "author": "gbbofh",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2020-08-19T15:25:46Z",
+    "body": "`plot_response()` in `Network` is also susceptible to this exception:\r\n```\r\nimport obspy\r\nobspy.read_inventory()[0].plot_response(0.01, station=\"ABCDE\")\r\n```\r\nAs is `Station.plot()`. The best place to handle the exception would likely be in `_adjust_bode_plot_figure()`, where the `np.arange()` can be wrapped in a try/except block to either print out a warning, or raise an `ObsPyException` with a more descriptive error message."
+   }
+  ],
+  "open_prs": [
+   "https://github.com/obspy/obspy/pull/2701"
+  ],
+  "closed_prs": [],
+  "heuristic": 0.0
+ },
+ "obspy/obspy#2730": {
+  "repo": "obspy/obspy",
+  "number": 2730,
+  "url": "https://github.com/obspy/obspy/issues/2730",
+  "title": "PPSD: Add option to pass in existing Figure and list of Axes to use",
+  "body": "We should add an option to be able to pass in an existing matplotlib `Figure` and list of `Axes` objects to `PPSD.plot()` as `PPSD.plot(..., fig=None, axes=None)` like we have for many other plotting routines. The purpose is to make it easier to make figures that have different PPSDs plotted in various subplots/axes. Compare [this post on discourse](https://discourse.obspy.org/t/plotting-ppsd-of-all-station-components-as-subplots-vertically-w-new-high-low-noise-model/1100/3).",
+  "labels": [
+   "enhancement",
+   ".imaging",
+   "Good First Issue"
+  ],
+  "created_at": "2020-10-15T09:07:04Z",
+  "updated_at": "2023-04-21T10:52:06Z",
+  "comments_count": 2,
+  "stars": 0,
+  "language": null,
+  "repo_description": "",
+  "watched": false,
+  "welcomed_before": 0,
+  "signals": [],
+  "comments": [
+   {
+    "author": "obspy-bot",
+    "type": "User",
+    "association": "CONTRIBUTOR",
+    "created_at": "2020-10-15T09:08:49Z",
+    "body": "This issue has been mentioned on **ObsPy Forum**. There might be relevant details there:\n\nhttps://discourse.obspy.org/t/plotting-ppsd-of-all-station-components-as-subplots-vertically-w-new-high-low-noise-model/1100/4\n"
+   },
+   {
+    "author": "msbdd",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2023-04-05T17:54:45Z",
+    "body": "I've encountered the same, since using a 3-channel instrument (or two sitting on the same pier) sometimes require plotting simultaneously more PPSD plots. \r\nOne workaround is to merge these plots after printing using any graphic manipulation software, but that could be inconvenient and not that fast, therefore i am suggesting changing \r\n`fig = plt.figure()`\r\nto \r\n```\r\nif not subfig:\r\n    fig = plt.figure()\r\nelse:\r\n    fig = subfig\r\n```\r\nand adding the possibility to pass the subfig to the PPSD plot function in the spectral_estimation.py thus enabling using sublots functionality. \r\nI've did some testing and this code \r\n```\r\nfrom obspy.imaging.cm import pqlx\r\nfrom obspy.signal import PPSD\r\nimport matplotlib.pyplot as plt\r\nfrom obspy import read\r\nfrom obspy import read_inventory\r\n\r\nfig = plt.figure(layout='constrained', figsize=(25, 18))\r\nsubfigs = fig.subfigures(2, 3, wspace=0.07)\r\nst = read('test_data1.seed')\r\nst2 = read('test_data2.seed')\r\ninv = read_inventory('inv_1.xml')\r\ninv2 = read_inventory('inv_2.xml')\r\ninv3 = read_inventory('inv_3.xml')\r\ninv.extend(inv2)\r\ninv.extend(inv3)\r\ni = 0\r\nfor comp in [\"E\", \"N\", \"Z\"]:\r\n   tr = st.select(component=comp)[0]\r\n   tr2 = st2.select(component=comp)[0]\r\n   ppsd = PPSD(stats=tr.stats, metadata=inv)\r\n   ppsd.add(tr)\r\n   ppsd2 = PPSD(stats=tr2.stats, metadata=inv)\r\n   ppsd2.add(tr2)\r\n   ppsd.plot(cmap=pqlx, show=False, subfig=subfigs[0, i])\r\n   ppsd2.plot(cmap=pqlx, show=False, subfig=subfigs[1, i])\r\n   i += 1\r\nplt.show()\r\nfig.savefig(\"tes"
+   }
+  ],
+  "open_prs": [],
+  "closed_prs": [],
+  "heuristic": 0.0
+ },
+ "simpeg/simpeg#787": {
+  "repo": "simpeg/simpeg",
+  "number": 787,
+  "url": "https://github.com/simpeg/simpeg/issues/787",
+  "title": "Plotting integrated sensitivity for DC resistivity problem. ",
+  "body": "Hi all,\r\nI noticed that for the 2D DC resistivity problem, there is no attribute `prob.getJtJdiag(m)`, which makes it hard to visualize the integrated sensitivity. Would it be possible to implement this?\r\n",
+  "labels": [
+   "question",
+   "help wanted",
+   "DC"
+  ],
+  "created_at": "2019-06-17T20:49:01Z",
+  "updated_at": "2019-08-09T00:25:57Z",
+  "comments_count": 3,
+  "stars": 0,
+  "language": null,
+  "repo_description": "",
+  "watched": false,
+  "welcomed_before": 0,
+  "signals": [],
+  "comments": [
+   {
+    "author": "JKutt",
+    "type": "User",
+    "association": "CONTRIBUTOR",
+    "created_at": "2019-06-18T20:25:43Z",
+    "body": "Hi Sarah,\r\nI coded this up for the 3D DC problem awhile back on a local server machine but did not bring it to the repository. There was talk that there may be an implementation on one of EM branches. I could also grab the code I used and you could test it for 2D? Perhaps then start a PR for it?"
+   },
+   {
+    "author": "micmitch",
+    "type": "User",
+    "association": "CONTRIBUTOR",
+    "created_at": "2019-06-18T20:43:38Z",
+    "body": "I have also done this for the 3D problem. Happy to try to resurrect a script if that would be useful."
+   },
+   {
+    "author": "craigmillernz",
+    "type": "User",
+    "association": "CONTRIBUTOR",
+    "created_at": "2019-08-09T00:25:57Z",
+    "body": "I'd also be interested to be able to do this for 2D and 3D DC."
+   }
+  ],
+  "open_prs": [],
+  "closed_prs": [],
+  "heuristic": 0.0
+ },
+ "simpeg/simpeg#482": {
+  "repo": "simpeg/simpeg",
+  "number": 482,
+  "url": "https://github.com/simpeg/simpeg/issues/482",
+  "title": "Section for Reproducible Paper Examples",
+  "body": "- [x] add the DC example from the SimPEG paper. @sgkang do you have the original code for this?\r\n\r\nThere are a couple other works in progress.\r\n",
+  "labels": [
+   "enhancement",
+   "help wanted",
+   "community"
+  ],
+  "created_at": "2016-10-24T22:39:30Z",
+  "updated_at": "2019-03-30T18:54:09Z",
+  "comments_count": 2,
+  "stars": 0,
+  "language": null,
+  "repo_description": "",
+  "watched": false,
+  "welcomed_before": 0,
+  "signals": [],
+  "comments": [
+   {
+    "author": "rowanc1",
+    "type": "User",
+    "association": "MEMBER",
+    "created_at": "2017-03-06T00:53:31Z",
+    "body": "This could now be easily addressed: #557 "
+   },
+   {
+    "author": "lheagy",
+    "type": "User",
+    "association": "MEMBER",
+    "created_at": "2019-03-30T18:54:09Z",
+    "body": "- [ ] The [simpeg-research](https://github.com/simpeg-research) github org is now a home for this. We should add a link from the SimPEG docs to point out its existence. "
+   }
+  ],
+  "open_prs": [],
+  "closed_prs": [],
+  "heuristic": 0.0
+ },
+ "seisbench/seisbench#98": {
+  "repo": "seisbench/seisbench",
+  "number": 98,
+  "url": "https://github.com/seisbench/seisbench/issues/98",
+  "title": "problem training EQTransformer with original_compatible=True",
+  "body": "I have encountered a problem implementing transfer learning with the original EQTransformer model (original_compatible=True and .from_pretrained(\"original\")). When I train starting with the \"original\" model, everything seems to work fine, the weights change, etc. But when I run, for example, eval.py to use the resulting model to predict, all of the \"score_detection\" values for the predictions are identical for each trace. Other values do change for each trace.\r\n\r\nThis does not happen if I train starting with .from_pretrained(\"stead\" or \"instance\")\r\n\r\n",
+  "labels": [
+   "bug",
+   "good first issue"
+  ],
+  "created_at": "2022-06-13T21:21:41Z",
+  "updated_at": "2025-10-13T09:19:01Z",
+  "comments_count": 3,
+  "stars": 0,
+  "language": null,
+  "repo_description": "",
+  "watched": false,
+  "welcomed_before": 0,
+  "signals": [],
+  "comments": [
+   {
+    "author": "DeniseBryson",
+    "type": "User",
+    "association": "CONTRIBUTOR",
+    "created_at": "2025-05-22T15:51:37Z",
+    "body": "hi @barcheck,\nI know this is very old, but in case you are still reading this, could you post the lines from your code to reproduce the bug.\nIt would be a great starting point to investigate this."
+   },
+   {
+    "author": "ian-podmore",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2025-10-11T00:14:42Z",
+    "body": "I am also having this issue. My code is simply: \n\nimport seisbench.models as sbm\npicker = sbm.EQTransformer.from_pretrained(\"original\")\n\nRunning those two lines gives me the following error: \n\nError(s) in loading state_dict for EQTransformer:\n\tMissing key(s) in state_dict: \"pick_lstms.0.weight_ih_l0\", \"pick_lstms.0.weight_hh_l0\", \"pick_lstms.0.bias_ih_l0\", \"pick_lstms.0.bias_hh_l0\", \"pick_lstms.1.weight_ih_l0\", \"pick_lstms.1.weight_hh_l0\", \"pick_lstms.1.bias_ih_l0\", \"pick_lstms.1.bias_hh_l0\". \n\tUnexpected key(s) in state_dict: \"pick_lstms.0.cell_f.weight_ih\", \"pick_lstms.0.cell_f.weight_hh\", \"pick_lstms.0.cell_f.bias_ih\", \"pick_lstms.0.cell_f.bias_hh\", \"pick_lstms.1.cell_f.weight_ih\", \"pick_lstms.1.cell_f.weight_hh\", \"pick_lstms.1.cell_f.bias_ih\", \"pick_lstms.1.cell_f.bias_hh\". \n\nIf I replace \"original\" with \"instance\" or other datasets, it runs successfully. "
+   },
+   {
+    "author": "yetinam",
+    "type": "User",
+    "association": "MEMBER",
+    "created_at": "2025-10-13T09:19:01Z",
+    "body": "Thanks for reporting this. I've moved the this to an independent issue, because I think it's not directly linked."
+   }
+  ],
+  "open_prs": [],
+  "closed_prs": [],
+  "heuristic": 0.0
+ },
+ "seisbench/seisbench#54": {
+  "repo": "seisbench/seisbench",
+  "number": 54,
+  "url": "https://github.com/seisbench/seisbench/issues/54",
+  "title": "Annotation stream channel names cut during writing",
+  "body": "Thanks for @SpinaCianetti @SonjaGaviano @cjunkk for discovering/highlighting this point:\r\n\r\nCurrently, when writing out any annotation streams, the label information (e.g. P, S, D) is often lost as obspy performs an internal conversion to a C struct where the **trace.stats.channel** parameter cannot be be greater than 11 bytes. This means only the first 3 characters of the 'channel'  code parameter are ever written. As this is a rather common operation, and is hard-coded in the internal format spec. of miniSEED, I think the solution would be to enforce a 3 char maximum for annotation names.",
+  "labels": [
+   "bug"
+  ],
+  "created_at": "2021-12-03T13:04:11Z",
+  "updated_at": "2022-01-27T12:00:40Z",
+  "comments_count": 4,
+  "stars": 0,
+  "language": null,
+  "repo_description": "",
+  "watched": false,
+  "welcomed_before": 0,
+  "signals": [
+   "open pull request linked: https://github.com/obspy/obspy/pull/2972"
+  ],
+  "comments": [
+   {
+    "author": "yetinam",
+    "type": "User",
+    "association": "MEMBER",
+    "created_at": "2021-12-03T13:21:53Z",
+    "body": "Thanks for reporting this! Could you check in which situations exactly this occurs? Is it only when writing to mseed?\r\n\r\nIn general, I agree with 3 letter abbreviations, however I fear it might be a lot harder to get unambiguous ones than with the longer naming, in particular as they are automatically generated.\r\n\r\nMaybe we could also submit a PR to obspy such that it gives a warning whenever parts of the channel name are truncated when writing out information?"
+   },
+   {
+    "author": "jawooll",
+    "type": "User",
+    "association": "CONTRIBUTOR",
+    "created_at": "2021-12-03T14:00:15Z",
+    "body": "Ok so, I've gone through and done a quick check of the following formats which can be written to via obspy (checkbox ticked if longer strings are **not supported**):\r\n\r\n- [ ] AH\r\n- [X] MSEED\r\n- [ ] pickle\r\n- [ ] SAC\r\n- [ ] SACXY\r\n- [X] SH_ASC\r\n- [X] SLIST\r\n- [X] TSPAIR\r\n- [X] WAV (this cuts all metadata so is expected behaviour anyway)\r\n\r\nThe remaining GSE2, SEGY, and SU formats were not checked as they require additional particular dtype formatting or extra specification parameters anyway.\r\n\r\nI completely agree with your comments that this is a rather frustrating issue as it will be hard to differentiate the model labels with just 3 characters. Submitting a PR to warn users of this via where the error is actually raised (obspy) makes sense. \r\n\r\nIf we wanted to solve this on our side, we could provide a mapping of annotations labels to 3 character strings inside SeisBench and create a wrapper method to ```stream.read``` and ```stream.write``` which would perform the mapping whenever users want to write or read the annotation traces. This would enable longer annotation label names, but it would force the use of the SeisBench wrapper io methods to read streams. \r\n"
+   },
+   {
+    "author": "trichter",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2022-01-26T16:32:23Z",
+    "body": "Not sure if it helps, but you could use asdf format for writing waveforms. An alternative is obspyh5 plugin allowing to write/read HDF5 files directly with ObsPy. Metadata should be preserved. (Though, I don't know if that is the case for channel code, too.)"
+   },
+   {
+    "author": "jawooll",
+    "type": "User",
+    "association": "CONTRIBUTOR",
+    "created_at": "2022-01-27T12:00:27Z",
+    "body": "Thanks for the heads-up with the plugin, we can look into this. From our side, the idea would be to try and keep as close to the standard formats to write obspy streams as possible (so allowing for writing output predictions to mseed), just due to the widespread use. \r\n\r\nAs the cutting of channel codes is unavoidable, we could log the appropriate warning inside our package, but I think the better place for it would be in the obspy io module itself. I've submitted a PR for this [in obspy](https://github.com/obspy/obspy/pull/2972)"
+   }
+  ],
+  "open_prs": [
+   "https://github.com/obspy/obspy/pull/2972"
+  ],
+  "closed_prs": [],
+  "heuristic": 0.0
+ },
+ "GenericMappingTools/pygmt#4209": {
+  "repo": "GenericMappingTools/pygmt",
+  "number": 4209,
+  "url": "https://github.com/GenericMappingTools/pygmt/issues/4209",
+  "title": "pygmt.mapproject: Forward and inverse map transformations, datum conversions and geodesy",
+  "body": "*This issue serves as the central place for discussing and tracking the implementation of the `mapproject` method in PyGMT. The issue will be closed when the initial implementation is complete. Progress is tracked at https://github.com/orgs/GenericMappingTools/projects/3.*\n\n## Documentation\n\n- GMT: https://docs.generic-mapping-tools.org/dev/mapproject.html\n- GMT.jl: https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/mapproject\n- PyGMT: https://www.pygmt.org/dev/api/generated/pygmt.mapproject.html\n\n## GMT Option Flags and Modifieres\n\n☑️: *Implemented*; ⬜: *To be implemented/discussed*; ~~Strikethrough~~: *Won't implement*.\n\n\n- [ ] `table`:\n- [ ] `-A`\n- [ ] `-C`\n- [ ] `-D`\n- [ ] `-E`\n- [ ] `-F`\n- [ ] `-G`\n- [ ] `-I`\n- [ ] `-J`: `projection`\n- [ ] `-L`\n- [ ] `-N`\n- [ ] `-Q`\n- [ ] `-R`: `region` \n- [ ] `-S`\n- [ ] `-T`\n- [ ] `-V`: `verbose`\n- [ ] `-W`\n- [ ] `-Z`\n- [ ] `-b`\n- [ ] `-d`\n- [ ] `-e`\n- [ ] `-f`\n- [ ] `-g`\n- [ ] `-h`\n- [ ] `-i`\n- [ ] `-j`\n- [ ] `-o`\n- [ ] `-p`\n- [ ] `-q`\n- [ ] `-s`\n- [ ] `-i`\n- [ ] ~~`--PAR=value`~~: Use `pygmt.config` instead.\n\n## Notes on Input Formats\n\n*Add any notes on the input formats, especially the meaning of columns.*\n\n## Linked Pull Requests\n\n- [ ] Initial feature implementation\n- [ ] Add a tutorial or gallery example\n\n## Related Issues and Discussions\n\n*Add links to related wrapper discussions, API design threads, or upstream GMT changes here.*\n",
+  "labels": [
+   "help wanted",
+   "feature request"
+  ],
+  "created_at": "2025-11-14T03:09:33Z",
+  "updated_at": "2026-08-15T02:11:20Z",
+  "comments_count": 2,
+  "stars": 0,
+  "language": null,
+  "repo_description": "",
+  "watched": false,
+  "welcomed_before": 0,
+  "signals": [],
+  "comments": [
+   {
+    "author": "willschlitzer",
+    "type": "User",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-08-14T02:52:39Z",
+    "body": "@seisman Are you working on an initial implementation of mapproject already? If not, I might take a look at it."
+   },
+   {
+    "author": "seisman",
+    "type": "User",
+    "association": "MEMBER",
+    "created_at": "2026-08-14T03:44:47Z",
+    "body": "Feel free to work on it."
+   }
+  ],
+  "open_prs": [],
+  "closed_prs": [
+   "https://github.com/GenericMappingTools/pygmt-paper-figures/pull/5 (merged)"
+  ],
+  "heuristic": 0.0
+ },
+ "GenericMappingTools/pygmt#1393": {
+  "repo": "GenericMappingTools/pygmt",
+  "number": 1393,
+  "url": "https://github.com/GenericMappingTools/pygmt/issues/1393",
+  "title": "Better support for plotting text in 3D at different heights",
+  "body": "**Description of the desired feature**\r\n\r\nFor 3D plots, it should be possible to plot text at different heights based on a 'z' column, see https://docs.generic-mapping-tools.org/6.2/text.html#z. The current implementation of `text` in PyGMT (see https://www.pygmt.org/v0.4.0/api/generated/pygmt.Figure.text.html) does support this, but users have to provide the xyz input into the `textfiles` parameter, and it is also not very discoverable for new users.\r\n\r\n<!-- Please be as detailed as you can in your description. If possible, include an example of how you would like to use this feature (even better if it's a code example). -->\r\n\r\nIt would be nice to have a `z` parameter (in addition to `x` and `y`) to be clear that `text` does support multi-height plotting. Here's a checklist for anyone wanting to work on this 'enhancement'.\r\n\r\nTODO:\r\n1. Alias the [`-Z`](https://docs.generic-mapping-tools.org/6.2/text.html#z), call it `zvalue` (as in `plot3d`)?\r\n2. Add the `z` parameter here:\r\n    https://github.com/GenericMappingTools/pygmt/blob/945bbc57ffc89a7c29384df48a653295b3f1a435/pygmt/src/text.py#L48-L49\r\n3. Modify the code here to mention that x/y/z triples are also possible (~~need to wait for #1121 though~~ edit: done!):\r\n    https://github.com/GenericMappingTools/pygmt/blob/945bbc57ffc89a7c29384df48a653295b3f1a435/pygmt/src/text.py#L160-L170\r\n4. Update the `text` API docstring to document the new behaviour.\r\n5. (Optional) Update the tutorial at https://www.pygmt.org/v0.4.0/tutorials/text.html to mention that z-value inputs are supported too.\r\n\r\n**Are you willing to help implement and maintain this feature?** Please wait for #1121 before starting work on this (Edit: that PR is merged, so ready to start)!\r\n\r\n<!-- Every feature we add is code that we will have to maintain and keep updated. This takes a lot of effort. If you are willing to be involved in the project and help maintain your feature, it will make it easier for us to accept it. -->\r\n",
+  "labels": [
+   "good first issue",
+   "help wanted",
+   "feature request"
+  ],
+  "created_at": "2021-07-23T03:16:07Z",
+  "updated_at": "2026-07-23T22:21:03Z",
+  "comments_count": 2,
+  "stars": 0,
+  "language": null,
+  "repo_description": "",
+  "watched": false,
+  "welcomed_before": 0,
+  "signals": [],
+  "comments": [
+   {
+    "author": "landryza",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2026-07-23T21:00:47Z",
+    "body": "Hi @weiji14 I would like to work on this issue. The description of what is needed is straightforward and clear. I just want to check if there are any helper functions that will be impacted by these changes.\n\nIf this feature is still required, I would be happy to have it assigned to me and help!"
+   },
+   {
+    "author": "weiji14",
+    "type": "User",
+    "association": "MEMBER",
+    "created_at": "2026-07-23T22:20:56Z",
+    "body": "Hi @landryza, please go ahead and give this a try! The underlying API has changed a bit since 5 years ago, but hopefully you can still figure out how to insert the `z` parameter. Let us know if you need any help :D"
+   }
+  ],
+  "open_prs": [],
+  "closed_prs": [
+   "https://github.com/GenericMappingTools/pygmt/pull/4777"
+  ],
+  "heuristic": 0.0
+ },
+ "Loop3D/LoopStructural#288": {
+  "repo": "Loop3D/LoopStructural",
+  "number": 288,
+  "url": "https://github.com/Loop3D/LoopStructural/issues/288",
+  "title": "[BUG] LoopProjectfileProcessor hardcodes fault_stratigraphy=None, producing models with no fault offset",
+  "body": "### Describe your issue\n\n## Summary\n\n`LoopStructural.modelling.input.project_file.LoopProjectfileProcessor.__init__`\npasses `fault_stratigraphy=None` to `ProcessInputData.__init__`. When\n`GeologicalModel.from_processor(processor)` then builds each foliation, it\ncalls `create_and_add_foliation(s, faults=None)` and the stratigraphy feature\nends up with **zero fault references on its builder**. The implicit foliation\nfield is built smoothly across every fault and extracted isosurfaces are\ncontinuous meshes that show no fault offset — even though the fault features\nthemselves are interpolated and exist in the model.\n\nThe data needed to construct the proper mapping is already in the `.loop3d`\n(`eventRelationships` carries the unit-fault crossings that map2loop's\nStage 4 topology produces). It is simply never read.\n\nThe result: the same map2loop output produces **two different LoopStructural\nmodels** depending on which processor consumes it. `Map2LoopProcessor`\nbuilds `fault_stratigraphy` correctly from its `fault_strat` DataFrame;\n`LoopProjectfileProcessor` discards the relationships. The `.loop3d` is\nsupposed to be a faithful re-encoding, and today it is lossy for the\nunit-fault mapping.\n\n## Versions affected\n\n| | Version | `fault_stratigraphy=None` hardcoded |\n|---|---|---|\n| LoopStructural released | 1.6.27 | ✓ |\n| LoopStructural released | 1.6.28 | ✓ |\n| LoopStructural `master` HEAD | (current) | ✓ |\n\nConfirmed on Python 3.12, conda-forge / loop3d channels. `LoopProjectFile`\n0.2.2, `map2loop` 3.3.1.\n\n## Reproduction\n\n```python\nfrom LoopProjectFile import ProjectFile\nfrom LoopStructural.modelling.input.project_file import LoopProjectfileProcessor\nfrom LoopStructural import GeologicalModel\n\n# Any .loop3d with stratigraphy + faults works. E.g. the bundled map2loop\n# Hamersley demo (Project(use_australian_state_data=\"WA\", ...).run_all()).\npf = ProjectFile(\"hamersley.loop3d\")\nproc = LoopProjectfileProcessor(pf)\n\nassert proc.fault_stratigraphy is None  # the bug — should be a dict\n\nmodel = GeologicalModel.from_processor(proc)\nmodel.update()\n\nsg = model['sg']\nprint(len(sg.faults))  # 0 — should be N\n```\n\nThe foliation has zero fault references even though the model knows\nabout every fault.\n\n## Empirical evidence\n\nSampling the foliation scalar field on a horizontal slice of the bundled\nHamersley demo, both with the existing `None` and with\n`_fault_stratigraphy = {sg: [all_fault_names]}` set on the processor:\n\n```\nConfiguration                           | mean |Δfield| | nonzero diff cells\n----------------------------------------+--------------+-------------------\nfault_stratigraphy=None  (current)      |   reference  |   reference\nfault_stratigraphy populated, 1× disp   |        0.00  |   0 / 15717\nfault_stratigraphy populated, 50× disp  |     2248.91  |  15717 / 15717\n```\n\nThe 1× test is identical to within float precision — not because the fix\nis a no-op, but because map2loop emits a placeholder `100 m` displacement\nwhen the source has no throw measurements, and 100 m is invisible against\nthe Hamersley regional ~6 km vertical signal. The 50× test (5000 m,\ngeologically realistic) produces visibly chopped layers and a synclinal\nwarp — proving the wiring works end-to-end.\n\n## Asymmetry between processors\n\n| | `Map2LoopProcessor` | `LoopProjectfileProcessor` |\n|---|---|---|\n| Source | map2loop output dir | `.loop3d` (re-encoded map2loop output) |\n| Builds `fault_stratigraphy` | ✓ from `fault_strat` DataFrame | ✗ hardcodes `None` |\n| Stratigraphy gets fault refs | ✓ | ✗ |\n| Visible fault offset in surfaces | ✓ | ✗ |\n\n## Root cause\n\n`LoopStructural/modelling/input/project_file.py`, in\n`LoopProjectfileProcessor.__init__`:\n\n```python\n        super().__init__(\n            ...\n            fault_properties=fault_properties,\n            fault_edges=fault_edges,\n            colours=colours,\n            fault_stratigraphy=None,      # ← here\n            intrusions=None,\n            ...\n        )\n```\n\nSecondary: `fault_stratigraphy` is exposed on `ProcessInputData`\nas a property **without a setter**, so users who notice cannot set it\npost-construction through the public API — they must write to\n`_fault_stratigraphy` directly.\n\n## Proposed fix\n\nTwo-tier, with a small extra:\n\n**Tier 1 — read the relationships from the `.loop3d`.**\nThe data is in `pf.eventRelationships` (or the equivalent eventLinks /\nfaultLog tables Stage 4 topology populates). Build the mapping the same\nshape `Map2LoopProcessor` produces:\n\n```python\n# Sketch — exact column names depend on the .loop3d schema\nfault_stratigraphy = {sg: [] for sg in stratigraphic_supergroups}\nfor row in pf.eventRelationships.itertuples():\n    fname = self._fault_id_to_name.get(row.eventId1)\n    uname = self._strat_id_to_name.get(row.eventId2)\n    if fname and uname:\n        fault_stratigraphy[supergroup_for(uname)].append(fname)\nfault_stratigraphy = {sg: sorted(set(f)) for sg, f in fault_stratigraphy.items() if f}\n```\n\n**Tier 2 — fallback.** When `eventRelationships` is empty/missing,\ndefault to \"every fault cuts every supergroup\":\n\n```python\nif not fault_stratigraphy:\n    fault_stratigraphy = {sg: list(fault_names) for sg in stratigraphic_supergroups}\n```\n\nStrictly better than `None`, and matches the standard assumption in\nLoopStructural tutorials when users don't supply per-unit relationships.\n\n**Tier 3.** Add a setter to the `fault_stratigraphy` property on\n`ProcessInputData` so consumers can set it post-construction.\n\n## Workaround until the fix lands\n\n```python\nprocessor = LoopProjectfileProcessor(pf)\nprocessor._fault_stratigraphy = {  # write to backing field; property has no setter\n    sg: list(processor.fault_network.faults)\n    for sg in processor.stratigraphic_column.keys()\n    if sg != \"faults\"\n}\nmodel = GeologicalModel.from_processor(processor)\nmodel.update()\n```\n\nApplies Tier 2 only (every fault cuts every supergroup). Produces correct\nfault wiring; visible offset still depends on having realistic displacement\nvalues in the source data — map2loop's de",
+  "labels": [
+   "bug"
+  ],
+  "created_at": "2026-06-16T05:16:40Z",
+  "updated_at": "2026-08-05T07:20:36Z",
+  "comments_count": 2,
+  "stars": 0,
+  "language": null,
+  "repo_description": "",
+  "watched": false,
+  "welcomed_before": 0,
+  "signals": [],
+  "comments": [
+   {
+    "author": "lachlangrose",
+    "type": "User",
+    "association": "MEMBER",
+    "created_at": "2026-06-16T05:26:28Z",
+    "body": "Hi @tamaravasey thanks for opening this issue, happy for you to make a pr and I can review it as I don't know when I'll have a chance to fix the issue. \n\nFYI I'm working on a new version of loopstructural so the api will change significantly especially around the model format and design. It will probably become live in a month or so, so depending on your use cases it might be worthwhile waiting for that."
+   },
+   {
+    "author": "manduinca",
+    "type": "User",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-08-05T07:20:36Z",
+    "body": "I looked into this while working on #289 and I think the missing offsets have a different cause. In current master (and 1.6.28), `from_processor` passes `faults=None` down to `_add_faults`, and `_add_faults` with `features=None` adds all faults to the foliation. I ran the bundled `load_geological_map_data` fixture with `fault_stratigraphy=None`: after `model.update()`, `model['supergroup_0'].faults` contains all 6 faults. Checking `len(sg.faults)` before `update()` returns 0 because faults are attached to the feature during the build, which might be what happened here.\n\nThat would also explain the populated 1x run showing 0.00 diff in all 15717 cells: populating `fault_stratigraphy` didn't change the wiring because the faults were already active.\n\nWhat the hardcoded `None` does lose is selective FAULT_STRATA relationships from the project file: `None` means every fault cuts everything. So if anything the current behaviour applies too many faults, not too few. Happy to open a PR wiring those through if map2loop actually emits them.\n\nOne caveat: while testing this on master I ran into #296, which currently breaks `from_processor` entirely, so anyone reproducing on 1.7 will hit that first."
+   }
+  ],
+  "open_prs": [],
+  "closed_prs": [],
+  "heuristic": 0.0
+ },
+ "Loop3D/LoopStructural#263": {
+  "repo": "Loop3D/LoopStructural",
+  "number": 263,
+  "url": "https://github.com/Loop3D/LoopStructural/issues/263",
+  "title": "[BUG] Notebook examples - AttributeError: 'Loop3DView' object has no attribute 'add_scalar_field' or 'add_isosurface'",
+  "body": "### Describe your issue\n\nWorking with LoopStructural v1.6.16, I get the AttributeError: 'Loop3DView' object has no attribute 'add_scalar_field' or AttributeError: 'Loop3DView' object has no attribute 'add_isosurface'\n\nwhen running the provided example notebooks (2b. Refolded folds, 3a. Modelling faults using structural frames, 3c. Defining the fault displacement function)\n\n### Minimal reproducing code example\n\n```python\nhttps://loop3d.org/LoopStructural/_auto_examples/2_fold/_refolded_folds.html\n\nhttps://loop3d.org/LoopStructural/_auto_examples/3_fault/_faulted_intrusion.html\n\nhttps://loop3d.org/LoopStructural/_auto_examples/3_fault/_define_fault_displacement.html\n```\n\n### Error message\n\n```shell\nERROR 2b.\n---------------------------------------------------------------------------\nAttributeError                            Traceback (most recent call last)\nCell In[2], line 5\n      3 s2 = model.create_and_add_fold_frame(\"s2\", nelements=10000, buffer=0.5, solver=\"lu\", damp=True)\n      4 viewer = Loop3DView(model)\n----> 5 viewer.add_scalar_field(s2[0], cmap=\"prism\")\n      6 viewer.add_isosurface(s2[0], slices=[0, 1])\n      7 viewer.add_data(s2[0])\n\nAttributeError: 'Loop3DView' object has no attribute 'add_scalar_field'\n\n\nERROR 3a.\n---------------------------------------------------------------------------\nAttributeError                            Traceback (most recent call last)\nCell In[3], line 8\n      3 fault = model.create_and_add_fault(\n      4     \"fault\", 500, nelements=10000, steps=4, interpolatortype=\"FDI\", buffer=0.3\n      5 )\n      7 viewer = Loop3DView(model)\n----> 8 viewer.add_isosurface(\n      9     fault,\n     10     isovalue=0,\n     11     #                       slices=[0,1]#nslices=10\n     12 )\n     13 xyz = model.data[model.data[\"feature_name\"] == \"strati\"][[\"X\", \"Y\", \"Z\"]].to_numpy()\n     14 xyz = xyz[fault.evaluate(xyz).astype(bool), :]\n\nAttributeError: 'Loop3DView' object has no attribute 'add_isosurface'\n\n\nERROR 3c.\n---------------------------------------------------------------------------\nAttributeError                            Traceback (most recent call last)\nCell In[2], line 21\n     18 import LoopStructural.visualisation as vis\n     20 view = vis.Loop3DView(model)\n---> 21 view.add_isosurface(model.features[0], slices=[0])\n     22 view.add_isosurface(model.features[1], nslices=5, paint_with=model.features[1])\n     23 # view.add_vector_field(model[\"fault\"][1], locations=model.regular_grid()[::100])\n\nAttributeError: 'Loop3DView' object has no attribute 'add_isosurface'\n```",
+  "labels": [
+   "bug"
+  ],
+  "created_at": "2025-08-01T03:08:06Z",
+  "updated_at": "2025-08-08T03:45:41Z",
+  "comments_count": 2,
+  "stars": 0,
+  "language": null,
+  "repo_description": "",
+  "watched": false,
+  "welcomed_before": 0,
+  "signals": [],
+  "comments": [
+   {
+    "author": "lachlangrose",
+    "type": "User",
+    "association": "MEMBER",
+    "created_at": "2025-08-04T04:23:39Z",
+    "body": "This example wasn't updated for the new visualisation using pyvista. I've updated it and the docs are being re-run."
+   },
+   {
+    "author": "gpirot",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2025-08-08T03:45:41Z",
+    "body": "After upgrading to 1.6.18, I still have a few similar errors in some notebooks (downloaded from the last built of the doc) and python scripts (downloaded from github).\nAssignining model.create_and_add_foliation to a strati object (among others), and updating the call to the viewer solves it.\n\nAttributeError: 'Loop3DView' object has no attribute 'add_model_surfaces'\n4_advanced/_model_from_geological_map\n4_advanced/_5_using_logging\n\nAttributeError: 'Loop3DView' object has no attribute 'add_isosurface'\n4_advanced/_7_local_weights\n3_fault/_faulted_intrusion\n3_fault/_define_fault_displacement\n"
+   }
+  ],
+  "open_prs": [],
+  "closed_prs": [],
+  "heuristic": 0.0
+ },
+ "pyvista/pyvista#147": {
+  "repo": "pyvista/pyvista",
+  "number": 147,
+  "url": "https://github.com/pyvista/pyvista/issues/147",
+  "title": "Create custom axes labels to avoid broken VTK features",
+  "body": "The `vtkCubeAxesActor` has problems if trying to make publication-quality plots. See:\r\n\r\n- #123\r\n- [Label Format Broken](https://discourse.vtk.org/t/set-vtkcubeaxesactor-label-format-and-remove-exponent/457/2)\r\n- [Fontsize control broken](https://discourse.vtk.org/t/setfontsize-on-vtkcubeaxesactor-bug/520)\r\n- [Scaling issues](https://discourse.vtk.org/t/scaling-a-rendering-scene/173)\r\n\r\nThere's clearly an issue on VTK's side with the `vtkCubeAxesActor` that I don't see getting fixed anytime soon. I think this warrants we create our own axes class.\r\n\r\n## Proposed Solution\r\n\r\nWe create a methods that makes an axes and labels using `vtki.StructuredGrid` and text labels or 3D text. I think the folks making `vtkplotter` did something like this\r\n",
+  "labels": [
+   "bug",
+   "enhancement",
+   "help-wanted",
+   "discussion"
+  ],
+  "created_at": "2019-04-02T16:43:42Z",
+  "updated_at": "2026-08-14T10:49:17Z",
+  "comments_count": 11,
+  "stars": 0,
+  "language": null,
+  "repo_description": "",
+  "watched": false,
+  "welcomed_before": 0,
+  "signals": [
+   "open pull request linked: https://github.com/pyvista/pyvista/pull/9017"
+  ],
+  "comments": [
+   {
+    "author": "banesullivan",
+    "type": "User",
+    "association": "MEMBER",
+    "created_at": "2019-04-02T17:04:58Z",
+    "body": "Note the proposed topic for the VTK hackathon: https://discourse.vtk.org/t/vtk-hackathon/662"
+   },
+   {
+    "author": "akaszynski",
+    "type": "User",
+    "association": "MEMBER",
+    "created_at": "2019-04-02T20:37:21Z",
+    "body": "If we can figure out how to make labels, we can also use ``matplotlib`` to display equations.  I'm leaning towards approach A, but it's going to require more work."
+   },
+   {
+    "author": "banesullivan",
+    "type": "User",
+    "association": "MEMBER",
+    "created_at": "2019-08-02T16:38:23Z",
+    "body": "See https://discourse.vtk.org/t/vtkcubeaxesactor2d-setting-label-format-for-individual-axis/1436/2"
+   },
+   {
+    "author": "banesullivan",
+    "type": "User",
+    "association": "MEMBER",
+    "created_at": "2019-10-14T17:13:59Z",
+    "body": "So @marcomusy has a really awesome solution to this in `vtkplotter`: https://github.com/marcomusy/vtkplotter/blob/11fecd9f84c586081fd365a6e23fd720c369304a/vtkplotter/addons.py#L697\r\n\r\nPerhaps we should adopt some of those features to tackle this? To my knowledge, we still wouldn't be able to render mathtex but most of the other issues would be resolved.\r\n\r\nAlso, I'm pushing once more for VTK to fix all the issues with the `vtkCubeAxesAxtor`... be sure to chime in here to see if folks will work on it for a hackathon: https://discourse.vtk.org/t/a-vtk-hackathon-on-november-6-2019/1896"
+   },
+   {
+    "author": "marcomusy",
+    "type": "User",
+    "association": "CONTRIBUTOR",
+    "created_at": "2019-10-14T18:18:33Z",
+    "body": "I do also think that axes are very poorly dealt with in vtk... I especially hate numbers floating around to face the camera as one moves the scene. I could never find a way to lock them.\r\n\r\nIn figure #395 the grey axes and grid planes are infact `vtkAssembly` objects which are customizable in various ways, \r\none thing I still don't like is that ticks (and grid lines) are placed evenly spaced in the range of the bounding box, whereas I would like them to respect some rounding to the closest integer.. but this is a bit trickier than it seems... so it's still in my to do list :)"
+   },
+   {
+    "author": "XushanLu",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2021-04-27T22:17:29Z",
+    "body": "Have there been any updates in PyVista on this? I could not really control the font size of the axes lables."
+   },
+   {
+    "author": "akaszynski",
+    "type": "User",
+    "association": "MEMBER",
+    "created_at": "2023-01-31T00:17:36Z",
+    "body": "> Have there been any updates in PyVista on this? I could not really control the font size of the axes labels.\r\n\r\nA little late on this one, but yes, as of `pyvista=0.37.0`, at least the font size issue has been fixed."
+   },
+   {
+    "author": "banesullivan",
+    "type": "User",
+    "association": "MEMBER",
+    "created_at": "2023-10-29T08:37:45Z",
+    "body": "I picked this up again recently and found that this may not be that heavy of a lift anymore with PyVsita's latest features. Sharing rough code incase anyone else wants to pick this up and take it to the finish line (I may come back to it):\r\n\r\n![screenshot](https://github.com/pyvista/pyvista/assets/22067021/d2b91e9b-fe85-4bd3-ac42-1ecfe5b49687)\r\n\r\n(note it requires #5140)\r\n\r\n```py\r\nimport pyvista as pv\r\nfrom pyvista.plotting import Plotter\r\nimport numpy as np\r\nfrom pyvista import examples\r\n\r\npv.global_theme.trame.still_ratio = 2\r\npv.global_theme.trame.interactive_ratio = 2\r\n\r\n\r\npl = Plotter()\r\npl.add_mesh(examples.load_random_hills())\r\n\r\nfloors = {}\r\n\r\n\r\ndef add_floors(pl, **kwargs):\r\n    a = pl.add_floor('-x', **kwargs)\r\n    floors['-x'] = a.mapper.dataset\r\n    a = pl.add_floor('-y', **kwargs)\r\n    floors['-y'] = a.mapper.dataset\r\n    a = pl.add_floor('-z', **kwargs)\r\n    floors['-z'] = a.mapper.dataset\r\n\r\n\r\nadd_floors(pl, show_edges=True, i_resolution=4, j_resolution=4, opacity=0.075)\r\n\r\nbounds = pl.bounds\r\n\r\n\r\nfactor = 1 / 25\r\n\r\nx_axis = pv.Line(\r\n    pointa=(bounds[0], bounds[2], bounds[4]), pointb=(bounds[1], bounds[2], bounds[4]), resolution=4\r\n)\r\n_ = pl.add_mesh(x_axis, color='k', name='x-axis')\r\n\r\nfor i, point in enumerate(x_axis.points):\r\n    text = pv.Text3D(f'{point[0]:.2f}', depth=0)\r\n    # Move text so that the top middle is at the origin\r\n    text.points[:, 0] += (text.bounds[0] - text.bounds[1]) / 2\r\n    text.points[:, 1] += (text.bounds[2] - text.bounds[3]) / 2"
+   },
+   {
+    "author": "banesullivan",
+    "type": "User",
+    "association": "MEMBER",
+    "created_at": "2025-12-05T19:32:41Z",
+    "body": "As of VTK 9.5, there is a new [vtkGridAxesActor3D](https://vtk.org/doc/nightly/html/classvtkGridAxesActor3D.html) that was ported over from ParaView. It performs a lot better than the previous `vtkCubeAxesActor`. Here is an example of how to use it and control the text colors/culling/etc:\n\n```py\nimport vtk\nimport pyvista as pv\nfrom pyvista import examples\n\n# mesh = examples.download_teapot()\nmesh = examples.download_st_helens().warp_by_scalar()\n\nplotter = pv.Plotter()\nplotter.set_background(\"lightgrey\")\nplotter.add_mesh(mesh, show_scalar_bar=False)\n\n\naxes = vtk.vtkGridAxesActor3D()\naxes.SetGridBounds(mesh.bounds)\n\n# Show all faces (this uses a bit mask)\naxes.SetFaceMask(0b111111)\n\n# GetProperty only gets the 0th face\n# https://github.com/Kitware/VTK/blob/0c3b3cd9dfb5775cb71ce8d1675d9ff51f22a498/Rendering/GridAxes/vtkGridAxesActor3D.cxx#L325\n# So set all of the fields on the property first\naxes.GetProperty().SetFrontfaceCulling(True)\naxes.GetProperty().SetColor(0.0, 0.0, 0.0)\n# then reset the property for all faces this way by making a copy. SetPropery will propagate to all faces\n# https://github.com/Kitware/VTK/blob/0c3b3cd9dfb5775cb71ce8d1675d9ff51f22a498/Rendering/GridAxes/vtkGridAxesActor3D.cxx#L310\nprop = vtk.vtkProperty()\n# But it MUST be a copy as there is a check that the property being set is not the same as the existing one\nprop.DeepCopy(axes.GetProperty())\naxes.SetProperty(prop)\n# It seems the property is expected to be shared for all faces but isn't actually. Repor"
+   },
+   {
+    "author": "banesullivan",
+    "type": "User",
+    "association": "MEMBER",
+    "created_at": "2025-12-05T19:34:27Z",
+    "body": "Thanks @user27182 for bringing this to my attention in https://github.com/pyvista/pyvista/pull/7682#issuecomment-3095180971"
+   },
+   {
+    "author": "user27182",
+    "type": "User",
+    "association": "CONTRIBUTOR",
+    "created_at": "2025-12-05T19:38:41Z",
+    "body": "Good timing! Yet another CubeAxesActor issue surfaced today in #8156"
+   }
+  ],
+  "open_prs": [
+   "https://github.com/pyvista/pyvista/pull/9017"
+  ],
+  "closed_prs": [
+   "https://github.com/pyvista/pyvista/pull/292 (merged)",
+   "https://github.com/pyvista/pyvista/pull/7682 (merged)",
+   "https://github.com/pyvista/pyvista/pull/9010 (merged)"
+  ],
+  "heuristic": 0.0
+ },
+ "pyvista/pyvista#1629": {
+  "repo": "pyvista/pyvista",
+  "number": 1629,
+  "url": "https://github.com/pyvista/pyvista/issues/1629",
+  "title": "Improve example coverage of plotting module",
+  "body": "About 50% of our docstrings in PyVista have examples.  This is fairly good, especially considering that many of these objects are not publicly exposed.\r\n\r\nHowever, for modules like `pyvista.plotting.plotting`, it would be great to see nearly 100% coverage considering how important it is to be able to demonstrate the individual methods of the Plotting class.\r\n\r\nThis is a great first issue since it doesn't involve changing the code base, just providing an example for some of our docstrings in [plotting](https://github.com/pyvista/pyvista/blob/main/pyvista/plotting/plotting.py)\r\n\r\nFeel free to post questions here on how to get started if you're interested.\r\n\r\nNote that many of these examples don't need to include `plotter.show`, and if they write files you can feel free to use the `# doctest:+SKIP` directive\r\n\r\n```\r\nName                                         Docstrings     Missed   Covered\r\n----------------------------------------------------------------------------\r\npyvista.plotting.plotting                           155        110     29.0%\r\n```\r\n\r\n### Some easy ones\r\n- [x] `Plotter.export_vtkjs`\r\n- [ ] `Plotter.fly_to`\r\n- [x] `Plotter.remove_legend`\r\n- [x] `Plotter.save_graphic`\r\n- [x] `Plotter.add_point_labels`\r\n- [x] `Plotter.add_lines`\r\n- [x] `Plotter.add_text`\r\n- [x] `Plotter.add_legend` (needs to be fixed, plots aren't great)\r\n- [ ] `Plotter.add_point_scalar_labels`\r\n- [x] `Plotter.add_volume`\r\n- [ ] `Plotter.increment_point_size_and_line_width`\r\n- [x] `Plotter.link_views`\r\n- [x] `remove_background_image`\r\n- [x] `remove_bounds_axes`\r\n- [x] `Plotter.remove_scalar_bar`\r\n- [ ] `Plotter.render`\r\n- [ ] `Plotter.reset_camera_clipping_range`\r\n- [x] `Plotter.set_environment_texture`\r\n- [x] `Plotter.show_axes_all`\r\n- [x] `Plotter.show_grid`\r\n- [x] `Plotter.view_xy`\r\n- [x] `Plotter.view_xz`\r\n- [x] `Plotter.view_yx`\r\n- [x] `Plotter.view_yz`\r\n- [x] `Plotter.view_zx`\r\n- [x] `Plotter.view_zy`\r\n\r\nAttributes:\r\n- [x] `Plotter.background_color`\r\n- [x] `Plotter.bounds`\r\n- [ ] `Plotter.camera`\r\n- [x] `Plotter.camera_position`\r\n- [ ] `Plotter.center`\r\n- [ ] `Plotter.image`\r\n\r\n### Harder ones\r\n- [ ] `Plotter.add_actor`\r\n\r\nIn `widgets.py` but exposed in Plotter\r\n- [ ] `add_box_widget`\r\n- [ ] `add_checkbox_button_widget`\r\n- [ ] `add_line_widget`\r\n- [ ] `add_mesh_clip_box`\r\n- [ ] `add_mesh_clip_plane`\r\n- [ ] `add_mesh_isovalue`\r\n- [ ] `add_mesh_slice`\r\n- [ ] `add_mesh_slice_orthogonal`\r\n- [ ] `add_mesh_slice_spline`\r\n- [ ] `add_mesh_threshold`\r\n- [ ] `add_plane_widget`\r\n- [ ] `add_sphere_widget`\r\n- [ ] `add_spline_widget`\r\n- [ ] `add_text_slider_widget`\r\n\r\nNote that if we use the `@wraps` decorator, we need to make the changes to the docstring in the method being wrapped.",
+  "labels": [
+   "documentation",
+   "good first issue"
+  ],
+  "created_at": "2021-09-02T21:15:26Z",
+  "updated_at": "2026-10-17T03:14:18Z",
+  "comments_count": 14,
+  "stars": 0,
+  "language": null,
+  "repo_description": "",
+  "watched": false,
+  "welcomed_before": 0,
+  "signals": [
+   "open pull request linked: https://github.com/pyvista/pyvista/pull/9336, https://github.com/pyvista/pyvista/pull/9432, https://github.com/pyvista/pyvista/pull/9448"
+  ],
+  "comments": [
+   {
+    "author": "AleenaSA",
+    "type": "User",
+    "association": "CONTRIBUTOR",
+    "created_at": "2021-09-04T20:10:22Z",
+    "body": "Hi, this sounds interesting as a first contribution. Could you give me more pointers on how to begin? "
+   },
+   {
+    "author": "akaszynski",
+    "type": "User",
+    "association": "MEMBER",
+    "created_at": "2021-09-04T21:33:48Z",
+    "body": "Add an `Examples` section in one of the methods in the `Plotter` class.  For example, `add_text`:\r\nhttps://github.com/pyvista/pyvista/blob/598fb020618a0bfa4803039768ce51be4fd5ca68/pyvista/plotting/plotting.py#L2925\r\n\r\nSee the other example sections like the one for ``add_background_image``:\r\nhttps://github.com/pyvista/pyvista/blob/598fb020618a0bfa4803039768ce51be4fd5ca68/pyvista/plotting/plotting.py#L4193-L4200\r\n\r\nCreate a PR with just that new section and you'll be good to go."
+   },
+   {
+    "author": "AleenaSA",
+    "type": "User",
+    "association": "CONTRIBUTOR",
+    "created_at": "2021-09-05T17:16:47Z",
+    "body": "The [PR](https://github.com/pyvista/pyvista/pull/1640) for `add_text` is merged, shall I look into others mentioned above as well? Individual PRs are required or one consolidated one is fine?"
+   },
+   {
+    "author": "akaszynski",
+    "type": "User",
+    "association": "MEMBER",
+    "created_at": "2021-09-05T19:34:21Z",
+    "body": "> The [PR](https://github.com/pyvista/pyvista/pull/1640) for `add_text` is merged, shall I look into others mentioned above as well? Individual PRs are required or one consolidated one is fine?\r\n\r\nThat would be great!  You can do individual or get several in one depending on how ambitious you'd like."
+   },
+   {
+    "author": "AleenaSA",
+    "type": "User",
+    "association": "CONTRIBUTOR",
+    "created_at": "2021-09-12T17:47:33Z",
+    "body": "Hi, I have a couple of questions. In case of `save_graphic` and `export_vtkjs` what should be the file path given in the docstring examples? Also to `remove_legend` we'll have to first add legend and then call the remove method, right? or do we have an example where legend is already added? "
+   },
+   {
+    "author": "akaszynski",
+    "type": "User",
+    "association": "MEMBER",
+    "created_at": "2021-09-13T17:23:36Z",
+    "body": "> In case of save_graphic and export_vtkjs what should be the file path given in the docstring examples?\r\n\r\nGood question.  This is a good case to use `# doctest:+SKIP`.  We don't want to actually write any files, just to demonstrate usage (and show a cool plot) whenever possible.  See:\r\n\r\nhttps://github.com/pyvista/pyvista/blob/7a41ba4176429fd005c42203aac80d36f97d4255/pyvista/plotting/plotting.py#L355-L364\r\n\r\n\r\n> Also to remove_legend we'll have to first add legend and then call the remove method, right? or do we have an example where legend is already added?\r\n\r\nExactly.  It's up to you if you want to show before/after plots like as in [enable_shadows](https://docs.pyvista.org/api/plotting/_autosummary/pyvista.Plotter.enable_shadows.html?highlight=shadows#pyvista.Plotter.enable_shadows).\r\n"
+   },
+   {
+    "author": "adeak",
+    "type": "User",
+    "association": "MEMBER",
+    "created_at": "2021-10-05T19:00:28Z",
+    "body": "I've ticked out `Plotter.add_volume()`, thanks to @puripant, our newest contributor :tada: "
+   },
+   {
+    "author": "puripant",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2021-10-06T03:48:32Z",
+    "body": "I am planning to add a bunch about views in one PR. A few questions. For those that are simply wraps of [renderer.py](https://github.com/pyvista/pyvista/blob/main/pyvista/plotting/renderer.py) functions, I should add examples in [renderer.py](https://github.com/pyvista/pyvista/blob/main/pyvista/plotting/renderer.py), right? And since many functions are similar, should I write all examples separately or, say, refer to one big example of many views?"
+   },
+   {
+    "author": "adeak",
+    "type": "User",
+    "association": "MEMBER",
+    "created_at": "2021-10-06T22:41:29Z",
+    "body": "> I am planning to add a bunch about views in one PR.\r\n\r\nExcellent!\r\n\r\n> For those that are simply wraps of [renderer.py](https://github.com/pyvista/pyvista/blob/main/pyvista/plotting/renderer.py) functions, I should add examples in [renderer.py](https://github.com/pyvista/pyvista/blob/main/pyvista/plotting/renderer.py), right?\r\n\r\nRight. But you can probably frame the examples in terms of `Plotter`s, which is what users will be facing.\r\n\r\n> And since many functions are similar, should I write all examples separately or, say, refer to one big example of many views?\r\n\r\nIdeally each docstring example should showcase that one method in context. It's OK if some methods have the same  example where there's overlap, but the `view_*` methods sound mutually exclusive. \"One big example of many views\" sounds like something that could go in the Plotting section of the dedicated Examples, assuming we don't already have that.\r\n"
+   },
+   {
+    "author": "tkoyama010",
+    "type": "User",
+    "association": "MEMBER",
+    "created_at": "2022-07-16T21:46:05Z",
+    "body": "This is probably the **BEST FIRST ISSUE**. Thank you very much."
+   },
+   {
+    "author": "ghost",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2026-03-10T01:11:13Z",
+    "body": "Hi! I'd like to help with this. I'll start by adding examples for a few methods in the plotting module."
+   },
+   {
+    "author": "isphada2002-tech",
+    "type": "User",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-06-17T19:01:27Z",
+    "body": "I would like to add an example for Plotter.reset_camera_clipping_range to demonstrate how it resets the near and far clipping planes of the active camera."
+   },
+   {
+    "author": "adeak",
+    "type": "User",
+    "association": "MEMBER",
+    "created_at": "2026-06-17T20:06:14Z",
+    "body": "@isphada2002-tech sounds great, [it's still missing any examples on current `main`](https://github.com/pyvista/pyvista/blob/40fd189c76376f7bff4095f1be7c0dc1b5741fa3/pyvista/plotting/plotter.py#L6954-L6956). Looking forward to your contribution :)"
+   },
+   {
+    "author": "jdotc1",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2026-10-17T03:14:18Z",
+    "body": "I will add a single self-contained example for `Plotter.clear_actors()`, which currently has no example on main. It will demonstrate clearing actors across two renderers, using built-in geometry and no downloaded data."
+   }
+  ],
+  "open_prs": [
+   "https://github.com/pyvista/pyvista/pull/9336",
+   "https://github.com/pyvista/pyvista/pull/9432",
+   "https://github.com/pyvista/pyvista/pull/9448"
+  ],
+  "closed_prs": [
+   "https://github.com/pyvista/pyvista/pull/1639",
+   "https://github.com/pyvista/pyvista/pull/1640 (merged)",
+   "https://github.com/pyvista/pyvista/pull/1651 (merged)",
+   "https://github.com/pyvista/pyvista/pull/1707 (merged)",
+   "https://github.com/pyvista/pyvista/pull/1714 (merged)",
+   "https://github.com/pyvista/pyvista/pull/1715 (merged)",
+   "https://github.com/pyvista/pyvista/pull/2546 (merged)",
+   "https://github.com/pyvista/pyvista/pull/2551 (merged)",
+   "https://github.com/pyvista/pyvista/pull/3003",
+   "https://github.com/pyvista/pyvista/pull/3005 (merged)",
+   "https://github.com/pyvista/pyvista/pull/3010",
+   "https://github.com/pyvista/pyvista/pull/3013 (merged)",
+   "https://github.com/pyvista/pyvista/pull/4697 (merged)",
+   "https://github.com/pyvista/pyvista/pull/4993 (merged)",
+   "https://github.com/pyvista/pyvista/pull/5036 (merged)",
+   "https://github.com/pyvista/pyvista/pull/8390 (merged)",
+   "https://github.com/pyvista/pyvista/pull/8767 (merged)",
+   "https://github.com/pyvista/pyvista/pull/8844 (merged)",
+   "https://github.com/pyvista/pyvista/pull/9426 (merged)",
+   "https://github.com/pyvista/pyvista/pull/9438 (merged)",
+   "https://github.com/pyvista/pyvista/pull/9439 (merged)"
+  ],
+  "heuristic": 0.0
+ },
+ "napari/napari#6251": {
+  "repo": "napari/napari",
+  "number": 6251,
+  "url": "https://github.com/napari/napari/issues/6251",
+  "title": "napari/_qt/qt_event_loop.py has Deprecation Warning without version number.",
+  "body": "## 🧰 Task\r\n\r\nIn `napari/_qt/qt_event_loop.py` There is a warning without version number:\r\n\r\n```\r\n285-    warn(\r\n286-        trans._(\r\n287-            \"\\nThe 'gui_qt()' context manager is deprecated.\\nIf you are running napari from a script, please use 'napari.run()' as follows:\\n\\n    import napari\\n\\n    viewer = napari.Viewer()  # no prior setup needed\\n    # other code using the viewer...\\n    napari.run()\\n\\nIn IPython or Jupyter, 'napari.run()' is not necessary. napari will automatically\\nstart an interactive event loop for you: \\n\\n    import napari\\n    viewer = napari.Viewer()  # that's it!\\n\",\r\n288-            deferred=True,\r\n289-        ),\r\n290:        FutureWarning,\r\n```\r\n\r\nIt would be nice to : \r\n\r\n - [ ] find since when/which PR/Whihch napari version it has been there.\r\n - [ ] add the version number in the message, and \r\n - [ ] potentially remove the deprecated functionality if we believe it's been long enough. \r\n\r\nAll of this are issues that would be easy for new contributor.",
+  "labels": [
+   "contribute:good first issue",
+   "task",
+   "triage:probably solved"
+  ],
+  "created_at": "2023-09-24T10:37:30Z",
+  "updated_at": "2026-10-07T09:29:49Z",
+  "comments_count": 3,
+  "stars": 0,
+  "language": null,
+  "repo_description": "",
+  "watched": false,
+  "welcomed_before": 0,
+  "signals": [],
+  "comments": [
+   {
+    "author": "GenevieveBuckley",
+    "type": "User",
+    "association": "CONTRIBUTOR",
+    "created_at": "2024-03-27T05:33:54Z",
+    "body": "The `gui_qt` context manager was deprecated in https://github.com/napari/napari/pull/2533 on April 14, 2021. \r\n\r\nThat means the first napari release including a deprecation warning for `gui_qt` was [napari version 0.4.8](https://github.com/napari/napari/releases/tag/v0.4.8), released on May 19, 2021."
+   },
+   {
+    "author": "GenevieveBuckley",
+    "type": "User",
+    "association": "CONTRIBUTOR",
+    "created_at": "2024-03-27T05:37:44Z",
+    "body": ">  potentially remove the deprecated functionality if we believe it's been long enough.\r\n\r\nI guess the real question is: when is \"long enough\"?\r\n\r\nPersonally, I'm in favour of removing it in the 0.5.0 release, since it's been deprecated for almost three years so far (and I imagine it will be longer than three years by the time the 0.5.0 release is done)."
+   },
+   {
+    "author": "Schefflera-Arboricola",
+    "type": "User",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-10-07T09:27:40Z",
+    "body": "I think this can be closed now bcoz gui_qt was removed in https://github.com/napari/napari/pull/7735"
+   }
+  ],
+  "open_prs": [],
+  "closed_prs": [],
+  "heuristic": 0.0
+ },
+ "napari/napari#789": {
+  "repo": "napari/napari",
+  "number": 789,
+  "url": "https://github.com/napari/napari/issues/789",
+  "title": "Reading in DVID volumes",
+  "body": "## 🚀 Feature\r\n\r\nWe've been chatting with the FlyEM folks at Janelia about putting their data in napari, whether it would scale, the various ways to interact with it, etc. As a first step, it would be great to build a proof of concept accessing a DVID volume as a dask array. @DocSavage shared the following DVID endpoint URLs with me as a first pass, with the caveat that they might move in ~2-3 months. But it should be enough to get us started.\r\n\r\n-------------------------------\r\n \r\nHere are the relevant endpoints to access DVID directly:\r\n \r\nMUSHROOM BODY dataset – grayscale only\r\nhttps://emdata.janelia.org/api/repo/ee789/info\r\nThis will give you JSON describing the metadata for the Mushroom body dataset, which is 7615 x 11139 x 14655 voxels.  So it’s a reasonable size.\r\n \r\nFor the grayscale (uint8blk) you can access documentation for the HTTP API here:\r\nhttps://emdata.janelia.org/api/node/ee789/grayscale/help\r\nIf you scroll down to the /raw or /blocks endpoint, that will let you download the raw data.\r\n \r\nThere’s a JPEG (3D) compression version with multiscale under the names grayscalejpeg, grayscalejpeg_1, … grayscalejpeg_7.\r\n\r\n7 medulla column (version 82252).\r\nIf you do http://emdata.janelia.org/api/repo/82252/info you will see the metadata for it.\r\nIt’s a bit smaller at about 5k x 4.5k x 8k.  The grayscale is called grayscaleview, grayscaleview_1, etc.\r\n \r\nSegmentation is available under the name “groundtruth”.\r\nYou can see the REST API for that type of data here:\r\nhttps://emdata.janelia.org/api/node/82252/groundtruth/help\r\n \r\nLike above, you can use /raw or /blocks endpoints to grab the data.\r\nPseudocolored segmentation:\r\nhttps://emdata.janelia.org/api/node/82252/groundtruth/pseudocolor/xy/512_512/2500_2600_4000\r\nThe matching grayscale at high-res:\r\nhttps://emdata.janelia.org/api/node/82252/grayscaleview/raw/xy/512_512/2500_2600_4000\r\n\r\n-------------------------------\r\n\r\nThe first step would be to read those docs, use `da.from_delayed` to build an array from DVID endpoints, and then produce a usage example in the `examples/` folder that reads in that data.",
+  "labels": [
+   "feature",
+   "contribute:good first issue"
+  ],
+  "created_at": "2019-12-13T05:37:05Z",
+  "updated_at": "2026-09-25T07:33:09Z",
+  "comments_count": 12,
+  "stars": 0,
+  "language": null,
+  "repo_description": "",
+  "watched": false,
+  "welcomed_before": 0,
+  "signals": [],
+  "comments": [
+   {
+    "author": "hungyiwu",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2020-06-17T02:09:11Z",
+    "body": "Is this issue still active? I saw there's a \"good first issue\" label and wanted to try it out\r\nThe links are still working, and I was able to retrieve the image through their HTTP API\r\nMy workspace is here https://github.com/hungyiwu/napari_issue_789"
+   },
+   {
+    "author": "hungyiwu",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2020-06-18T00:32:06Z",
+    "body": "I made a working prototype for the first data set and demo'ed it with the following GIFs:\r\n\r\n## 3D volume view  \r\n![](https://raw.githubusercontent.com/hungyiwu/napari_issue_789/master/figures/napari_view_3d.gif)\r\n## 3D layer view\r\n![](https://raw.githubusercontent.com/hungyiwu/napari_issue_789/master/figures/napari_view_layers.gif)\r\n\r\nhere's the repo https://github.com/hungyiwu/napari_issue_789\r\n\r\nwhat would be a good way to wrap it into the `examples/` folder?"
+   },
+   {
+    "author": "jni",
+    "type": "User",
+    "association": "MEMBER",
+    "created_at": "2020-06-18T00:59:19Z",
+    "body": "Wow! @hungyiwu this is so cool!! 🎉 \r\n\r\nWe have lots of options here, and I think I'd like you to use all three. =D They are listed in order of difficulty.\r\n\r\n1. Rename your `run.py` script `dvid.py` and add it in a pull request to our `examples` folder. (Are you familiar with the pull request workflow btw?) One thing that should change is instead of using `get_attribute(self)` as the API for metadata, you could use [properties](https://stackoverflow.com/questions/17330160/how-does-the-property-decorator-work) so that you can just write, eg, `meta.dtype` instead of `meta.get_dtype()`. But we can examine the code more closely once you open the pull request.\r\n\r\n2. Add a tutorial for this in our [tutorials](https://github.com/napari/tutorials) repo, with text explaining each bit of code.\r\n\r\n3. Since this issue was created, @tlambert03 added the ability to create Reader plugins for napari. Implementing a napari DVID reader would mean that I could point to a URL with `napari https://emdata.janelia.org/api/repo/ee789/info`, or drag and drop that URL into napari, and it would open the file. Here's the documentation on how to write a plugin: https://napari.org/docs/plugins/index.html A DVID plugin would be a massive contribution!"
+   },
+   {
+    "author": "hungyiwu",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2020-06-18T01:29:09Z",
+    "body": "Thank you for laying out the steps! I'll look into the Reader plugins and try to write a tutorial.\r\n\r\n* pull request  \r\n   I did pull request with myself and class projects before, and my first pull request in opensource community is (probably) [this](https://github.com/napari/tutorials/pull/75) 😛  \r\n* property instead of `get` methods  \r\n   I considered using properties but realized those properties will depend on `data_name` (`grayscalejpeg_1`, `grayscalejpeg_2`, ...)\r\n   Would you recommend parsing all different properties in `__init__` as different properties? I'm thinking about something like this:  \r\n```\r\nmeta.data_name = {\r\n    'grayscalejpeg_1': {'dtype': 'uint8', 'minpoint': [...]},\r\n    'grayscalejpeg_2': {...},\r\n    }\r\n```\r\n* memory issue  \r\n   My laptop has 16 GB RAM and can only handle 100x100x100 voxels at higher resolution (`grayscalejpeg`) or the whole image at lower resolution (`grayscalejpeg_5`), otherwise the process just crashed. I thought `dask` should be able to handle the data size, so maybe my implementation was not how `dask` was designed to be used?"
+   },
+   {
+    "author": "kevinyamauchi",
+    "type": "User",
+    "association": "CONTRIBUTOR",
+    "created_at": "2020-06-18T06:36:38Z",
+    "body": "Super cool, @hungyiwu !"
+   },
+   {
+    "author": "hungyiwu",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2020-06-28T19:22:39Z",
+    "body": "My progress on this has been very limited as I don't really use the DVID format at all. If anyone is interested in taking over this, please feel free to do so!"
+   },
+   {
+    "author": "jni",
+    "type": "User",
+    "association": "MEMBER",
+    "created_at": "2021-06-08T00:24:57Z",
+    "body": "It looks like the DVID endpoints may have changed. I found this blog post about the latest (1.2) hemibrain release:\r\n\r\nhttps://dvid.io/blog/release-v1.2/\r\n\r\nwhich points to this Python library to query the REST API:\r\n\r\nhttps://github.com/janelia-flyem/neuclease\r\n\r\nI know @docsavage was planning to do a bit of work with napari but I suspect he has not gotten around to it yet. But if you have @docsavage please share your code here! 😊 "
+   },
+   {
+    "author": "hungyiwu",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2021-06-08T03:46:08Z",
+    "body": "The [original repo](https://github.com/hungyiwu/napari_issue_789) was removed because (1) I didn't have time to continue the development, and (2) my initial approach wasn't following the plugin system so not much effort-saving. Sorry for any confusion 🥺"
+   },
+   {
+    "author": "DocSavage",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2021-06-08T22:42:08Z",
+    "body": "@jni The DVID endpoints are sacrosanct and will not be changed :)  The neuclease library was written by @stuarteberg and includes a DVID python driver.  At some point he may split that out.  I did make a simple non-dask example just to test bringing in uint8 subvolumes into napari, and it was pretty simple.  I'll try to add a dask example in the near future if Emma doesn't beat me to it."
+   },
+   {
+    "author": "emmazhou",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2021-06-09T21:51:42Z",
+    "body": "@jni @hungyiwu made a plugin! https://github.com/emmazhou/napari-dvid\r\n\r\nthis was almost entirely cannibalized from some sample code @DocSavage sent me :)\r\n\r\ntry it out and lemme know if it works for you!"
+   },
+   {
+    "author": "jni",
+    "type": "User",
+    "association": "MEMBER",
+    "created_at": "2021-06-10T02:40:24Z",
+    "body": "Cool! @emmazhou I've made an issue there with next steps, assuming you want to take the next steps. 😂 "
+   },
+   {
+    "author": "kcpevey",
+    "type": "User",
+    "association": "CONTRIBUTOR",
+    "created_at": "2022-12-14T14:39:35Z",
+    "body": "@emmazhou has there been any more progress on this?"
+   }
+  ],
+  "open_prs": [],
+  "closed_prs": [],
+  "heuristic": 0.0
+ },
+ "keycloak/keycloak#52352": {
+  "repo": "keycloak/keycloak",
+  "number": 52352,
+  "url": "https://github.com/keycloak/keycloak/issues/52352",
+  "title": "ClassNotFound PersistenceManager when starting server",
+  "body": "### Before reporting an issue\n\n- [x] I have read and understood the above terms for submitting issues, and I understand that my issue may be closed without action if I do not follow them.\n\n### Area\n\nadapter/jee-saml\n\n### Describe the bug\n\nWith the environment of Wildfly 41.0.1 EE10, Keycloak SAML WildFly Adapter 26.7.3, OpenJDK 25.0.4, when the server is starting, it experiences ClassNotFoundException for org.infinispan.persistence.manager.PersistenceManager.\n\nThe web.xml of the application is configured with\n```xml\n<web-app id=\"WebApp_ID\" version=\"3.0\" xmlns=\"http://java.sun.com/xml/ns/javaee\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd\">\n\t<distributable/>\n\n\t<context-param>\n\t\t<description>Keycloak SAML logout</description>\n\t\t<param-name>keycloak.sessionIdMapperUpdater.classes</param-name>\n\t\t<param-value>org.keycloak.adapters.saml.wildfly.infinispan.InfinispanSessionCacheIdMapperUpdater</param-value>\n\t</context-param>\n\t...\n</web-app>\n```\nAs the error message indicates, the current workaround is to add the dependency ```org.infinispan.core``` to the module ```org.keycloak.keycloak-saml-wildfly-elytron-adapter```.  It is proven to work.\n\nOriginal Stacktrace:\n```\n2026-09-02 16:00:31.509 WARN  [org.keycloak.adapters.saml.elytron.KeycloakConfigurationServletListener] (ServerService Thread Pool -- 82) Cannot use org.keycloak.adapters.saml.elytron.infinispan.InfinispanSessionCacheIdMapperUpdater.addTokenStoreUpdaters(DeploymentInfo, SessionIdMapper) method: java.lang.reflect.InvocationTargetException\n    at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)\n    at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)\n    at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n    at java.base/java.lang.reflect.Method.invoke(Method.java:569)\n    at org.keycloak.keycloak-saml-wildfly-elytron-adapter//org.keycloak.adapters.saml.elytron.KeycloakConfigurationServletListener.invokeAddTokenStoreUpdaterMethod(KeycloakConfigurationServletListener.java:199)\n    at org.keycloak.keycloak-saml-wildfly-elytron-adapter//org.keycloak.adapters.saml.elytron.KeycloakConfigurationServletListener.addTokenStoreUpdaters(KeycloakConfigurationServletListener.java:175)\n    at org.keycloak.keycloak-saml-wildfly-elytron-adapter//org.keycloak.adapters.saml.elytron.KeycloakConfigurationServletListener.contextInitialized(KeycloakConfigurationServletListener.java:112)\n    at io.undertow.servlet@1.0.1.Final//io.undertow.servlet.core.ApplicationListeners.contextInitialized(ApplicationListeners.java:187)\n    at io.undertow.servlet@1.0.1.Final//io.undertow.servlet.core.DeploymentManagerImpl$1.call(DeploymentManagerImpl.java:220)\n    at io.undertow.servlet@1.0.1.Final//io.undertow.servlet.core.DeploymentManagerImpl$1.call(DeploymentManagerImpl.java:188)\n    at io.undertow.servlet@1.0.1.Final//io.undertow.servlet.core.ServletRequestContextThreadSetupAction$1.call(ServletRequestContextThreadSetupAction.java:42)\n    at io.undertow.servlet@1.0.1.Final//io.undertow.servlet.core.ContextClassLoaderSetupAction$1.call(ContextClassLoaderSetupAction.java:43)\n    at org.wildfly.extension.undertow@41.0.1.Final//org.wildfly.extension.undertow.deployment.ControlPointDeploymentInfoConfigurator$1.call(ControlPointDeploymentInfoConfigurator.java:100)\n    at org.wildfly.extension.undertow@41.0.1.Final//org.wildfly.extension.undertow.security.jacc.JACCContextIdHandler$2$1.call(JACCContextIdHandler.java:103)\n    at org.wildfly.extension.undertow@41.0.1.Final//org.wildfly.extension.undertow.deployment.UndertowDeploymentInfoService$UndertowThreadSetupAction.lambda$create$0(UndertowDeploymentInfoService.java:1428)\n    at org.wildfly.extension.undertow@41.0.1.Final//org.wildfly.extension.undertow.deployment.UndertowDeploymentInfoService$UndertowThreadSetupAction.lambda$create$0(UndertowDeploymentInfoService.java:1428)\n    at org.wildfly.extension.undertow@41.0.1.Final//org.wildfly.extension.undertow.deployment.UndertowDeploymentInfoService$UndertowThreadSetupAction.lambda$create$0(UndertowDeploymentInfoService.java:1428)\n    at org.wildfly.extension.undertow@41.0.1.Final//org.wildfly.extension.undertow.deployment.UndertowDeploymentInfoService$UndertowThreadSetupAction.lambda$create$0(UndertowDeploymentInfoService.java:1428)\n    at io.undertow.servlet@1.0.1.Final//io.undertow.servlet.core.DeploymentManagerImpl.deploy(DeploymentManagerImpl.java:256)\n    at org.wildfly.extension.undertow@41.0.1.Final//org.wildfly.extension.undertow.deployment.UndertowDeploymentService.startContext(UndertowDeploymentService.java:88)\n    at org.wildfly.extension.undertow@41.0.1.Final//org.wildfly.extension.undertow.deployment.UndertowDeploymentService$1.run(UndertowDeploymentService.java:70)\n    at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:539)\n    at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)\n    at org.jboss.threads@3.9.2//org.jboss.threads.ContextHandler$1.runWith(ContextHandler.java:18)\n    at org.jboss.threads@3.9.2//org.jboss.threads.EnhancedQueueExecutor$Task.doRunWith(EnhancedQueueExecutor.java:2651)\n    at org.jboss.threads@3.9.2//org.jboss.threads.EnhancedQueueExecutor$Task.run(EnhancedQueueExecutor.java:2630)\n    at org.jboss.threads@3.9.2//org.jboss.threads.EnhancedQueueExecutor.runThreadBody(EnhancedQueueExecutor.java:1622)\n    at org.jboss.threads@3.9.2//org.jboss.threads.EnhancedQueueExecutor$ThreadBody.run(EnhancedQueueExecutor.java:1589)\n    at java.base/java.lang.Thread.run(Thread.java:840)\n    at org.jboss.threads@3.9.2//org.jboss.threads.JBossThread.run(JBossThread.java:501)\nCaused by: java.lang.NoClassDefFoundError: org/infinispan/persistence/manager/PersistenceManager\n    at org.keycloak.keycloak-saml-wildfly-elytron-adapter//org.keycloak.adapters.saml.elytron.infi",
+  "labels": [
+   "kind/bug",
+   "area/adapter/jee",
+   "help wanted",
+   "priority/low",
+   "status/auto-expire",
+   "status/auto-bump",
+   "team/core-protocols"
+  ],
+  "created_at": "2026-09-03T08:52:39Z",
+  "updated_at": "2026-10-20T03:46:06Z",
+  "comments_count": 3,
+  "stars": 0,
+  "language": null,
+  "repo_description": "",
+  "watched": false,
+  "welcomed_before": 0,
+  "signals": [],
+  "comments": [
+   {
+    "author": "mposolda",
+    "type": "User",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-10-05T13:42:15Z",
+    "body": "Not 100% sure if this is a valid issue or rather a mis-configuration. But looks like a low priority issue anyway."
+   },
+   {
+    "author": "keycloak-github-bot[bot]",
+    "type": "Bot",
+    "association": "NONE",
+    "created_at": "2026-10-05T13:42:31Z",
+    "body": "Due to the amount of issues reported by the community we are not able to prioritise resolving this issue at the moment.\n\nIf you are affected by this issue, upvote it by adding a :thumbsup: to the description. We would also welcome a contribution to fix the issue."
+   },
+   {
+    "author": "wongkwl",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2026-10-20T03:46:06Z",
+    "body": "The issue still exists in latest version 26.8.1.  The following patch is verified working for my case.\n\n```diff\ndiff --git a/distribution/galleon-feature-packs/saml-adapter-galleon-pack/src/main/resources/modules/system/add-ons/keycloak/org/keycloak/keycloak-saml-wildfly-elytron-adapter/main/module.xml b/distribution/galleon-feature-packs/saml-adapter-galleon-pack/src/main/resources/modules/system/add-ons/keycloak/org/keycloak/keycloak-saml-wildfly-elytron-adapter/main/module.xml\nindex 5c144021fe..a9e4f97420 100755\n--- a/distribution/galleon-feature-packs/saml-adapter-galleon-pack/src/main/resources/modules/system/add-ons/keycloak/org/keycloak/keycloak-saml-wildfly-elytron-adapter/main/module.xml\n+++ b/distribution/galleon-feature-packs/saml-adapter-galleon-pack/src/main/resources/modules/system/add-ons/keycloak/org/keycloak/keycloak-saml-wildfly-elytron-adapter/main/module.xml\n@@ -41,6 +41,7 @@\n         <module name=\"org.keycloak.keycloak-common\"/>\n         <module name=\"org.apache.httpcomponents\"/>\n         <module name=\"org.infinispan\"/>\n+        <module name=\"org.infinispan.core\"/>\n         <module name=\"org.infinispan.commons\"/>\n         <module name=\"org.infinispan.cachestore.remote\"/>\n         <module name=\"org.infinispan.client.hotrod\"/>\n```"
+   }
+  ],
+  "open_prs": [],
+  "closed_prs": [],
+  "heuristic": 0.0
+ },
+ "keycloak/keycloak#54008": {
+  "repo": "keycloak/keycloak",
+  "number": 54008,
+  "url": "https://github.com/keycloak/keycloak/issues/54008",
+  "title": "Deletion of CLIENT_ROLE_MAPPING / REALM_ROLE_MAPPING not shown in the user admin events tab",
+  "body": "### Before reporting an issue\n\n- [x] I have read and understood the above terms for submitting issues, and I understand that my issue may be closed without action if I do not follow them.\n\n### Area\n\nadmin/ui\n\n### Describe the bug\n\nIf you remove roles from a user Keycloak since 26.6.x uses a bulk operation and resource path `ui-ext/role-mapping-delete/users/<userid>` as admin event. While this is shown under the general Admin Events of the realm, it is not visible in the Admin Events of the corresponding user.\nOperations that add a role to a user on the other hand are shown there.\n\n### Version\n\n26.8.1\n\n### Regression\n\n- [ ] The issue is a regression\n\n### Expected behavior\n\nThe role removal event is shown for each user in its related admin events as well\n\n### Actual behavior\n\nIt is not shown.\n\n### How to Reproduce?\n\n- Enable admin events\n- Create a user\n- Assign him some roles -> check admin events of the user -> visible (correct)\n- Remove the roles -> check admin events of the user -> not visible (only in the general admin events of the realm)\n\n### Anything else?\n\nIt is a bit odd that adding roles to a user is handled as separate events (one event per role), while (since 26.6) the removal of multiple roles is just a single event. That is not consistent, that is why I can't propose whether this is a sole ui fix or if it is just wrong doing it in a bulk way.",
+  "labels": [
+   "kind/bug",
+   "area/admin/ui",
+   "help wanted",
+   "priority/low",
+   "status/auto-bump"
+  ],
+  "created_at": "2026-10-15T10:29:14Z",
+  "updated_at": "2026-10-19T13:02:11Z",
+  "comments_count": 7,
+  "stars": 0,
+  "language": null,
+  "repo_description": "",
+  "watched": false,
+  "welcomed_before": 0,
+  "signals": [
+   "possible claim by @Sagar07Kr on 2026-10-17",
+   "possible claim by @Sagar07Kr on 2026-10-18"
+  ],
+  "comments": [
+   {
+    "author": "Sagar07Kr",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2026-10-17T20:06:46Z",
+    "body": "Hi, I'd like to work on this.\n\nLooks like the user's Admin Events tab filters with `users/<id>*`, but the bulk delete endpoint saves the event with the request path `ui-ext/role-mapping-delete/users/<id>`, so it never matches. Adding roles goes through RoleMapperResource, which is why those show up.\n\nI'd rather fix it on the server than change the filter in the UI: set the resource path in RoleMappingDeleteResource to the same format the normal endpoints use (`users/<id>/role-mappings/realm` and `.../clients/<client-id>`). That way the REST API also gets consistent paths. I'll add a check for it in RoleMappingDeleteResourceTest.\n\nCould you please assign this issue to me?\n"
+   },
+   {
+    "author": "eicki",
+    "type": "User",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-10-17T21:15:24Z",
+    "body": "I like your approach as it corresponds to the workaround that we have implemented in our custom event listener (pushing events to sns topic) currently causing issue in our downstream listeners not expecting ui-ext resource paths."
+   },
+   {
+    "author": "Sagar07Kr",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2026-10-18T04:33:55Z",
+    "body": "can you assign this issue to me.\r\n\r\n\r\nOn Sun, Oct 18, 2026 at 2:45 AM Björn Eickvonder ***@***.***>\r\nwrote:\r\n\r\n> *eicki* left a comment (keycloak/keycloak#54008)\r\n> <https://github.com/keycloak/keycloak/issues/54008#issuecomment-6241218405>\r\n>\r\n> I like your approach as it corresponds to the workaround that we have\r\n> implemented in our custom event listener (pushing events to sns topic)\r\n> currently causing issue in our downstream listeners not expecting ui-ext\r\n> resource paths.\r\n>\r\n> —\r\n> Reply to this email directly, view it on GitHub\r\n> <https://github.com/keycloak/keycloak/issues/54008?email_source=notifications&email_token=B23DUKEQKUMYD5ZNCTHLEMT5UPOQHA5CNFSNUABFM5UWIORPF5TWS5BNNB2WEL2JONZXKZKDN5WW2ZLOOQXTMMRUGEZDCOBUGA22M4TFMFZW63VHMNXW23LFNZ2KKZLWMVXHJLDGN5XXIZLSL5RWY2LDNM#issuecomment-6241218405>,\r\n> or unsubscribe\r\n> <https://github.com/notifications/unsubscribe-auth/B23DUKB7LXS5OVQMV44MAH35UPOQHAVCNFSNUABEKJSXA33TNF2G64TZHMYTCMJSGU2TQOJ3JFZXG5LFHM2TQNRUGQZTQOBWGGQXMAQ>\r\n> .\r\n> Triage notifications, keep track of coding agent tasks and review pull\r\n> requests on the go with GitHub Mobile for iOS\r\n> <https://github.com/notifications/mobile/ios/B23DUKD53Q5O7FAYEZB5LR35UPOQHA5CNFSNUABFM5UWIORPF5TWS5BNNB2WEL2JONZXKZKDN5WW2ZLOOQXTMMRUGEZDCOBUGA22M4TFMFZW63VHMNXW23LFNZ2KKZLWMVXHJKTGN5XXIZLSL5UW64Y>\r\n> and Android\r\n> <https://github.com/notifications/mobile/android/B23DUKGDJH44U67EMIL2ZQL5UPOQHA5CNFSNUABFM5UWIORPF5TWS5BNNB2WEL2JONZXKZKDN5WW2ZLOOQXTMMRUGEZDCOBUGA22M4TFMFZW"
+   },
+   {
+    "author": "eicki",
+    "type": "User",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-10-19T11:06:39Z",
+    "body": "Only maintainers can do, as this is related to #45333, maybe @ssilvert can have a look if your proposal is fine."
+   },
+   {
+    "author": "ssilvert",
+    "type": "User",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-10-19T11:43:32Z",
+    "body": "Thanks for the report, and for the analysis @Sagar07Kr. The cause is right. #45333 changed the user's Admin Events tab to filter on `users/<id>*`. Bulk removal goes through `ui-ext/role-mapping-delete/users/<id>`, and `RoleMappingDeleteResource` uses the request URI as the event's resource path, so the filter never matches it. Adding roles goes through `RoleMapperResource`, which logs `users/<id>/role-mappings/...`, and that's why additions show up.\n\nThis is closely related to #53747. Its PR, #53764, removes the `ui-ext` role-mapping endpoints, `RoleMappingDeleteResource` included, and switches the Admin Console to the Admin API. Removals would then go through the standard role-mappings endpoints and log the same resource paths as additions.\n\n@pedroigor, this is your area, so I'll hand it over to you: whether #53764 covers this, whether 26.x needs a separate fix, and who should pick it up.\n"
+   },
+   {
+    "author": "pedroigor",
+    "type": "User",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-10-19T13:01:29Z",
+    "body": "Even though within the same area it is a different issue. I'm not touching events in https://github.com/keycloak/keycloak/issues/53747.\n\nI'm moving this one to #53271."
+   },
+   {
+    "author": "keycloak-github-bot[bot]",
+    "type": "Bot",
+    "association": "NONE",
+    "created_at": "2026-10-19T13:02:07Z",
+    "body": "Due to the amount of issues reported by the community we are not able to prioritise resolving this issue at the moment.\n\nIf you are affected by this issue, upvote it by adding a :thumbsup: to the description. We would also welcome a contribution to fix the issue."
+   }
+  ],
+  "open_prs": [],
+  "closed_prs": [],
+  "heuristic": 0.0
+ },
+ "testcontainers/testcontainers-java#1167": {
+  "repo": "testcontainers/testcontainers-java",
+  "number": 1167,
+  "url": "https://github.com/testcontainers/testcontainers-java/issues/1167",
+  "title": "Consolidate code snippets from the docs and `/examples` folder",
+  "body": "Followup of #1150. \r\nSince the snippets are runnable now, we could merge them with the examples we have to improve the discoverability and reduce the duplicates between those two sets.",
+  "labels": [
+   "help wanted",
+   "type/docs",
+   "type/housekeeping",
+   "resolution/acknowledged",
+   "good first issue"
+  ],
+  "created_at": "2019-01-20T11:58:21Z",
+  "updated_at": "2026-10-07T09:03:42Z",
+  "comments_count": 10,
+  "stars": 0,
+  "language": null,
+  "repo_description": "",
+  "watched": false,
+  "welcomed_before": 0,
+  "signals": [
+   "open pull request linked: https://github.com/testcontainers/testcontainers-java/pull/12105",
+   "possible claim by @riyanmohmmeed-dev on 2026-04-23",
+   "possible claim by @Stuaarts on 2026-08-31",
+   "possible claim by @Yusuf-Hussien on 2026-10-07"
+  ],
+  "comments": [
+   {
+    "author": "kiview",
+    "type": "User",
+    "association": "MEMBER",
+    "created_at": "2019-01-24T08:19:28Z",
+    "body": "Also see #1177 "
+   },
+   {
+    "author": "stale[bot]",
+    "type": "Bot",
+    "association": "NONE",
+    "created_at": "2019-04-24T08:30:54Z",
+    "body": "This issue has been automatically marked as stale because it has not had recent activity. It will be closed if no further activity occurs. If you believe this is a mistake, please reply to this comment to keep it open. If there isn't  one already, a PR to fix or at least reproduce the problem in a test case will  always help us get back on track to tackle this.\n"
+   },
+   {
+    "author": "vcvitaly",
+    "type": "User",
+    "association": "CONTRIBUTOR",
+    "created_at": "2021-01-05T14:35:17Z",
+    "body": "It's not really clear what snippets, could you maybe clarify if this is still relevant?"
+   },
+   {
+    "author": "Kamveno",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2023-09-26T19:02:08Z",
+    "body": "I would like to contribute"
+   },
+   {
+    "author": "akash-yadagouda",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2024-09-17T17:43:35Z",
+    "body": "Need some more information here, what exactly the  **Consolidate code snippets**  is."
+   },
+   {
+    "author": "akash-yadagouda",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2024-10-05T18:31:16Z",
+    "body": "> Need some more information here, what exactly the **Consolidate code snippets** is.\n\nWaiting "
+   },
+   {
+    "author": "riyanmohmmeed-dev",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2026-04-23T18:21:48Z",
+    "body": "Hi, I'd like to work on this. I'll audit the current docs snippets vs the /examples folder and propose a consolidation plan. Is this still relevant and would a PR be welcome?"
+   },
+   {
+    "author": "malet-pr",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2026-06-27T18:36:47Z",
+    "body": "I would like to contribute if help is still needed. If so, I would like more information."
+   },
+   {
+    "author": "Stuaarts",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2026-08-31T17:29:29Z",
+    "body": "Hi, I'd like to work on this issue as my first contribution. Is it still available ? If so, Could you please assign the issue to me? Thank you !\n\n"
+   },
+   {
+    "author": "Yusuf-Hussien",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2026-10-07T09:03:42Z",
+    "body": "Hi! I'd like to take this on as my first contribution. I did an initial audit of the two sets:\n\n- `docs/examples/` — runnable Gradle projects embedded in the docs (`junit4/generic`, `junit4/redis`, `junit5/redis`, …), kept compilable by CI\n- `examples/` — 19 standalone projects linked from `docs/examples.md`\n\nProposed approach:\n\n1. Full duplication audit — docs snippets overlapping `examples/` projects, plus any `examples/` projects not referenced from the docs\n2. Consolidate a first batch (move/de-dupe while preserving the runnable-docs guarantee, e.g. snippet includes from `examples/` into docs pages)\n3. Update `docs/examples.md` so everything under `examples/` is discoverable\n\nDoes this direction work for you, or would you prefer a narrower first PR?\n"
+   }
+  ],
+  "open_prs": [
+   "https://github.com/testcontainers/testcontainers-java/pull/12105"
+  ],
+  "closed_prs": [],
+  "heuristic": 0.0
+ },
+ "testcontainers/testcontainers-java#1406": {
+  "repo": "testcontainers/testcontainers-java",
+  "number": 1406,
+  "url": "https://github.com/testcontainers/testcontainers-java/issues/1406",
+  "title": "Image cache lookup should support SHA256 digests and Image IDs",
+  "body": "See #1391 (and this _may_ be related to #699):\r\n\r\nTestcontainers' image indexing code can't handle images that have SHA256 digests. We need a way to access the RepoDigests from docker-java's Image class. Unless I'm missing something, at the moment only RepoTags is mapped.\r\n\r\nWe would then modify `RemoteDockerImage`:\r\n```\r\n                List<Image> updatedImages = listImagesCmd.exec();\r\n                updatedImages.stream()\r\n                    .map(Image::getRepoTags)\r\n                    .filter(Objects::nonNull)\r\n                    .flatMap(Stream::of)\r\n                    .map(DockerImageName::new)\r\n                    .collect(Collectors.toCollection(() -> AVAILABLE_IMAGE_NAME_CACHE));\r\n```\r\n\r\nso that both `Image::getRepoTags` and `Image::getRepoDigests` are loaded into the cache. There's probably also some work to do around identity/equals/hashcode of `DockerImageName` objects in the cache.\r\n\r\nEDIT 5 June 2020: We should also ensure that Image IDs are loaded into the cache - see #699.",
+  "labels": [
+   "type/bug",
+   "help wanted",
+   "resolution/acknowledged",
+   "good first issue"
+  ],
+  "created_at": "2019-04-15T19:51:54Z",
+  "updated_at": "2026-09-15T13:30:27Z",
+  "comments_count": 6,
+  "stars": 0,
+  "language": null,
+  "repo_description": "",
+  "watched": false,
+  "welcomed_before": 0,
+  "signals": [
+   "open pull request linked: https://github.com/testcontainers/testcontainers-java/pull/11585, https://github.com/testcontainers/testcontainers-java/pull/11948, https://github.com/testcontainers/testcontainers-java/pull/12000"
+  ],
+  "comments": [
+   {
+    "author": "stale[bot]",
+    "type": "Bot",
+    "association": "NONE",
+    "created_at": "2019-07-14T20:44:29Z",
+    "body": "This issue has been automatically marked as stale because it has not had recent activity. It will be closed if no further activity occurs. If you believe this is a mistake, please reply to this comment to keep it open. If there isn't  one already, a PR to fix or at least reproduce the problem in a test case will  always help us get back on track to tackle this.\n"
+   },
+   {
+    "author": "stale[bot]",
+    "type": "Bot",
+    "association": "NONE",
+    "created_at": "2019-07-28T21:10:54Z",
+    "body": "This issue has been automatically closed due to inactivity. We apologise if this is still an active problem for you, and would ask you to re-open the  issue if this is the case.\n"
+   },
+   {
+    "author": "britter",
+    "type": "User",
+    "association": "CONTRIBUTOR",
+    "created_at": "2020-07-24T09:17:25Z",
+    "body": "@rnorth we're still blocked by this from upgrading past 0.12.3. Any chance to get a fix for this? "
+   },
+   {
+    "author": "bsideup",
+    "type": "User",
+    "association": "MEMBER",
+    "created_at": "2020-07-24T09:50:09Z",
+    "body": "@britter have you considered contributing a fix? You should have the most knowledge of the problem and how to fix it :)"
+   },
+   {
+    "author": "britter",
+    "type": "User",
+    "association": "CONTRIBUTOR",
+    "created_at": "2020-07-27T10:26:21Z",
+    "body": "@bsideup I had a look when I reported this initially and it was not clear to me how to fix this. I might have some time look at this again this week and come up with some more concrete questions."
+   },
+   {
+    "author": "oualidbouh",
+    "type": "User",
+    "association": "NONE",
+    "created_at": "2026-09-15T13:30:27Z",
+    "body": "Hi! I’m interested in contributing to this issue. I\nIs this issue still relevant with the current codebase? If so, I’d be happy to investigate it and work on a fix."
+   }
+  ],
+  "open_prs": [
+   "https://github.com/testcontainers/testcontainers-java/pull/11585",
+   "https://github.com/testcontainers/testcontainers-java/pull/11948",
+   "https://github.com/testcontainers/testcontainers-java/pull/12000"
+  ],
+  "closed_prs": [
+   "https://github.com/testcontainers/testcontainers-java/pull/1407 (merged)",
+   "https://github.com/testcontainers/testcontainers-java/pull/3134",
+   "https://github.com/testcontainers/testcontainers-java/pull/11591"
+  ],
+  "heuristic": 0.0
+ }
+}

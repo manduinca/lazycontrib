@@ -54,13 +54,16 @@ def load_threads(gh: GitHub, refs: list[str], snapshot: Path) -> dict[str, Candi
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", default=llm.MODEL)
-    parser.add_argument("--snapshot", default=str(Path(__file__).with_name("claims_threads.json")))
+    parser.add_argument("--set", choices=["dev", "test"], default="dev",
+                        help="dev was used to write the prompts; test was labelled and never tuned on")
     parser.add_argument("--out")
     args = parser.parse_args()
     llm.MODEL = args.model
-    labels = yaml.safe_load(Path(__file__).with_name("claims.yaml").read_text())
+    here = Path(__file__).parent
+    labels = yaml.safe_load((here / ("claims.yaml" if args.set == "dev" else "claims_test.yaml")).read_text())
+    args.snapshot = here / ("claims_threads.json" if args.set == "dev" else "claims_threads_test.json")
     now = datetime.fromisoformat(labels["now"].replace("Z", "+00:00"))
-    threads = load_threads(GitHub(), [i["ref"] for i in labels["issues"]], Path(args.snapshot))
+    threads = load_threads(GitHub(), [i["ref"] for i in labels["issues"]], args.snapshot)
     profile = Profile(github=ME)
     rows = []
     for item in labels["issues"]:
@@ -69,7 +72,8 @@ def main() -> None:
         verdict = assess_issue(c, profile, now)
         rows.append({"ref": item["ref"], "expected": item["status"], "model": verdict.status,
                      "regex": regex_status(c, now), "reason": verdict.status_reason,
-                     "dropped_claims": verdict.dropped_claims, "seconds": round(time.time() - started, 1)})
+                     "dropped_claims": verdict.dropped_claims, "rejected_claims": verdict.rejected_claims,
+                     "seconds": round(time.time() - started, 1)})
         print(f"{item['ref']:55s} expected={item['status']:12s} model={verdict.status:12s} "
               f"regex={rows[-1]['regex']}", flush=True)
 
@@ -81,9 +85,10 @@ def main() -> None:
                 "taken_vs_free_without_linked_pr": f"{sum(taken(r[key]) == taken(r['expected']) for r in hard)}/{len(hard)}",
                 "said_free_but_taken": sum(r[key] == "free" and r["expected"] != "free" for r in rows)}
 
-    result = {"model": args.model, "issues": len(rows), "now": labels["now"],
+    result = {"model": args.model, "set": args.set, "issues": len(rows), "now": labels["now"],
               "lazycontrib": summary("model"), "regex_baseline": summary("regex"),
               "invented_claims_dropped": sum(r["dropped_claims"] for r in rows),
+              "claims_rejected_on_second_check": sum(r["rejected_claims"] for r in rows),
               "confusion": Counter(f"{r['expected']}->{r['model']}" for r in rows if r["expected"] != r["model"])}
     print(json.dumps(result, indent=2))
     if args.out:

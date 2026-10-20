@@ -1,0 +1,30 @@
+# Held-out threads from repositories that are not in claims.yaml, labelled on 2026-10-20 from the saved snapshot
+# (claims_threads_test.json) before running the model on them, and never used to tune prompts.
+now: "2026-10-20T06:00:00Z"
+issues:
+  - {ref: "jaegertracing/jaeger#9789", status: in_progress}
+  - {ref: "jaegertracing/jaeger#9631", status: in_progress}
+  - {ref: "usebruno/bruno#5456", status: in_progress}
+  - {ref: "usebruno/bruno#737", status: in_progress}
+  - {ref: "gofr-dev/gofr#629", status: stale_claim}
+  - {ref: "gofr-dev/gofr#2480", status: in_progress}
+  - {ref: "grpc-ecosystem/grpc-gateway#7281", status: stale_claim}
+  - {ref: "grpc-ecosystem/grpc-gateway#2833", status: stale_claim}
+  - {ref: "obspy/obspy#2685", status: in_progress}
+  - {ref: "obspy/obspy#2730", status: free}
+  - {ref: "simpeg/simpeg#787", status: free}
+  - {ref: "simpeg/simpeg#482", status: free}
+  - {ref: "seisbench/seisbench#98", status: free}
+  - {ref: "seisbench/seisbench#54", status: in_progress}
+  - {ref: "GenericMappingTools/pygmt#4209", status: stale_claim}
+  - {ref: "GenericMappingTools/pygmt#1393", status: stale_claim}
+  - {ref: "Loop3D/LoopStructural#288", status: free}
+  - {ref: "Loop3D/LoopStructural#263", status: free}
+  - {ref: "pyvista/pyvista#147", status: in_progress}
+  - {ref: "pyvista/pyvista#1629", status: in_progress}
+  - {ref: "napari/napari#6251", status: free}
+  - {ref: "napari/napari#789", status: free}
+  - {ref: "keycloak/keycloak#52352", status: free}
+  - {ref: "keycloak/keycloak#54008", status: claimed}
+  - {ref: "testcontainers/testcontainers-java#1167", status: in_progress}
+  - {ref: "testcontainers/testcontainers-java#1406", status: in_progress}
