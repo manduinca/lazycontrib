@@ -59,7 +59,11 @@ def _brief(o: dict) -> str:
         p = o["plan"]
         lines += ["", "## Draft plan (check it against the code)"]
         lines += [f"{i}. {s}" for i, s in enumerate(p["proposal"]["approach"], 1)]
-        lines += ["", "Files: " + ", ".join(p["files_checked"]), "Build on: " + ", ".join(p["reuse_checked"])]
+        lines += [""]
+        if p["files_checked"]:
+            lines.append("Files: " + ", ".join(p["files_checked"]))
+        if p["reuse_checked"]:
+            lines.append("Build on: " + ", ".join(p["reuse_checked"]))
     policy = o["policy"]
     lines += ["", "## Before you open the pull request", "- [ ] I ran the tests and tried the change myself",
               "- [ ] The description and any replies are in my own words"]
