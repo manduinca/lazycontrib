@@ -59,15 +59,12 @@ def _age_days(stamp: str, now: datetime) -> float:
     return (now - datetime.fromisoformat(stamp.replace("Z", "+00:00"))).total_seconds() / 86400
 
 
-def _chunks(items: list[str], size: int) -> list[list[str]]:
-    return [items[i:i + size] for i in range(0, len(items), size)]
-
-
 def domain_repos(gh: GitHub, profile: Profile, now: datetime, limit: int = 30) -> list[str]:
     pushed = (now - timedelta(days=profile.max_days_since_push)).date().isoformat()
     found: dict[str, int] = {}
     for domain in profile.domains:
-        query = f"topic:{domain} stars:>={profile.min_stars} pushed:>={pushed} archived:false"
+        query = (f"topic:{domain} stars:{profile.min_stars}..{profile.max_stars} pushed:>={pushed} "
+                 f"archived:false help-wanted-issues:>0")
         result = gh.get("/search/repositories", {"q": query, "sort": "stars", "per_page": 15})
         for repo in result.get("items", []):
             if not profile.languages or repo.get("language") in profile.languages:
@@ -84,23 +81,25 @@ def discover(gh: GitHub, profile: Profile, history: list[dict], now: datetime | 
             welcomed[pr["repo"]] = welcomed.get(pr["repo"], 0) + 1
     watch = [r for r in dict.fromkeys(profile.watch) if r not in profile.avoid]
     repos = watch + [r for r in domain_repos(gh, profile, now) if r not in watch and r not in profile.avoid]
-    labels = ",".join(f'"{label}"' for label in profile.labels)
 
     seen: dict[str, Candidate] = {}
-    for batch in _chunks(repos, 5):
-        scope = " ".join(f"repo:{r}" for r in batch)
-        for item in gh.search_issues(f"{scope} is:issue is:open no:assignee label:{labels}", limit=60):
-            repo = item["repository_url"].split("/repos/", 1)[1]
-            names = [label["name"] for label in item.get("labels", [])]
-            if {n.lower() for n in names} & SKIP_LABELS:
-                continue
-            if _age_days(item["created_at"], now) > profile.max_issue_age_days:
-                continue
-            seen[item["html_url"]] = Candidate(
-                repo=repo, number=item["number"], url=item["html_url"], title=item["title"],
-                body=(item.get("body") or "")[:6000], labels=names, created_at=item["created_at"],
-                updated_at=item["updated_at"], comments_count=item.get("comments", 0),
-                watched=repo in watch, welcomed_before=welcomed.get(repo, 0))
+    for repo in repos:
+        for label in matching_labels(gh, repo, profile.labels):
+            items = gh.get(f"/repos/{repo}/issues", {"state": "open", "labels": label, "assignee": "none",
+                                                     "sort": "updated", "per_page": 30})
+            for item in items:
+                if "pull_request" in item or item["html_url"] in seen:
+                    continue
+                names = [lab["name"] for lab in item.get("labels", [])]
+                if {n.lower() for n in names} & SKIP_LABELS:
+                    continue
+                if _age_days(item["created_at"], now) > profile.max_issue_age_days:
+                    continue
+                seen[item["html_url"]] = Candidate(
+                    repo=repo, number=item["number"], url=item["html_url"], title=item["title"],
+                    body=(item.get("body") or "")[:6000], labels=names, created_at=item["created_at"],
+                    updated_at=item["updated_at"], comments_count=item.get("comments", 0),
+                    watched=repo in watch, welcomed_before=welcomed.get(repo, 0))
 
     candidates = []
     for candidate in seen.values():
@@ -118,11 +117,30 @@ def discover(gh: GitHub, profile: Profile, history: list[dict], now: datetime | 
     return candidates[:keep]
 
 
+def _norm(label: str) -> str:
+    return re.sub(r"[-_/:]+", " ", label.lower()).strip()
+
+
+def matching_labels(gh: GitHub, repo: str, wanted: list[str]) -> list[str]:
+    """The repository's own spelling of the labels you asked for ("help-wanted", "kind/bug", "Good First Issue")."""
+    try:
+        labels = [lab["name"] for lab in gh.get(f"/repos/{repo}/labels", {"per_page": 100})]
+    except GitHubError:
+        return []
+    found = []
+    for want in (_norm(w) for w in wanted):
+        for name in labels:
+            norm = _norm(name)
+            if norm == want or norm.endswith(" " + want) or (want == "bug" and norm in {"type bug", "kind bug", "bug report"}):
+                found.append(name)
+    return list(dict.fromkeys(found))[:6]
+
+
 def _heuristic(c: Candidate, profile: Profile, now: datetime) -> float:
-    lower = {label.lower() for label in c.labels}
+    lower = {_norm(label) for label in c.labels}
     score = 2.0 * min(c.welcomed_before, 3) + (1.0 if c.watched else 0.0)
-    score += 1.0 if "help wanted" in lower else 0.0
-    score += 0.6 if "bug" in lower else 0.0
+    score += 1.0 if any(l.endswith("help wanted") for l in lower) else 0.0
+    score += 0.6 if any(l.endswith("bug") for l in lower) else 0.0
     score += 0.8 if c.language in profile.languages else 0.0
     score -= 0.08 * min(c.comments_count, 20)
     score -= 0.6 * min(_age_days(c.created_at, now) / 365, 1.5)

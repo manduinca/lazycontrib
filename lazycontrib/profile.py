@@ -13,6 +13,9 @@ HOME = Path(os.environ.get("LAZYCONTRIB_HOME", Path.home() / ".lazycontrib"))
 OUTSIDER = {"CONTRIBUTOR", "FIRST_TIME_CONTRIBUTOR", "FIRST_TIMER", "NONE"}
 GENERIC_TOPICS = {"hacktoberfest", "hacktoberfest2020", "hacktoberfest2021", "hacktoberfest2022", "hacktoberfest2023",
                   "open-source", "opensource", "library", "framework", "api", "awesome", "good-first-issue"}
+LANGUAGE_TOPICS = {"python", "python3", "java", "go", "golang", "js", "javascript", "typescript", "rust", "cpp",
+                   "c", "kotlin", "scala", "ruby", "php", "docker", "react", "nodejs", "deep-learning",
+                   "machine-learning", "artificial-intelligence", "ai", "llm"}
 NOT_LANGUAGES = {"Jupyter Notebook", "HTML", "CSS", "Makefile", "Dockerfile", "Shell", "TeX", "Markdown"}
 
 
@@ -25,6 +28,7 @@ class Profile(BaseModel):
     watch: list[str] = Field(default_factory=list, description="owner/repo you want checked every run")
     avoid: list[str] = Field(default_factory=list, description="owner/repo to skip")
     min_stars: int = 50
+    max_stars: int = 60000
     max_days_since_push: int = 45
     max_issue_age_days: int = 540
     effort: list[str] = Field(default_factory=lambda: ["S", "M"])
@@ -75,7 +79,7 @@ def build(gh: GitHub, user: str) -> tuple[Profile, list[dict]]:
         if repo.get("language") and repo["language"] not in NOT_LANGUAGES:
             languages[repo["language"]] += weight
         for topic in repo.get("topics", []):
-            if topic not in GENERIC_TOPICS and topic.lower() not in {l.lower() for l in languages} | {"python", "java", "go", "js", "javascript", "typescript", "golang", "docker"}:
+            if topic not in GENERIC_TOPICS and topic not in LANGUAGE_TOPICS:
                 topics[topic] += weight
     profile = Profile(
         github=user,

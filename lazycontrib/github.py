@@ -14,6 +14,7 @@ import httpx
 API = "https://api.github.com"
 CACHE = Path(os.environ.get("LAZYCONTRIB_CACHE", Path.home() / ".cache" / "lazycontrib"))
 SEARCH_GAP_S = 2.2
+DEBUG = bool(os.environ.get("LAZYCONTRIB_DEBUG"))
 
 
 class GitHubError(RuntimeError):
@@ -54,7 +55,9 @@ class GitHub:
         key = f"GET {path} {json.dumps(params, sort_keys=True)}"
 
         def fetch():
-            for attempt in range(4):
+            for attempt in range(7):
+                if DEBUG:
+                    print(f"  GET {path} {params or ''}", flush=True)
                 try:
                     response = self.http.get(path, params=params)
                 except httpx.TransportError:
@@ -63,8 +66,12 @@ class GitHub:
                 if response.status_code == 404 and allow_404:
                     return None
                 if response.status_code in (403, 429) and "rate limit" in response.text.lower():
+                    retry = response.headers.get("retry-after")
                     reset = float(response.headers.get("x-ratelimit-reset", time.time() + 60))
-                    time.sleep(min(90.0, max(5.0, reset - time.time())))
+                    wait = float(retry) if retry else min(65.0, max(3.0, reset - time.time() + 1))
+                    if DEBUG:
+                        print(f"  rate limited, waiting {wait:.0f}s", flush=True)
+                    time.sleep(wait)
                     continue
                 if response.status_code >= 500:
                     time.sleep(2 * (attempt + 1))
