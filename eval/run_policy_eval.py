@@ -53,10 +53,13 @@ def score(rows: list[dict], key: str) -> dict:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", default=llm.MODEL)
+    parser.add_argument("--set", choices=["dev", "test"], default="dev",
+                        help="dev was used to write prompts and keywords; test was labelled and never tuned on")
     parser.add_argument("--out")
     args = parser.parse_args()
     llm.MODEL = args.model
-    labels = yaml.safe_load(Path(__file__).with_name("policies.yaml").read_text())
+    name = "policies.yaml" if args.set == "dev" else "policies_test.yaml"
+    labels = yaml.safe_load(Path(__file__).with_name(name).read_text())
     gh = GitHub()
     rows = []
     for item in labels:
@@ -70,7 +73,7 @@ def main() -> None:
                      "keywords": sorted(keyword_flags("\n".join(facts.ai_excerpts)))})
         print(f"{item['repo']:45s} model={model_flags} expected={item['flags']} dropped={policy.dropped}", flush=True)
     summary = {
-        "model": args.model, "repos": len(rows),
+        "model": args.model, "set": args.set, "repos": len(rows),
         "model_with_grounding": score(rows, "model"),
         "keyword_baseline": score(rows, "keywords"),
         "stance_accuracy": f"{sum(r['stance'] == r['stance_expected'] for r in rows)}/{len(rows)}",

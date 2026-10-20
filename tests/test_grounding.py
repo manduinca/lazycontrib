@@ -30,10 +30,16 @@ def test_policy_keeps_only_quoted_rules(monkeypatch):
     text = ("We welcome AI assistance. Contributors must disclose the use of AI tools in the PR description. "
             "Please test every change locally before opening a pull request.")
     facts = RepoFacts(repo="o/r", policy_text={"CONTRIBUTING.md": text}, ai_excerpts=[f"[CONTRIBUTING.md] {text}"])
-    fake_replies(monkeypatch, {"rules": [
-        {"flag": "must_disclose", "quote": "must disclose the use of AI tools", "source": "CONTRIBUTING.md"},
-        {"flag": "no_autonomous_agents", "quote": "agents may never open pull requests", "source": "CONTRIBUTING.md"},
-    ]})
+    answers = {
+        assess.QUESTIONS["must_disclose"]: {"applies": True, "quote": "must disclose the use of AI tools"},
+        assess.QUESTIONS["no_autonomous_agents"]: {"applies": True, "quote": "agents may never open pull requests"},
+    }
+
+    def chat(messages, schema=None, timeout=300):
+        question = messages[-1]["content"].split("\n", 1)[0].removeprefix("Question: ")
+        return json.dumps(answers.get(question, {"applies": False, "quote": ""}))
+
+    monkeypatch.setattr(llm, "chat", chat)
     policy = assess.assess_policy(facts)
     assert policy.must_disclose and not policy.no_autonomous_agents
     assert policy.stance == "conditions" and policy.dropped == 1

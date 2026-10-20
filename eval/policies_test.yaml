@@ -1,0 +1,35 @@
+# Held-out set: labelled from each project's files on 2026-10-20, before running the model on them, and never used
+# to tune prompts or keywords. nixpkgs was left out: its policy sits past the part of CONTRIBUTING.md lazycontrib reads.
+- repo: matplotlib/matplotlib
+  stance: conditions
+  flags: [must_disclose, own_words_only]
+- repo: scikit-learn/scikit-learn
+  stance: conditions
+  flags: [must_disclose]
+- repo: sympy/sympy
+  stance: conditions
+  flags: [must_disclose, own_words_only]
+- repo: godotengine/godot
+  stance: conditions
+  flags: [must_disclose]
+- repo: zed-industries/zed
+  stance: conditions
+  flags: [ai_welcome, own_words_only, human_testing_required]
+- repo: astral-sh/ruff
+  stance: conditions
+  flags: [ai_welcome, own_words_only, no_autonomous_agents]
+- repo: pydata/xarray
+  stance: conditions
+  flags: [must_disclose, no_autonomous_agents, human_testing_required]
+- repo: numpy/numpy
+  stance: conditions
+  flags: [must_disclose]
+- repo: pandas-dev/pandas
+  stance: conditions
+  flags: [must_disclose]
+- repo: servo/servo
+  stance: unspecified
+  flags: []
+- repo: jj-vcs/jj
+  stance: conditions
+  flags: [ai_welcome, must_disclose, own_words_only, no_autonomous_agents]
