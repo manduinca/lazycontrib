@@ -1,0 +1,328 @@
+{
+  "summary": {
+    "model": "gemma4:e4b",
+    "set": "dev",
+    "issues": 30,
+    "now": "2026-10-20T06:00:00Z",
+    "lazycontrib": {
+      "exact": "28/30",
+      "exact_without_linked_pr": "15/17",
+      "taken_vs_free_without_linked_pr": "16/17",
+      "said_free_but_taken": 0
+    },
+    "regex_baseline": {
+      "exact": "23/30",
+      "exact_without_linked_pr": "10/17",
+      "taken_vs_free_without_linked_pr": "10/17",
+      "said_free_but_taken": 7
+    },
+    "invented_claims_dropped": 9,
+    "claims_rejected_on_second_check": 26,
+    "confusion": {
+      "claimed->stale_claim": 1,
+      "free->stale_claim": 1
+    }
+  },
+  "rows": [
+    {
+      "ref": "open-telemetry/opentelemetry.io#7932",
+      "expected": "stale_claim",
+      "model": "stale_claim",
+      "regex": "free",
+      "reason": "@breedx-splk said they would take it 382 days ago",
+      "dropped_claims": 0,
+      "rejected_claims": 0,
+      "seconds": 2.7
+    },
+    {
+      "ref": "OpenAPITools/openapi-generator#23274",
+      "expected": "stale_claim",
+      "model": "stale_claim",
+      "regex": "stale_claim",
+      "reason": "@YB0y said they would take it 213 days ago",
+      "dropped_claims": 0,
+      "rejected_claims": 0,
+      "seconds": 3.9
+    },
+    {
+      "ref": "open-telemetry/opentelemetry.io#7114",
+      "expected": "claimed",
+      "model": "claimed",
+      "regex": "free",
+      "reason": "@reetig said they would take it 7 days ago",
+      "dropped_claims": 0,
+      "rejected_claims": 0,
+      "seconds": 3.0
+    },
+    {
+      "ref": "open-telemetry/opentelemetry.io#7535",
+      "expected": "stale_claim",
+      "model": "stale_claim",
+      "regex": "free",
+      "reason": "@immavalls said they would take it 131 days ago",
+      "dropped_claims": 0,
+      "rejected_claims": 0,
+      "seconds": 6.7
+    },
+    {
+      "ref": "open-telemetry/opentelemetry.io#7117",
+      "expected": "in_progress",
+      "model": "in_progress",
+      "regex": "in_progress",
+      "reason": "open pull request: https://github.com/open-telemetry/opentelemetry.io/pull/11905",
+      "dropped_claims": 0,
+      "rejected_claims": 0,
+      "seconds": 3.1
+    },
+    {
+      "ref": "open-telemetry/opentelemetry.io#7115",
+      "expected": "in_progress",
+      "model": "in_progress",
+      "regex": "in_progress",
+      "reason": "open pull request: https://github.com/open-telemetry/opentelemetry.io/pull/11850",
+      "dropped_claims": 0,
+      "rejected_claims": 0,
+      "seconds": 3.6
+    },
+    {
+      "ref": "open-telemetry/opentelemetry.io#11927",
+      "expected": "in_progress",
+      "model": "in_progress",
+      "regex": "in_progress",
+      "reason": "open pull request: https://github.com/open-telemetry/opentelemetry.io/pull/11947",
+      "dropped_claims": 0,
+      "rejected_claims": 0,
+      "seconds": 6.0
+    },
+    {
+      "ref": "open-telemetry/opentelemetry.io#7544",
+      "expected": "in_progress",
+      "model": "in_progress",
+      "regex": "in_progress",
+      "reason": "open pull request: https://github.com/open-telemetry/opentelemetry.io/pull/11770",
+      "dropped_claims": 0,
+      "rejected_claims": 0,
+      "seconds": 4.5
+    },
+    {
+      "ref": "open-telemetry/opentelemetry.io#9427",
+      "expected": "in_progress",
+      "model": "in_progress",
+      "regex": "in_progress",
+      "reason": "open pull request: https://github.com/open-telemetry/opentelemetry.io/pull/11349",
+      "dropped_claims": 0,
+      "rejected_claims": 0,
+      "seconds": 9.1
+    },
+    {
+      "ref": "open-telemetry/opentelemetry.io#6899",
+      "expected": "in_progress",
+      "model": "in_progress",
+      "regex": "in_progress",
+      "reason": "open pull request: https://github.com/open-telemetry/opentelemetry.io/pull/11675",
+      "dropped_claims": 0,
+      "rejected_claims": 1,
+      "seconds": 4.9
+    },
+    {
+      "ref": "open-telemetry/opentelemetry.io#7545",
+      "expected": "claimed",
+      "model": "claimed",
+      "regex": "claimed",
+      "reason": "@reetig said they would take it 7 days ago",
+      "dropped_claims": 2,
+      "rejected_claims": 0,
+      "seconds": 6.9
+    },
+    {
+      "ref": "fatiando/harmonica#586",
+      "expected": "free",
+      "model": "free",
+      "regex": "free",
+      "reason": "nobody has claimed it and no pull request is linked",
+      "dropped_claims": 0,
+      "rejected_claims": 1,
+      "seconds": 3.8
+    },
+    {
+      "ref": "open-telemetry/opentelemetry.io#7841",
+      "expected": "claimed",
+      "model": "stale_claim",
+      "regex": "free",
+      "reason": "@immavalls said they would take it 79 days ago",
+      "dropped_claims": 2,
+      "rejected_claims": 0,
+      "seconds": 10.5
+    },
+    {
+      "ref": "dapr/java-sdk#1509",
+      "expected": "free",
+      "model": "free",
+      "regex": "free",
+      "reason": "nobody has claimed it and no pull request is linked",
+      "dropped_claims": 0,
+      "rejected_claims": 2,
+      "seconds": 2.9
+    },
+    {
+      "ref": "fatiando/harmonica#646",
+      "expected": "stale_claim",
+      "model": "stale_claim",
+      "regex": "free",
+      "reason": "@santisoler said they would take it 175 days ago",
+      "dropped_claims": 0,
+      "rejected_claims": 0,
+      "seconds": 3.2
+    },
+    {
+      "ref": "testcontainers/testcontainers-go#3867",
+      "expected": "in_progress",
+      "model": "in_progress",
+      "regex": "in_progress",
+      "reason": "open pull request: https://github.com/testcontainers/testcontainers-go/pull/3868",
+      "dropped_claims": 0,
+      "rejected_claims": 4,
+      "seconds": 9.8
+    },
+    {
+      "ref": "GlacioHack/xdem#986",
+      "expected": "stale_claim",
+      "model": "stale_claim",
+      "regex": "free",
+      "reason": "@marinebcht said they would take it 74 days ago",
+      "dropped_claims": 0,
+      "rejected_claims": 2,
+      "seconds": 3.6
+    },
+    {
+      "ref": "GlacioHack/xdem#943",
+      "expected": "free",
+      "model": "free",
+      "regex": "free",
+      "reason": "nobody has claimed it and no pull request is linked",
+      "dropped_claims": 0,
+      "rejected_claims": 1,
+      "seconds": 3.2
+    },
+    {
+      "ref": "wailsapp/wails#6215",
+      "expected": "free",
+      "model": "free",
+      "regex": "free",
+      "reason": "nobody has claimed it and no pull request is linked",
+      "dropped_claims": 0,
+      "rejected_claims": 1,
+      "seconds": 2.3
+    },
+    {
+      "ref": "wailsapp/wails#5160",
+      "expected": "in_progress",
+      "model": "in_progress",
+      "regex": "in_progress",
+      "reason": "open pull request: https://github.com/wailsapp/wails/pull/5599",
+      "dropped_claims": 3,
+      "rejected_claims": 0,
+      "seconds": 4.4
+    },
+    {
+      "ref": "wailsapp/wails#5799",
+      "expected": "in_progress",
+      "model": "in_progress",
+      "regex": "in_progress",
+      "reason": "open pull request: https://github.com/wailsapp/wails/pull/6300",
+      "dropped_claims": 0,
+      "rejected_claims": 3,
+      "seconds": 6.2
+    },
+    {
+      "ref": "testcontainers/testcontainers-go#3157",
+      "expected": "free",
+      "model": "free",
+      "regex": "free",
+      "reason": "nobody has claimed it and no pull request is linked",
+      "dropped_claims": 0,
+      "rejected_claims": 3,
+      "seconds": 6.5
+    },
+    {
+      "ref": "GlacioHack/xdem#942",
+      "expected": "in_progress",
+      "model": "in_progress",
+      "regex": "in_progress",
+      "reason": "open pull request: https://github.com/GlacioHack/xdem/pull/953",
+      "dropped_claims": 1,
+      "rejected_claims": 4,
+      "seconds": 6.6
+    },
+    {
+      "ref": "openrewrite/rewrite-testing-frameworks#723",
+      "expected": "free",
+      "model": "free",
+      "regex": "free",
+      "reason": "nobody has claimed it and no pull request is linked",
+      "dropped_claims": 0,
+      "rejected_claims": 1,
+      "seconds": 3.4
+    },
+    {
+      "ref": "GlacioHack/xdem#760",
+      "expected": "in_progress",
+      "model": "in_progress",
+      "regex": "in_progress",
+      "reason": "open pull request: https://github.com/GlacioHack/xdem/pull/759",
+      "dropped_claims": 0,
+      "rejected_claims": 0,
+      "seconds": 4.9
+    },
+    {
+      "ref": "tesseract-ocr/tesseract#4580",
+      "expected": "free",
+      "model": "stale_claim",
+      "regex": "free",
+      "reason": "@stweil said they would take it 99 days ago",
+      "dropped_claims": 0,
+      "rejected_claims": 3,
+      "seconds": 8.4
+    },
+    {
+      "ref": "dapr/python-sdk#853",
+      "expected": "claimed",
+      "model": "claimed",
+      "regex": "free",
+      "reason": "@Err0r-An0ma1y said they would take it 37 days ago",
+      "dropped_claims": 0,
+      "rejected_claims": 0,
+      "seconds": 2.4
+    },
+    {
+      "ref": "dapr/python-sdk#836",
+      "expected": "stale_claim",
+      "model": "stale_claim",
+      "regex": "stale_claim",
+      "reason": "@vkbajpaii said they would take it 141 days ago",
+      "dropped_claims": 0,
+      "rejected_claims": 0,
+      "seconds": 2.0
+    },
+    {
+      "ref": "open-telemetry/opentelemetry-collector#16164",
+      "expected": "in_progress",
+      "model": "in_progress",
+      "regex": "in_progress",
+      "reason": "open pull request: https://github.com/open-telemetry/opentelemetry-collector/pull/16168",
+      "dropped_claims": 1,
+      "rejected_claims": 0,
+      "seconds": 5.2
+    },
+    {
+      "ref": "open-telemetry/opentelemetry-collector-contrib#51982",
+      "expected": "in_progress",
+      "model": "in_progress",
+      "regex": "in_progress",
+      "reason": "open pull request: https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/52028",
+      "dropped_claims": 0,
+      "rejected_claims": 0,
+      "seconds": 4.1
+    }
+  ]
+}

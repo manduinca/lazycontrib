@@ -1,0 +1,287 @@
+{
+  "summary": {
+    "model": "gemma4:e4b",
+    "set": "test",
+    "issues": 26,
+    "now": "2026-10-20T06:00:00Z",
+    "lazycontrib": {
+      "exact": "22/26",
+      "exact_without_linked_pr": "11/15",
+      "taken_vs_free_without_linked_pr": "11/15",
+      "said_free_but_taken": 0
+    },
+    "regex_baseline": {
+      "exact": "23/26",
+      "exact_without_linked_pr": "12/15",
+      "taken_vs_free_without_linked_pr": "12/15",
+      "said_free_but_taken": 3
+    },
+    "invented_claims_dropped": 8,
+    "claims_rejected_on_second_check": 21,
+    "confusion": {
+      "free->stale_claim": 4
+    }
+  },
+  "rows": [
+    {
+      "ref": "jaegertracing/jaeger#9789",
+      "expected": "in_progress",
+      "model": "in_progress",
+      "regex": "in_progress",
+      "reason": "open pull request: https://github.com/jaegertracing/jaeger/pull/9796",
+      "dropped_claims": 2,
+      "rejected_claims": 0,
+      "seconds": 7.6
+    },
+    {
+      "ref": "jaegertracing/jaeger#9631",
+      "expected": "in_progress",
+      "model": "in_progress",
+      "regex": "in_progress",
+      "reason": "open pull request: https://github.com/jaegertracing/jaeger/pull/9635",
+      "dropped_claims": 1,
+      "rejected_claims": 0,
+      "seconds": 10.0
+    },
+    {
+      "ref": "usebruno/bruno#5456",
+      "expected": "in_progress",
+      "model": "in_progress",
+      "regex": "in_progress",
+      "reason": "open pull request: https://github.com/usebruno/bruno/pull/5457",
+      "dropped_claims": 1,
+      "rejected_claims": 4,
+      "seconds": 10.1
+    },
+    {
+      "ref": "usebruno/bruno#737",
+      "expected": "in_progress",
+      "model": "in_progress",
+      "regex": "in_progress",
+      "reason": "open pull request: https://github.com/usebruno/bruno/pull/3912",
+      "dropped_claims": 0,
+      "rejected_claims": 1,
+      "seconds": 6.2
+    },
+    {
+      "ref": "gofr-dev/gofr#629",
+      "expected": "stale_claim",
+      "model": "stale_claim",
+      "regex": "stale_claim",
+      "reason": "@om7057 said they would take it 76 days ago",
+      "dropped_claims": 0,
+      "rejected_claims": 0,
+      "seconds": 4.7
+    },
+    {
+      "ref": "gofr-dev/gofr#2480",
+      "expected": "in_progress",
+      "model": "in_progress",
+      "regex": "in_progress",
+      "reason": "open pull request: https://github.com/Ishiezz/gofr/pull/1",
+      "dropped_claims": 0,
+      "rejected_claims": 0,
+      "seconds": 14.4
+    },
+    {
+      "ref": "grpc-ecosystem/grpc-gateway#7281",
+      "expected": "stale_claim",
+      "model": "stale_claim",
+      "regex": "free",
+      "reason": "@scudette said they would take it 48 days ago",
+      "dropped_claims": 0,
+      "rejected_claims": 0,
+      "seconds": 5.6
+    },
+    {
+      "ref": "grpc-ecosystem/grpc-gateway#2833",
+      "expected": "stale_claim",
+      "model": "stale_claim",
+      "regex": "stale_claim",
+      "reason": "@ritik-kumar-dev said they would take it 76 days ago",
+      "dropped_claims": 0,
+      "rejected_claims": 0,
+      "seconds": 3.3
+    },
+    {
+      "ref": "obspy/obspy#2685",
+      "expected": "in_progress",
+      "model": "in_progress",
+      "regex": "in_progress",
+      "reason": "open pull request: https://github.com/obspy/obspy/pull/2701",
+      "dropped_claims": 0,
+      "rejected_claims": 0,
+      "seconds": 5.3
+    },
+    {
+      "ref": "obspy/obspy#2730",
+      "expected": "free",
+      "model": "free",
+      "regex": "free",
+      "reason": "nobody has claimed it and no pull request is linked",
+      "dropped_claims": 0,
+      "rejected_claims": 1,
+      "seconds": 3.7
+    },
+    {
+      "ref": "simpeg/simpeg#787",
+      "expected": "free",
+      "model": "stale_claim",
+      "regex": "free",
+      "reason": "@micmitch said they would take it 2680 days ago",
+      "dropped_claims": 1,
+      "rejected_claims": 1,
+      "seconds": 4.9
+    },
+    {
+      "ref": "simpeg/simpeg#482",
+      "expected": "free",
+      "model": "free",
+      "regex": "free",
+      "reason": "nobody has claimed it and no pull request is linked",
+      "dropped_claims": 0,
+      "rejected_claims": 2,
+      "seconds": 3.3
+    },
+    {
+      "ref": "seisbench/seisbench#98",
+      "expected": "free",
+      "model": "free",
+      "regex": "free",
+      "reason": "nobody has claimed it and no pull request is linked",
+      "dropped_claims": 0,
+      "rejected_claims": 1,
+      "seconds": 3.7
+    },
+    {
+      "ref": "seisbench/seisbench#54",
+      "expected": "in_progress",
+      "model": "in_progress",
+      "regex": "in_progress",
+      "reason": "open pull request: https://github.com/obspy/obspy/pull/2972",
+      "dropped_claims": 0,
+      "rejected_claims": 0,
+      "seconds": 4.8
+    },
+    {
+      "ref": "GenericMappingTools/pygmt#4209",
+      "expected": "stale_claim",
+      "model": "stale_claim",
+      "regex": "free",
+      "reason": "@willschlitzer said they would take it 67 days ago",
+      "dropped_claims": 0,
+      "rejected_claims": 0,
+      "seconds": 4.1
+    },
+    {
+      "ref": "GenericMappingTools/pygmt#1393",
+      "expected": "stale_claim",
+      "model": "stale_claim",
+      "regex": "free",
+      "reason": "@landryza said they would take it 88 days ago",
+      "dropped_claims": 0,
+      "rejected_claims": 0,
+      "seconds": 5.7
+    },
+    {
+      "ref": "Loop3D/LoopStructural#288",
+      "expected": "free",
+      "model": "stale_claim",
+      "regex": "free",
+      "reason": "@lachlangrose said they would take it 126 days ago",
+      "dropped_claims": 0,
+      "rejected_claims": 0,
+      "seconds": 7.0
+    },
+    {
+      "ref": "Loop3D/LoopStructural#263",
+      "expected": "free",
+      "model": "stale_claim",
+      "regex": "free",
+      "reason": "@lachlangrose said they would take it 442 days ago",
+      "dropped_claims": 0,
+      "rejected_claims": 1,
+      "seconds": 7.6
+    },
+    {
+      "ref": "pyvista/pyvista#147",
+      "expected": "in_progress",
+      "model": "in_progress",
+      "regex": "in_progress",
+      "reason": "open pull request: https://github.com/pyvista/pyvista/pull/9017",
+      "dropped_claims": 0,
+      "rejected_claims": 5,
+      "seconds": 13.6
+    },
+    {
+      "ref": "pyvista/pyvista#1629",
+      "expected": "in_progress",
+      "model": "in_progress",
+      "regex": "in_progress",
+      "reason": "open pull request: https://github.com/pyvista/pyvista/pull/9336",
+      "dropped_claims": 1,
+      "rejected_claims": 2,
+      "seconds": 14.5
+    },
+    {
+      "ref": "napari/napari#6251",
+      "expected": "free",
+      "model": "free",
+      "regex": "free",
+      "reason": "nobody has claimed it and no pull request is linked",
+      "dropped_claims": 0,
+      "rejected_claims": 1,
+      "seconds": 4.6
+    },
+    {
+      "ref": "napari/napari#789",
+      "expected": "free",
+      "model": "stale_claim",
+      "regex": "free",
+      "reason": "@hungyiwu said they would take it 2315 days ago",
+      "dropped_claims": 0,
+      "rejected_claims": 1,
+      "seconds": 7.1
+    },
+    {
+      "ref": "keycloak/keycloak#52352",
+      "expected": "free",
+      "model": "free",
+      "regex": "free",
+      "reason": "nobody has claimed it and no pull request is linked",
+      "dropped_claims": 0,
+      "rejected_claims": 1,
+      "seconds": 7.9
+    },
+    {
+      "ref": "keycloak/keycloak#54008",
+      "expected": "claimed",
+      "model": "claimed",
+      "regex": "claimed",
+      "reason": "@Sagar07Kr said they would take it 2 days ago",
+      "dropped_claims": 0,
+      "rejected_claims": 0,
+      "seconds": 6.4
+    },
+    {
+      "ref": "testcontainers/testcontainers-java#1167",
+      "expected": "in_progress",
+      "model": "in_progress",
+      "regex": "in_progress",
+      "reason": "open pull request: https://github.com/testcontainers/testcontainers-java/pull/12105",
+      "dropped_claims": 1,
+      "rejected_claims": 0,
+      "seconds": 7.4
+    },
+    {
+      "ref": "testcontainers/testcontainers-java#1406",
+      "expected": "in_progress",
+      "model": "in_progress",
+      "regex": "in_progress",
+      "reason": "open pull request: https://github.com/testcontainers/testcontainers-java/pull/11585",
+      "dropped_claims": 1,
+      "rejected_claims": 0,
+      "seconds": 4.8
+    }
+  ]
+}
