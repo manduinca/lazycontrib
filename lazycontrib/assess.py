@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 from datetime import datetime, timezone
 from typing import Literal
@@ -8,6 +9,7 @@ from pydantic import BaseModel, Field
 
 from . import llm
 from .discover import Candidate, RepoFacts, issue_digest
+from .github import CACHE
 from .profile import Profile
 
 Flag = Literal["ai_welcome", "ai_discouraged", "ai_prohibited", "must_disclose", "human_testing_required",
@@ -39,6 +41,7 @@ class Policy(BaseModel):
     rejected: int = 0
 
 
+PROMPT_VERSION = 4
 QUESTIONS: dict[str, str] = {
     "ai_welcome": "Does the project explicitly allow or welcome contributors using AI tools for code?",
     "ai_discouraged": "Does the project say that using AI tools is discouraged in general (not banned, and not "
@@ -58,6 +61,12 @@ class Check(BaseModel):
     says_it: bool
 
 
+# These decide whether a project is skipped, so a wrong yes costs a lot: they get a second check. The caution
+# rules (disclose, test yourself, own words, no agents) keep every grounded yes, because missing one is the
+# expensive mistake and an extra one is a checklist item with its quote next to it.
+STANCE_FLAGS = {"ai_welcome", "ai_discouraged", "ai_prohibited"}
+
+
 VERIFY_PROMPT = """You check one sentence from a project's contribution guidelines. Answer only whether the sentence,
 on its own, states what the question asks. A sentence that only mentions AI, or states a different rule, does not.
 Reply with JSON only: {"says_it": true|false}."""
@@ -70,9 +79,20 @@ empty quote. Statements about maintainers' own use of AI, or about AI-generated 
 
 def assess_policy(facts: RepoFacts) -> Policy:
     """One question per rule; a rule only counts when its quote is really in the project's files."""
-    policy = Policy(dco=facts.dco, cla=facts.cla)
     if not facts.ai_excerpts:
-        return policy
+        return Policy(dco=facts.dco, cla=facts.cla)
+    key = hashlib.sha256(json.dumps([llm.MODEL, PROMPT_VERSION, facts.ai_excerpts]).encode()).hexdigest()
+    cached = CACHE / "policies" / f"{key}.json"
+    if cached.exists():
+        return Policy.model_validate_json(cached.read_text())
+    policy = _assess_policy(facts)
+    cached.parent.mkdir(parents=True, exist_ok=True)
+    cached.write_text(policy.model_dump_json())
+    return policy
+
+
+def _assess_policy(facts: RepoFacts) -> Policy:
+    policy = Policy(dco=facts.dco, cla=facts.cla)
     text = "\n\n".join(facts.ai_excerpts)
     sources = list(facts.policy_text.values())
     flags = set()
@@ -84,7 +104,10 @@ def assess_policy(facts: RepoFacts) -> Policy:
         if not llm.grounded(answer.quote, *sources):
             policy.dropped += 1
             continue
-        check, _ = llm.structured(VERIFY_PROMPT, f"Question: {question}\n\nSentence: {answer.quote}", Check)
+        if flag in STANCE_FLAGS:
+            check, _ = llm.structured(VERIFY_PROMPT, f"Question: {question}\n\nSentence: {answer.quote}", Check)
+        else:
+            check = Check(says_it=True)
         if check.says_it:
             flags.add(flag)
             policy.rules.append(Rule(flag=flag, quote=answer.quote))
