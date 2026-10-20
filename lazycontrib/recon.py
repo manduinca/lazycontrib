@@ -118,25 +118,43 @@ def grep(root: Path, needles: list[str], max_files: int = 6, budget: int = 9000)
 
 PLAN_PROMPT = """You draft an implementation plan for an open source issue. The contributor will review it, write the
 code and open the pull request themselves.
-Use only files and names that appear in the snippets. Prefer extending an existing helper over repeating a fix
-in several places. Cover everything in "must_do". Reply with JSON only."""
+Write each step as an instruction to the contributor ("Add...", "Change...", "Test..."), never about yourself or
+about the snippets. Name only files and identifiers that appear in the snippets or the file list. Prefer extending
+an existing helper over repeating a fix in several places. Cover everything in "must_do". Reply with JSON only."""
+
+
+def path_matches(root: Path, candidate: Candidate, limit: int = 8) -> list[str]:
+    """Repository files whose paths contain the path fragments the issue mentions, like `zero-code/go/autosdk/`."""
+    fragments = {span.strip("/ ") for span in CODE_SPAN.findall(candidate.body) if "/" in span and " " not in span}
+    if not fragments:
+        return []
+    tracked = subprocess.run(["git", "-C", str(root), "ls-files"], capture_output=True, text=True).stdout.splitlines()
+    found = []
+    for fragment in sorted(fragments):
+        found += [path for path in tracked if fragment.lower() in path.lower()][:3]
+    return list(dict.fromkeys(found))[:limit]
 
 
 def plan(candidate: Candidate, verdict: IssueVerdict) -> Plan:
     root = clone(candidate.repo)
     searched = terms(candidate, verdict)
     snippets, _ = grep(root, searched)
+    listed = path_matches(root, candidate)
     user = json.dumps({"issue": {"repo": candidate.repo, "title": candidate.title,
                                  "summary": verdict.draft.summary, "must_do": verdict.draft.must_do}},
                       ensure_ascii=False) + "\n\nCode snippets (path, line numbers):\n" + (snippets or "(no matches)")
+    if listed:
+        user += "\n\nFiles in the repository that match paths named in the issue:\n" + "\n".join(listed)
     proposal, _ = llm.structured(PLAN_PROMPT, user, Proposal)
     files_ok, reuse_ok, dropped = [], [], []
     for path in proposal.files:
         clean = path.strip().lstrip("./")
         (files_ok if clean and (root / clean).is_file() else dropped).append(clean)
     for name in proposal.reuse:
-        symbol = re.split(r"[\s(]", name.strip("` "), maxsplit=1)[0].split(".")[-1]
-        found = symbol and subprocess.run(["git", "-C", str(root), "grep", "-q", "-F", "-e", symbol, "--", "."],
-                                          capture_output=True).returncode == 0
+        clean = name.strip("` ").removesuffix("()")
+        symbol = clean.split(".")[-1]
+        found = (re.fullmatch(r"[A-Za-z_][\w.]{2,80}", clean) is not None
+                 and subprocess.run(["git", "-C", str(root), "grep", "-q", "-w", "-F", "-e", symbol, "--", "."],
+                                    capture_output=True).returncode == 0)
         (reuse_ok if found else dropped).append(name)
     return Plan(proposal=proposal, files_checked=files_ok, reuse_checked=reuse_ok, dropped=dropped, searched=searched)

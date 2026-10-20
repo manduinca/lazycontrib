@@ -32,3 +32,31 @@ def test_markdown_and_html_render_everything(tmp_path):
     assert "Crash &lt;on&gt; empty input" in page and "lazycontrib start o/r#7" in page
     paths = write(r, tmp_path)
     assert all(p.exists() for p in paths.values())
+
+
+def test_plan_keeps_only_real_files_and_identifiers(monkeypatch, tmp_path):
+    import json
+    import subprocess
+
+    from lazycontrib import llm, recon
+    from lazycontrib.assess import IssueDraft, IssueVerdict
+    from lazycontrib.discover import Candidate
+
+    root = tmp_path / "repo"
+    (root / "src").mkdir(parents=True)
+    (root / "src" / "parse.py").write_text("def parse_header(text):\n    return text\n")
+    (root / "docs" / "zero-code" / "go").mkdir(parents=True)
+    (root / "docs" / "zero-code" / "go" / "autosdk.md").write_text("# autosdk\n")
+    subprocess.run(["git", "init", "-q", str(root)], check=True)
+    subprocess.run(["git", "-C", str(root), "add", "."], check=True)
+    monkeypatch.setattr(recon, "clone", lambda repo: root)
+    reply = {"approach": ["Guard parse_header"], "files": ["src/parse.py", "src/missing.py"],
+             "reuse": ["parse_header", "No helper exists for this", "made_up_helper"], "tests": [], "risks": []}
+    monkeypatch.setattr(llm, "chat", lambda messages, schema=None, timeout=300: json.dumps(reply))
+    c = Candidate(repo="o/r", number=1, url="u", title="Crash in `parse_header`", body="See `zero-code/go/`",
+                  created_at="2026-09-01T00:00:00Z", updated_at="2026-09-01T00:00:00Z")
+    draft = IssueDraft(summary="s", must_do=["fix it"])
+    p = recon.plan(c, IssueVerdict(status="free", status_reason="", draft=draft))
+    assert p.files_checked == ["src/parse.py"] and p.reuse_checked == ["parse_header"]
+    assert set(p.dropped) == {"src/missing.py", "No helper exists for this", "made_up_helper"}
+    assert recon.path_matches(root, c) == ["docs/zero-code/go/autosdk.md"]
