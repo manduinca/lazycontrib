@@ -1,0 +1,331 @@
+{
+  "summary": {
+    "model": "gemma4:e4b",
+    "set": "dev",
+    "repos": 16,
+    "model_with_grounding": {
+      "precision": 0.65,
+      "recall": 0.963,
+      "f1": 0.776,
+      "repos_fully_right": "6/16"
+    },
+    "keyword_baseline": {
+      "precision": 0.821,
+      "recall": 0.852,
+      "f1": 0.836,
+      "repos_fully_right": "10/16"
+    },
+    "stance_accuracy": "13/16",
+    "quotes_kept": 40,
+    "quotes_dropped_as_ungrounded": 1
+  },
+  "rows": [
+    {
+      "repo": "fatiando/harmonica",
+      "expected": [
+        "ai_discouraged",
+        "must_disclose",
+        "own_words_only",
+        "no_autonomous_agents"
+      ],
+      "stance_expected": "discouraged",
+      "model": [
+        "ai_discouraged",
+        "ai_welcome",
+        "must_disclose",
+        "no_autonomous_agents"
+      ],
+      "stance": "discouraged",
+      "dropped_quotes": 0,
+      "kept_quotes": 4,
+      "seconds": 61.6,
+      "keywords": [
+        "ai_discouraged",
+        "ai_prohibited",
+        "must_disclose",
+        "no_autonomous_agents",
+        "own_words_only"
+      ]
+    },
+    {
+      "repo": "apache/lucene",
+      "expected": [
+        "ai_welcome",
+        "own_words_only",
+        "no_autonomous_agents"
+      ],
+      "stance_expected": "conditions",
+      "model": [
+        "ai_welcome",
+        "must_disclose",
+        "no_autonomous_agents",
+        "own_words_only"
+      ],
+      "stance": "conditions",
+      "dropped_quotes": 0,
+      "kept_quotes": 4,
+      "seconds": 17.1,
+      "keywords": [
+        "ai_welcome",
+        "must_disclose",
+        "no_autonomous_agents",
+        "own_words_only"
+      ]
+    },
+    {
+      "repo": "lichess-org/lila",
+      "expected": [
+        "ai_welcome",
+        "must_disclose",
+        "human_testing_required"
+      ],
+      "stance_expected": "conditions",
+      "model": [
+        "ai_welcome",
+        "human_testing_required",
+        "must_disclose"
+      ],
+      "stance": "conditions",
+      "dropped_quotes": 0,
+      "kept_quotes": 3,
+      "seconds": 31.2,
+      "keywords": [
+        "ai_welcome",
+        "human_testing_required",
+        "must_disclose"
+      ]
+    },
+    {
+      "repo": "open-telemetry/opentelemetry-python-contrib",
+      "expected": [
+        "ai_welcome",
+        "own_words_only",
+        "no_autonomous_agents"
+      ],
+      "stance_expected": "conditions",
+      "model": [
+        "ai_welcome",
+        "must_disclose",
+        "no_autonomous_agents",
+        "own_words_only"
+      ],
+      "stance": "conditions",
+      "dropped_quotes": 0,
+      "kept_quotes": 4,
+      "seconds": 19.3,
+      "keywords": [
+        "must_disclose",
+        "own_words_only"
+      ]
+    },
+    {
+      "repo": "keycloak/keycloak",
+      "expected": [
+        "ai_welcome",
+        "must_disclose"
+      ],
+      "stance_expected": "conditions",
+      "model": [
+        "ai_welcome",
+        "must_disclose",
+        "own_words_only"
+      ],
+      "stance": "conditions",
+      "dropped_quotes": 0,
+      "kept_quotes": 3,
+      "seconds": 13.4,
+      "keywords": [
+        "ai_welcome",
+        "must_disclose"
+      ]
+    },
+    {
+      "repo": "torchgeo/torchgeo",
+      "expected": [
+        "ai_prohibited"
+      ],
+      "stance_expected": "prohibited",
+      "model": [
+        "ai_prohibited",
+        "ai_welcome",
+        "must_disclose"
+      ],
+      "stance": "conditions",
+      "dropped_quotes": 1,
+      "kept_quotes": 3,
+      "seconds": 15.1,
+      "keywords": [
+        "ai_prohibited",
+        "own_words_only"
+      ]
+    },
+    {
+      "repo": "testcontainers/testcontainers-go",
+      "expected": [
+        "ai_welcome",
+        "must_disclose"
+      ],
+      "stance_expected": "conditions",
+      "model": [
+        "ai_welcome",
+        "must_disclose"
+      ],
+      "stance": "conditions",
+      "dropped_quotes": 0,
+      "kept_quotes": 2,
+      "seconds": 8.8,
+      "keywords": []
+    },
+    {
+      "repo": "napari/napari",
+      "expected": [],
+      "stance_expected": "unspecified",
+      "model": [
+        "ai_welcome"
+      ],
+      "stance": "welcome",
+      "dropped_quotes": 0,
+      "kept_quotes": 1,
+      "seconds": 5.5,
+      "keywords": []
+    },
+    {
+      "repo": "ghostty-org/ghostty",
+      "expected": [
+        "ai_welcome",
+        "must_disclose"
+      ],
+      "stance_expected": "conditions",
+      "model": [
+        "ai_welcome",
+        "must_disclose",
+        "no_autonomous_agents",
+        "own_words_only"
+      ],
+      "stance": "conditions",
+      "dropped_quotes": 0,
+      "kept_quotes": 4,
+      "seconds": 27.0,
+      "keywords": [
+        "ai_welcome",
+        "must_disclose"
+      ]
+    },
+    {
+      "repo": "curl/curl",
+      "expected": [
+        "ai_welcome",
+        "own_words_only"
+      ],
+      "stance_expected": "conditions",
+      "model": [
+        "ai_discouraged",
+        "ai_prohibited",
+        "ai_welcome",
+        "own_words_only"
+      ],
+      "stance": "discouraged",
+      "dropped_quotes": 0,
+      "kept_quotes": 4,
+      "seconds": 4.7,
+      "keywords": [
+        "ai_welcome",
+        "own_words_only"
+      ]
+    },
+    {
+      "repo": "simpeg/simpeg",
+      "expected": [],
+      "stance_expected": "unspecified",
+      "model": [],
+      "stance": "unspecified",
+      "dropped_quotes": 0,
+      "kept_quotes": 0,
+      "seconds": 0.0,
+      "keywords": []
+    },
+    {
+      "repo": "tesseract-ocr/tesseract",
+      "expected": [],
+      "stance_expected": "unspecified",
+      "model": [],
+      "stance": "unspecified",
+      "dropped_quotes": 0,
+      "kept_quotes": 0,
+      "seconds": 0.0,
+      "keywords": []
+    },
+    {
+      "repo": "OpenAPITools/openapi-generator",
+      "expected": [],
+      "stance_expected": "unspecified",
+      "model": [],
+      "stance": "unspecified",
+      "dropped_quotes": 0,
+      "kept_quotes": 0,
+      "seconds": 0.0,
+      "keywords": []
+    },
+    {
+      "repo": "ReactiveX/RxJava",
+      "expected": [
+        "ai_welcome",
+        "must_disclose"
+      ],
+      "stance_expected": "conditions",
+      "model": [
+        "ai_welcome",
+        "must_disclose"
+      ],
+      "stance": "conditions",
+      "dropped_quotes": 0,
+      "kept_quotes": 2,
+      "seconds": 17.2,
+      "keywords": [
+        "ai_prohibited",
+        "ai_welcome",
+        "must_disclose"
+      ]
+    },
+    {
+      "repo": "scikit-image/scikit-image",
+      "expected": [
+        "must_disclose",
+        "own_words_only"
+      ],
+      "stance_expected": "conditions",
+      "model": [
+        "ai_welcome",
+        "must_disclose",
+        "no_autonomous_agents",
+        "own_words_only"
+      ],
+      "stance": "conditions",
+      "dropped_quotes": 0,
+      "kept_quotes": 4,
+      "seconds": 21.4,
+      "keywords": [
+        "must_disclose",
+        "own_words_only"
+      ]
+    },
+    {
+      "repo": "obspy/obspy",
+      "expected": [
+        "must_disclose"
+      ],
+      "stance_expected": "conditions",
+      "model": [
+        "ai_welcome",
+        "must_disclose"
+      ],
+      "stance": "conditions",
+      "dropped_quotes": 0,
+      "kept_quotes": 2,
+      "seconds": 3.4,
+      "keywords": [
+        "must_disclose"
+      ]
+    }
+  ]
+}

@@ -36,6 +36,8 @@ def test_policy_keeps_only_quoted_rules(monkeypatch):
     }
 
     def chat(messages, schema=None, timeout=300):
+        if "Sentence:" in messages[-1]["content"]:
+            return json.dumps({"says_it": True})
         question = messages[-1]["content"].split("\n", 1)[0].removeprefix("Question: ")
         return json.dumps(answers.get(question, {"applies": False, "quote": ""}))
 

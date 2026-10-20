@@ -69,6 +69,7 @@ def main() -> None:
         model_flags = sorted({r.flag for r in policy.rules})
         rows.append({"repo": item["repo"], "expected": item["flags"], "stance_expected": item["stance"],
                      "model": model_flags, "stance": policy.stance, "dropped_quotes": policy.dropped,
+                     "rejected_on_check": policy.rejected,
                      "kept_quotes": len(policy.rules), "seconds": round(time.time() - started, 1),
                      "keywords": sorted(keyword_flags("\n".join(facts.ai_excerpts)))})
         print(f"{item['repo']:45s} model={model_flags} expected={item['flags']} dropped={policy.dropped}", flush=True)
@@ -79,6 +80,7 @@ def main() -> None:
         "stance_accuracy": f"{sum(r['stance'] == r['stance_expected'] for r in rows)}/{len(rows)}",
         "quotes_kept": sum(r["kept_quotes"] for r in rows),
         "quotes_dropped_as_ungrounded": sum(r["dropped_quotes"] for r in rows),
+        "quotes_rejected_on_second_check": sum(r.get("rejected_on_check", 0) for r in rows),
     }
     print(json.dumps(summary, indent=2))
     if args.out:

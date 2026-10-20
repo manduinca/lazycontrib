@@ -36,6 +36,7 @@ class Policy(BaseModel):
     cla: bool = False
     rules: list[Rule] = Field(default_factory=list)
     dropped: int = 0
+    rejected: int = 0
 
 
 QUESTIONS: dict[str, str] = {
@@ -52,6 +53,14 @@ QUESTIONS: dict[str, str] = {
                             "comments on their own or on someone's behalf?",
     "newcomer_issues_reserved": "Does the project say beginner issues are meant for new human contributors?",
 }
+
+class Check(BaseModel):
+    says_it: bool
+
+
+VERIFY_PROMPT = """You check one sentence from a project's contribution guidelines. Answer only whether the sentence,
+on its own, states what the question asks. A sentence that only mentions AI, or states a different rule, does not.
+Reply with JSON only: {"says_it": true|false}."""
 
 POLICY_PROMPT = """You answer one yes/no question about a project's rules for AI-assisted contributions, using only
 the text given. Reply with JSON only: {"applies": true|false, "quote": "..."}.
@@ -72,11 +81,15 @@ def assess_policy(facts: RepoFacts) -> Policy:
                                    FlagAnswer)
         if not answer.applies:
             continue
-        if llm.grounded(answer.quote, *sources):
+        if not llm.grounded(answer.quote, *sources):
+            policy.dropped += 1
+            continue
+        check, _ = llm.structured(VERIFY_PROMPT, f"Question: {question}\n\nSentence: {answer.quote}", Check)
+        if check.says_it:
             flags.add(flag)
             policy.rules.append(Rule(flag=flag, quote=answer.quote))
         else:
-            policy.dropped += 1
+            policy.rejected += 1
     policy.must_disclose = "must_disclose" in flags
     policy.human_testing_required = "human_testing_required" in flags
     policy.own_words_only = "own_words_only" in flags
