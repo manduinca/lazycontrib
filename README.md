@@ -6,6 +6,10 @@ Looking for a good first contribution is slow work: search, open twenty tabs, re
 
 It never opens a pull request, posts a comment or pushes a commit. That part is yours.
 
+![A lazycontrib digest](docs/digest.jpg)
+
+[43-second demo](docs/lazycontrib-demo.mp4) · [an example digest from a real run](docs/example-digest.md)
+
 ## What you get
 
 For each issue it keeps, a briefing with:
