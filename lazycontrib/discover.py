@@ -151,7 +151,8 @@ def _heuristic(c: Candidate, profile: Profile, now: datetime) -> float:
 
 def enrich(gh: GitHub, candidate: Candidate) -> Candidate:
     comments = gh.comments(candidate.repo, candidate.number)
-    candidate.comments = [{"author": c["user"]["login"], "association": c.get("author_association", "NONE"),
+    candidate.comments = [{"author": c["user"]["login"], "type": c["user"].get("type", "User"),
+                           "association": c.get("author_association", "NONE"),
                            "created_at": c["created_at"], "body": (c.get("body") or "")[:1500]}
                           for c in comments]
     for event in gh.timeline(candidate.repo, candidate.number):

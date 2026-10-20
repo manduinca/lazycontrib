@@ -12,7 +12,13 @@ NOW = datetime(2026, 10, 20, tzinfo=timezone.utc)
 
 def fake_replies(monkeypatch, *replies):
     queue = [json.dumps(r) if isinstance(r, dict) else r for r in replies]
-    monkeypatch.setattr(llm, "chat", lambda messages, schema=None, timeout=300: queue.pop(0))
+
+    def chat(messages, schema=None, timeout=300):
+        if messages[-1]["content"].startswith("Comment:"):
+            return json.dumps({"says_it": True})
+        return queue.pop(0)
+
+    monkeypatch.setattr(llm, "chat", chat)
 
 
 @pytest.mark.parametrize("quote, source, expected", [

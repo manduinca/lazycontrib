@@ -156,7 +156,13 @@ class IssueVerdict(BaseModel):
     status_reason: str
     draft: IssueDraft
     dropped_claims: int = 0
+    rejected_claims: int = 0
 
+
+CLAIM_CHECK_PROMPT = """You read one comment from an issue thread. Answer whether the writer says they are working on
+the issue, will work on it, will open a pull request for it, or asks to be assigned or allowed to take it.
+Reproducing a bug, explaining the cause, reviewing or discussing options does not count.
+Reply with JSON only: {"says_it": true|false}."""
 
 ISSUE_PROMPT = """You help one open source contributor decide whether an issue is worth their time.
 Reply with JSON only, following the schema. Be concrete and short: one line per list item.
@@ -176,14 +182,22 @@ def assess_issue(candidate: Candidate, profile: Profile, now: datetime | None = 
     by_author: dict[str, list[dict]] = {}
     for c in candidate.comments:
         by_author.setdefault(c["author"], []).append(c)
-    real, dropped = [], 0
+    real, dropped, rejected = [], 0, 0
     for claim in draft.claims:
         author = claim.author.lstrip("@")
+        bots = {c["author"] for c in candidate.comments if c.get("type") == "Bot" or c["author"].endswith("[bot]")}
+        if author == profile.github or author in bots:
+            dropped += 1
+            continue
         matches = [c for c in by_author.get(author, []) if llm.grounded(claim.quote, c["body"])]
-        if matches and author != profile.github:
+        if not matches:
+            dropped += 1
+            continue
+        check, _ = llm.structured(CLAIM_CHECK_PROMPT, f"Comment: {claim.quote}", Check)
+        if check.says_it:
             real.append((author, matches[-1]["created_at"]))
         else:
-            dropped += 1
+            rejected += 1
 
     if candidate.open_prs:
         status, reason = "in_progress", f"open pull request: {candidate.open_prs[0]}"
@@ -194,4 +208,5 @@ def assess_issue(candidate: Candidate, profile: Profile, now: datetime | None = 
         reason = f"@{author} said they would take it {age} days ago"
     else:
         status, reason = "free", "nobody has claimed it and no pull request is linked"
-    return IssueVerdict(status=status, status_reason=reason, draft=draft, dropped_claims=dropped)
+    return IssueVerdict(status=status, status_reason=reason, draft=draft, dropped_claims=dropped,
+                        rejected_claims=rejected)
