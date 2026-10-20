@@ -136,7 +136,7 @@ class Claim(BaseModel):
 
 class IssueDraft(BaseModel):
     summary: str = Field(max_length=400, description="one or two sentences: what the issue asks for")
-    must_do: list[str] = Field(default_factory=list, max_length=6,
+    must_do: list[str] = Field(min_length=1, max_length=6,
                                description="every concrete thing a complete fix has to do, including parts the "
                                            "issue calls optional; one short line each")
     claims: list[Claim] = Field(default_factory=list, max_length=6,

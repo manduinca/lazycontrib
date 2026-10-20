@@ -61,22 +61,49 @@ def terms(candidate: Candidate, verdict: IssueVerdict) -> list[str]:
     return [t for t, _ in found.most_common(30) if t not in STOP and len(t) > 3][:12]
 
 
-def grep(root: Path, needles: list[str], max_files: int = 6, budget: int = 7000) -> tuple[str, Counter]:
+DEFINITION = (r"(def|class|func|function|fn|interface|struct|type|enum|object)[[:space:]]+"
+              r"(\([^)]*\)[[:space:]]*)?{name}([^[:alnum:]_]|$)")
+SECONDARY = re.compile(r"(^|/)(tests?|docs?|examples?|spec|__tests__)(/|$)|_test\.|test_|\.(md|rst|txt)$")
+
+
+def definitions(root: Path, needles: list[str]) -> dict[str, list[int]]:
+    found: dict[str, list[int]] = {}
+    for needle in needles:
+        name = needle.split(".")[-1]
+        if not re.fullmatch(r"[A-Za-z_]\w{2,}", name):
+            continue
+        out = subprocess.run(["git", "-C", str(root), "grep", "-n", "-I", "-E", "-e", DEFINITION.format(name=name),
+                              "--", "."], capture_output=True, text=True).stdout
+        for line in out.splitlines()[:20]:
+            path, number, _ = line.split(":", 2)
+            found.setdefault(path, []).append(int(number))
+    return found
+
+
+def grep(root: Path, needles: list[str], max_files: int = 6, budget: int = 9000) -> tuple[str, Counter]:
+    """Snippets around the definitions of the names the issue mentions first, then the busiest source files."""
     hits: Counter = Counter()
     lines_by_file: dict[str, list[int]] = {}
+    defined: set[tuple[str, int]] = set()
+    for path, numbers in definitions(root, needles).items():
+        hits[path] += 1000
+        lines_by_file.setdefault(path, []).extend(numbers)
+        defined |= {(path, n) for n in numbers}
     for needle in needles:
         out = subprocess.run(["git", "-C", str(root), "grep", "-n", "-I", "-F", "-e", needle, "--", "."],
                              capture_output=True, text=True).stdout
         for line in out.splitlines()[:200]:
             path, number, _ = line.split(":", 2)
-            hits[path] += 1
+            hits[path] += 1 if SECONDARY.search(path) else 3
             lines_by_file.setdefault(path, []).append(int(number))
     snippets, used = [], 0
     for path, _ in hits.most_common(max_files):
         source = (root / path).read_text(errors="replace").splitlines()
         shown = set()
-        for number in sorted(set(lines_by_file[path]))[:4]:
-            window = range(max(1, number - 6), min(len(source), number + 6) + 1)
+        ordered = sorted(set(lines_by_file[path]), key=lambda n: ((path, n) not in defined, n))
+        for number in ordered[:4]:
+            after = 45 if (path, number) in defined else 6
+            window = range(max(1, number - 4), min(len(source), number + after) + 1)
             if shown & set(window):
                 continue
             shown |= set(window)

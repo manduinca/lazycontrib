@@ -38,7 +38,7 @@ def markdown(report: Report) -> str:
         out += [f"## {i}. {c.repo}#{c.number}: {c.title}", "", f"<{c.url}>", ""]
         odds = f"{o.merge_odds:.0%}" if o.merge_odds is not None else "unknown"
         facts = [f"**Status:** {o.verdict.status.replace('_', ' ')} ({o.verdict.status_reason})",
-                 f"**Fit:** {d.fit}. {d.fit_reason}",
+                 f"**Fit:** {d.fit}" + (f". {d.fit_reason}" if d.fit_reason else ""),
                  f"**Effort:** {d.effort} · **clarity:** {d.clarity.replace('_', ' ')}",
                  f"**Merge odds:** {odds}" + (f" · the repo merges {o.repo_merge_rate:.0%} of outside PRs"
                                               if o.repo_merge_rate is not None else "")
