@@ -1,0 +1,2011 @@
+{
+ "open-telemetry/opentelemetry.io#7932": {
+  "repo": "open-telemetry/opentelemetry.io",
+  "number": 7932,
+  "url": "https://github.com/open-telemetry/opentelemetry.io/issues/7932",
+  "title": "[android] [registry] Add Android instrumentation to registry",
+  "body": "OTel Android has local documentation for a bunch of instrumentations that are not yet findable in the registry. As [noted in this comment](https://github.com/open-telemetry/opentelemetry.io/pull/7903#discussion_r2386810396), we should enhance the registry by adding information for each of the Android instrumentations.\n\n",
+  "labels": [
+   "help wanted",
+   "docs:registry",
+   "sig:android"
+  ],
+  "created_at": "2025-09-29T17:18:06Z",
+  "updated_at": "2025-10-07T11:33:01Z",
+  "comments_count": 3,
+  "stars": 0,
+  "language": null,
+  "repo_description": "",
+  "watched": false,
+  "welcomed_before": 0,
+  "signals": [],
+  "comments": [
+   {
+    "author": "breedx-splk",
+    "association": "CONTRIBUTOR",
+    "created_at": "2025-10-02T23:52:14Z",
+    "body": "@tiffany76 @svrnm - I'm interested in getting started on this...but it immediately occurs to me that the android instrumentations don't fit neatly/nicely into a \"language\" box (android being more of a platform/runtime than a language). \n\nI can think of a few ways of going about this, but not sure which might be preferred:\n\n* make a new \"language\" called Android and put the instrumentations in there, acknowledging in advance that android isn't a language.\n* fit them under \"kotlin\", acknowledging in advance that there's a bit of java in there remaining. Would this cause users looking for android bits to also miss it??\n* something else completely?\n\nThanks for your input."
+   },
+   {
+    "author": "tiffany76",
+    "association": "MEMBER",
+    "created_at": "2025-10-06T20:29:42Z",
+    "body": "Hi! We readily acknowledge that \"language\" is a bit of a catchall. For example, \"Collector\" is a \"language\" in the registry. \n\nSo I think we can add Android as a language. But @svrnm is way more knowledgeable about the registry, so I defer to his expertise."
+   },
+   {
+    "author": "svrnm",
+    "association": "MEMBER",
+    "created_at": "2025-10-07T11:33:01Z",
+    "body": "yes, let's start with `android` as language, and then raise an issue that we need to rethink that for android and the collector and some other quirks we have in the labeling right now."
+   }
+  ],
+  "open_prs": [],
+  "closed_prs": [
+   "https://github.com/open-telemetry/opentelemetry.io/pull/7903 (merged)",
+   "https://github.com/open-telemetry/opentelemetry.io/pull/10728",
+   "https://github.com/open-telemetry/opentelemetry.io/pull/10807 (merged)"
+  ],
+  "heuristic": 0.0
+ },
+ "OpenAPITools/openapi-generator#23274": {
+  "repo": "OpenAPITools/openapi-generator",
+  "number": 23274,
+  "url": "https://github.com/OpenAPITools/openapi-generator/issues/23274",
+  "title": "Add scalafmt (plugin) to scala (client/server) generators",
+  "body": "Add scalafmt (plugin) to scala (client/server) generators\n\nA good reference PR is https://github.com/OpenAPITools/openapi-generator/pull/23273\n\nPlease submit a PR if you would like to help with this task",
+  "labels": [
+   "Client: Scala",
+   "Server: Scala",
+   "help wanted"
+  ],
+  "created_at": "2026-03-17T04:01:14Z",
+  "updated_at": "2026-03-20T16:59:47Z",
+  "comments_count": 3,
+  "stars": 0,
+  "language": null,
+  "repo_description": "",
+  "watched": false,
+  "welcomed_before": 0,
+  "signals": [
+   "possible claim by @Daedalus-Icarus on 2026-03-19"
+  ],
+  "comments": [
+   {
+    "author": "Daedalus-Icarus",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-03-19T17:01:23Z",
+    "body": "Hi @wing328 I’ve reviewed the relevant code and I think I can address this issue. Could you assign it to me?"
+   },
+   {
+    "author": "wing328",
+    "association": "MEMBER",
+    "created_at": "2026-03-19T17:55:19Z",
+    "body": "thanks for offering help on this task.\n\nplease go ahead to submit PR(s)\n\n(I can't assign it to you since you're not a collaborator (with merge rights). It's a github limitation.)"
+   },
+   {
+    "author": "YB0y",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-03-20T16:59:47Z",
+    "body": "Hi @wing328, I think there are several areas that still need to be addressed. May I work on this issue as well?\n@Desel72, would it be okay if I work on this with you?"
+   }
+  ],
+  "open_prs": [],
+  "closed_prs": [
+   "https://github.com/OpenAPITools/openapi-generator/pull/23296",
+   "https://github.com/OpenAPITools/openapi-generator/pull/23300 (merged)",
+   "https://github.com/OpenAPITools/openapi-generator/pull/23362 (merged)",
+   "https://github.com/OpenAPITools/openapi-generator/pull/23377 (merged)",
+   "https://github.com/OpenAPITools/openapi-generator/pull/23378 (merged)",
+   "https://github.com/OpenAPITools/openapi-generator/pull/23443 (merged)",
+   "https://github.com/OpenAPITools/openapi-generator/pull/23458 (merged)",
+   "https://github.com/OpenAPITools/openapi-generator/pull/23459 (merged)",
+   "https://github.com/OpenAPITools/openapi-generator/pull/23463"
+  ],
+  "heuristic": 0.0
+ },
+ "open-telemetry/opentelemetry.io#7114": {
+  "repo": "open-telemetry/opentelemetry.io",
+  "number": 7114,
+  "url": "https://github.com/open-telemetry/opentelemetry.io/issues/7114",
+  "title": "[pt] Localize content/en/docs/zero-code/agent/configuration.md",
+  "body": "**What needs to be changed?**\n\nAs the refactor on Java docs was published recently, we must localize the Java docs on Portuguese docs.\n\n**What is the name + path of the page that needs changed?** \n\ncontent/en/docs/zero-code/agent/configuration.md\n\n**Additional context**: \n\n- [_Please delete paragraphs that you did not use before submitting._\n](https://github.com/open-telemetry/opentelemetry.io/discussions/4853)\n",
+  "labels": [
+   "help wanted",
+   "good first issue",
+   "lang:pt",
+   "triage:accepted:needs-pr"
+  ],
+  "created_at": "2025-06-15T17:44:26Z",
+  "updated_at": "2026-10-12T20:23:14Z",
+  "comments_count": 2,
+  "stars": 0,
+  "language": null,
+  "repo_description": "",
+  "watched": false,
+  "welcomed_before": 0,
+  "signals": [],
+  "comments": [
+   {
+    "author": "Vinaum8",
+    "association": "CONTRIBUTOR",
+    "created_at": "2025-06-15T17:48:15Z",
+    "body": "@vitorvasc estou puxando essa issue na pr: https://github.com/open-telemetry/opentelemetry.io/pull/6393"
+   },
+   {
+    "author": "reetig",
+    "association": "NONE",
+    "created_at": "2026-10-12T20:23:14Z",
+    "body": "can i  work on this issue ?"
+   }
+  ],
+  "open_prs": [],
+  "closed_prs": [],
+  "heuristic": 0.0
+ },
+ "open-telemetry/opentelemetry.io#7535": {
+  "repo": "open-telemetry/opentelemetry.io",
+  "number": 7535,
+  "url": "https://github.com/open-telemetry/opentelemetry.io/issues/7535",
+  "title": "[es] Spanish folder localization blogs",
+  "body": "This issue is to track the translation pages for the folder [`blogs`](https://opentelemetry.io/es/docs/contributing/blog/)\n\nKindly comment on this issue if you are translating a page or section.\n\n**Please open a unique PR for each page**\n\n## List of blogs translated\n- [x]  [opentelemetry.io/content/en/blog/index.md](https://opentelemetry.io/blog/) --> https://github.com/open-telemetry/opentelemetry.io/pull/7536\n\n####  2026\n- [x] [opentelemetry.io/content/en/blog/2025/ux-research-prometheus-otel](https://opentelemetry.io/blog/2025/ux-research-prometheus-otel/) --> https://github.com/open-telemetry/opentelemetry.io/pull/9927\n\n####  2025\n- [x] [opentelemetry.io/blog/2025/declarative-config](https://opentelemetry.io/blog/2025/declarative-config/)\n- [x] [opentelemetry.io/es/blog/2025/contribute-to-otel/](https://opentelemetry.io/es/blog/2025/contribute-to-otel/)\n- [x] [opentelemetry.io/blog/2025/how-to-name-your-metrics/](https://opentelemetry.io/es/blog/2025/how-to-name-your-metrics/)\n- [x] [opentelemetry.io/blog/2025/how-to-name-your-span-attributes/](https://opentelemetry.io/es/blog/2025/how-to-name-your-span-attributes/)\n- [x] [opentelemetry.io/blog/2025/how-to-name-your-spans/](https://opentelemetry.io/es/blog/2025/how-to-name-your-spans/)\n- [x] [opentelemetry.io/blog/2025/ux-research-prometheus-otel/](https://opentelemetry.io/es/blog/2025/ux-research-prometheus-otel/)\n",
+  "labels": [
+   "help wanted",
+   "good first issue",
+   "docs",
+   "lang:es"
+  ],
+  "created_at": "2025-08-12T18:49:17Z",
+  "updated_at": "2026-07-03T13:32:19Z",
+  "comments_count": 4,
+  "stars": 0,
+  "language": null,
+  "repo_description": "",
+  "watched": false,
+  "welcomed_before": 0,
+  "signals": [],
+  "comments": [
+   {
+    "author": "aminespinoza10",
+    "association": "NONE",
+    "created_at": "2025-09-16T21:30:25Z",
+    "body": "I can take the rest of the documents, will provide an independent Pull Request per doc to keep them isolated."
+   },
+   {
+    "author": "svrnm",
+    "association": "MEMBER",
+    "created_at": "2025-09-29T06:49:14Z",
+    "body": "> I can take the rest of the documents, will provide an independent Pull Request per doc to keep them isolated.\n\nPlease go ahead and provide PR(s) for the files you'd like to work on. Overall I recommend that you start with one and work on the next one when it's closed or well in flight."
+   },
+   {
+    "author": "falconcr",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-05-18T17:29:24Z",
+    "body": "I created a [PR](https://github.com/open-telemetry/opentelemetry.io/pull/9927) to translate  [opentelemetry.io/content/en/blog/2025/ux-research-prometheus-otel](https://opentelemetry.io/blog/2025/ux-research-prometheus-otel/)\n"
+   },
+   {
+    "author": "immavalls",
+    "association": "MEMBER",
+    "created_at": "2026-06-10T20:36:49Z",
+    "body": "I will next work on translating https://opentelemetry.io/blog/2026/genai-observability/ and https://opentelemetry.io/blog/2026/blueprints-intro/ @falconcr, if that's ok with you."
+   }
+  ],
+  "open_prs": [],
+  "closed_prs": [
+   "https://github.com/open-telemetry/opentelemetry.io/pull/7536 (merged)",
+   "https://github.com/open-telemetry/opentelemetry.io/pull/9927 (merged)"
+  ],
+  "heuristic": 0.0
+ },
+ "open-telemetry/opentelemetry.io#7117": {
+  "repo": "open-telemetry/opentelemetry.io",
+  "number": 7117,
+  "url": "https://github.com/open-telemetry/opentelemetry.io/issues/7117",
+  "title": "[pt] Localize content/en/docs/zero-code/java/spring-boot-starter/_index.md",
+  "body": "**What needs to be changed?**\n\nAs the refactor on Java docs was published recently, we must localize the Java docs on Portuguese docs.\n\n**What is the name + path of the page that needs changed?** \n\ncontent/en/docs/zero-code/java/spring-boot-starter/_index.md\n\n**Additional context**: \n\n- [_Please delete paragraphs that you did not use before submitting._\n](https://github.com/open-telemetry/opentelemetry.io/discussions/4853)\n",
+  "labels": [
+   "help wanted",
+   "good first issue",
+   "lang:pt",
+   "triage:accepted:needs-pr"
+  ],
+  "created_at": "2025-06-15T17:47:01Z",
+  "updated_at": "2026-09-30T15:20:01Z",
+  "comments_count": 3,
+  "stars": 0,
+  "language": null,
+  "repo_description": "",
+  "watched": false,
+  "welcomed_before": 0,
+  "signals": [
+   "open pull request linked: https://github.com/open-telemetry/opentelemetry.io/pull/11905",
+   "possible claim by @akshat-lakhera on 2026-09-30"
+  ],
+  "comments": [
+   {
+    "author": "Vinaum8",
+    "association": "CONTRIBUTOR",
+    "created_at": "2025-06-15T17:47:42Z",
+    "body": "@vitorvasc estou puxando essa issue na pr: https://github.com/open-telemetry/opentelemetry.io/pull/6393"
+   },
+   {
+    "author": "akshat-lakhera",
+    "association": "NONE",
+    "created_at": "2026-09-30T15:19:13Z",
+    "body": "@vitorvasc can you assign this to me ?\n"
+   },
+   {
+    "author": "otelbot-docs[bot]",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-09-30T15:20:01Z",
+    "body": "Thank you for your interest in contributing to this project, @akshat-lakhera! 🙏\n\nIf this is your first time contributing, please read [First time contributing](https://opentelemetry.io/docs/contributing/#first-time-contributing) and [Fixing an existing issue](https://opentelemetry.io/docs/contributing/issues/#fixing-an-existing-issue).\n\nAs noted there, **we don't assign issues** unless you're a regular contributor. If you don't see any linked PRs and no one else has said they are working on the issue, feel free to submit a draft PR early to signal that you're working on it."
+   }
+  ],
+  "open_prs": [
+   "https://github.com/open-telemetry/opentelemetry.io/pull/11905"
+  ],
+  "closed_prs": [],
+  "heuristic": 0.0
+ },
+ "open-telemetry/opentelemetry.io#7115": {
+  "repo": "open-telemetry/opentelemetry.io",
+  "number": 7115,
+  "url": "https://github.com/open-telemetry/opentelemetry.io/issues/7115",
+  "title": "[pt] Localize content/en/docs/zero-code/agent/performance.md",
+  "body": "**What needs to be changed?**\n\nAs the refactor on Java docs was published recently, we must localize the Java docs on Portuguese docs.\n\n**What is the name + path of the page that needs changed?** \n\ncontent/en/docs/zero-code/agent/performance.md\n\n**Additional context**: \n\n- [_Please delete paragraphs that you did not use before submitting._\n](https://github.com/open-telemetry/opentelemetry.io/discussions/4853)\n",
+  "labels": [
+   "help wanted",
+   "good first issue",
+   "lang:pt",
+   "triage:accepted:needs-pr"
+  ],
+  "created_at": "2025-06-15T17:45:20Z",
+  "updated_at": "2026-09-27T00:37:10Z",
+  "comments_count": 3,
+  "stars": 0,
+  "language": null,
+  "repo_description": "",
+  "watched": false,
+  "welcomed_before": 0,
+  "signals": [
+   "open pull request linked: https://github.com/open-telemetry/opentelemetry.io/pull/11850",
+   "possible claim by @akshat-lakhera on 2026-09-27"
+  ],
+  "comments": [
+   {
+    "author": "Vinaum8",
+    "association": "CONTRIBUTOR",
+    "created_at": "2025-06-15T17:48:11Z",
+    "body": "@vitorvasc estou puxando essa issue na pr: https://github.com/open-telemetry/opentelemetry.io/pull/6393"
+   },
+   {
+    "author": "akshat-lakhera",
+    "association": "NONE",
+    "created_at": "2026-09-27T00:36:56Z",
+    "body": "Hi @vitorvasc, I would love to contribute to this issue and work on the Portuguese localization for this file. Could you please assign it to me?"
+   },
+   {
+    "author": "otelbot-docs[bot]",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-09-27T00:37:10Z",
+    "body": "Thank you for your interest in contributing to this project, @akshat-lakhera! 🙏\n\nIf this is your first time contributing, please read [First time contributing](https://opentelemetry.io/docs/contributing/#first-time-contributing) and [Fixing an existing issue](https://opentelemetry.io/docs/contributing/issues/#fixing-an-existing-issue).\n\nAs noted there, **we don't assign issues** unless you're a regular contributor. If you don't see any linked PRs and no one else has said they are working on the issue, feel free to submit a draft PR early to signal that you're working on it."
+   }
+  ],
+  "open_prs": [
+   "https://github.com/open-telemetry/opentelemetry.io/pull/11850"
+  ],
+  "closed_prs": [],
+  "heuristic": 0.0
+ },
+ "open-telemetry/opentelemetry.io#11927": {
+  "repo": "open-telemetry/opentelemetry.io",
+  "number": 11927,
+  "url": "https://github.com/open-telemetry/opentelemetry.io/issues/11927",
+  "title": "[Docs]: Community Meeting Records links unusable",
+  "body": "### What needs to be changed?\n\nIf you look into the spreadsheet pointed out by the Meeting Records link in https://opentelemetry.io/community/ . The last meetings are all silent, blank, no content, unuseable. I suspect since we moved to LFX zoom platform.\n\nA better link I got in Slack is https://zoom-lfx.platform.linuxfoundation.org/meetings/opentelemetry?view=week\n\nConsider fixing the link or the spreadsheet?\n\n### Name + path of the page\n\nhttps://opentelemetry.io/community/ config/_default/hugo.yaml\n\n### Additional context\n\nRef: https://cloud-native.slack.com/archives/CJFCJHG4Q/p1790937763123679",
+  "labels": [
+   "help wanted",
+   "good first issue",
+   "triage:accepted"
+  ],
+  "created_at": "2026-10-02T12:33:29Z",
+  "updated_at": "2026-10-16T05:31:55Z",
+  "comments_count": 14,
+  "stars": 0,
+  "language": null,
+  "repo_description": "",
+  "watched": false,
+  "welcomed_before": 0,
+  "signals": [
+   "open pull request linked: https://github.com/open-telemetry/opentelemetry.io/pull/11947"
+  ],
+  "comments": [
+   {
+    "author": "tiffany76",
+    "association": "MEMBER",
+    "created_at": "2026-10-02T22:45:12Z",
+    "body": "Good catch, @krajorama! And thanks for raising an issue.  "
+   },
+   {
+    "author": "praxzy",
+    "association": "NONE",
+    "created_at": "2026-10-03T07:15:57Z",
+    "body": "I checked a few meetings through the suggested zoom-lfx page and found some unusable recordings there as well. Could someone confirm whether these meetings were recorded correctly?"
+   },
+   {
+    "author": "tiffany76",
+    "association": "MEMBER",
+    "created_at": "2026-10-03T22:47:10Z",
+    "body": "@praxzy, could you give us an example of a link from the LFX page that isn't working? Thanks!"
+   },
+   {
+    "author": "DIYAJATAR",
+    "association": "NONE",
+    "created_at": "2026-10-04T16:21:10Z",
+    "body": "Hi OpenTelemetry team,\n\nI'm Diya Jatar, an aspiring Software Engineer interested in developer tooling and open-source contributions.\n\nI'd like to help resolve the broken community meeting-record links described in this issue. I can investigate the current links and submit a small documentation/configuration fix after checking the repository's contribution guidelines.\n\nIs this issue still available for a contributor to work on?\n\nThank you!\n"
+   },
+   {
+    "author": "praxzy",
+    "association": "NONE",
+    "created_at": "2026-10-04T19:41:01Z",
+    "body": "@tiffany76, here is an example:\n\nProject triage - EU-friendly\nSep 28, 2026, 2:30:00 PM\nhttps://zoom.us/rec/share/I8rWyFK4XcE4TfQln1_-i-YLHX2W9VWsua-g_pCXoV1a1tonRcEmjqJhFLu72lq5.2Dmo03zuebeEdYLc\n"
+   },
+   {
+    "author": "tiffany76",
+    "association": "MEMBER",
+    "created_at": "2026-10-05T21:38:59Z",
+    "body": "Thanks, @praxzy. I _think_ what you're seeing is a meeting that was either poorly attended or canceled but not everyone got the message. As soon as someone enters a Zoom call, the recording starts. It looks to me like the individual who joined either decided not to wait around or discovered the meeting had been moved or canceled. Just a guess, but it does happen. I think overall the LFX links should work for meetings that actually took place.\n\n@DIYAJATAR, thank you for your interest! We'd be glad for your contribution. Please make sure to follow all of our [new contributor guidelines](https://opentelemetry.io/docs/contributing/#first-time-contributing) and go ahead with a PR. We're here if you have any questions! "
+   },
+   {
+    "author": "chadmcrowell",
+    "association": "NONE",
+    "created_at": "2026-10-06T15:22:45Z",
+    "body": "Hello there! 👋  I thought I'd add my two cents since I am familiar with the LFX platform in my role as tech lead for TAG Operational Resilience. \nThe good news is that LFX has a CLI, which you can easily run a command to get the meeting recording links. The CLI is a generic authenticated API client, so it's not as intuitive as `lfx meetings list`.\nThe Swagger UI is available at https://lfx-api.v2.cluster.lfx.dev/docs/\nThe OpenAPI document is /docs/spec/openapi-merged.yaml\nThe relevant OpenAPI document is `/docs/spec/openapi-merged.yaml`\nDownload it:\n```bash\nlfx api /docs/spec/openapi-merged.yaml > openapi.yaml\n```\nFind meeting and project paths:\n```bash\nyq -r '\n  .paths | keys[] |\n  select(test(\"(?i)meeting|record|project\"))\n' openapi.yaml\n```\nThe important API paths are:\n```bash\n/query/resources\n/itx/meeting_count\n/itx/meetings/{meeting_id}\n/itx/past_meetings/{past_meeting_id}\n```\nThe important discovery endpoint is `GET /query/resources`And its required parameter is `v=1`. Its name search parameter is `name=`.\nSo, the correct command is:\n```bash\nlfx api \\\n  '/query/resources?v=1&name=OpenTelemetry&page_size=100' \\\n  > resources.json\n```\nThe endpoint’s relevant parameters include:\n- `v`, required API version, use `1`.\n- `name`, resource name or alias.\n- `parent`, optional parent such as `project:PROJECT_UID`.\n- `type`, optional resource type.\n- `sort`, such as `best_match` or `updated_desc`.\n- `page_size`, from 1 to 1000.\nSearch for matching resources:\n```bash\njq -r '\n  ..\n "
+   },
+   {
+    "author": "sowmiyaksr",
+    "association": "NONE",
+    "created_at": "2026-10-14T10:50:10Z",
+    "body": "Hi Team,\n\nThis is Sowmiya. I would like to start by contributing to this issue. \n\nThanks"
+   },
+   {
+    "author": "tiffany76",
+    "association": "MEMBER",
+    "created_at": "2026-10-14T20:38:04Z",
+    "body": "Hi @sowmiyaksr, thanks for your interest. Another individual was planning to work on this issue, as commented above. @DIYAJATAR, are you still interested in creating a PR to fix this issue or can @sowmiyaksr take it over?  "
+   },
+   {
+    "author": "SUSH9391",
+    "association": "NONE",
+    "created_at": "2026-10-15T13:49:44Z",
+    "body": "is this issue still open since i went through the community/end-users/interviews and previous section/past-resordings i found it opeing OTe's youtube page of interviews\n"
+   },
+   {
+    "author": "SUSH9391",
+    "association": "NONE",
+    "created_at": "2026-10-15T14:22:43Z",
+    "body": "Hi! I checked the community page and traced the meeting record links pointing to the spreadsheet/Zoom recordings. the resordings are working fine from zoom "
+   },
+   {
+    "author": "SUSH9391",
+    "association": "NONE",
+    "created_at": "2026-10-15T15:29:19Z",
+    "body": "Hi everyone! Since this is still open and there's been some great discussion on the migration to LFX, I’d love to propose a straightforward fix:\n\nWe can update the community page config/documentation to point directly to the LFX Meetings Platform https://zoom-lfx.platform.linuxfoundation.org/meetings/opentelemetry?view=week where the active recordings and transcripts are now hosted, preventing users from landing on the legacy blank spreadsheet rows.\n\nWith the maintainers' green light, I am ready to put together a clean pull request for this"
+   },
+   {
+    "author": "tiffany76",
+    "association": "MEMBER",
+    "created_at": "2026-10-15T17:40:17Z",
+    "body": "Folks, while we appreciate your enthusiasm to contribute, we ask that you please read through the comments on these issues before requesting to work on them. If someone has claimed the issue before you and a reasonable amount of time has passed since their comment (~3 weeks), please address your comments to them to ask if the issue is free to claim. Thank you."
+   },
+   {
+    "author": "SUSH9391",
+    "association": "NONE",
+    "created_at": "2026-10-16T05:31:31Z",
+    "body": "Hi @tiffany76 , thank you for pointing that out and guiding us! My apologies for jumping in without fully tracking the previous comments on the thread. I'll make sure to keep this in mind and check for existing claimants moving forward. Good luck with the PR"
+   }
+  ],
+  "open_prs": [
+   "https://github.com/open-telemetry/opentelemetry.io/pull/11947"
+  ],
+  "closed_prs": [],
+  "heuristic": 0.0
+ },
+ "open-telemetry/opentelemetry.io#7544": {
+  "repo": "open-telemetry/opentelemetry.io",
+  "number": 7544,
+  "url": "https://github.com/open-telemetry/opentelemetry.io/issues/7544",
+  "title": "[pt] Localize content/en/docs/demo pages",
+  "body": "## Description\n\n**What needs to be changed?** \n\nThis issue is part of the Portuguese localization and tracks the localization for pages under the Demo directory.\n\nURL: https://opentelemetry.io/pt/docs/demo/\n\n**What is the name + path of the page that needs changed?** \n\n### content/en/docs/demo\n\n- [ ] content/en/docs/demo/_index.md - #11770 \n- [ ] content/en/docs/demo/architecture.md\n- [ ] content/en/docs/demo/development.md\n- [ ] content/en/docs/demo/docker-deployment.md\n- [ ] content/en/docs/demo/forking.md\n- [ ] content/en/docs/demo/kubernetes-deployment.md\n- [ ] content/en/docs/demo/tests.md\n\n### content/en/docs/demo/collector-data-flow-dashboard \n\n- [ ] content/en/docs/demo/collector-data-flow-dashboard/index.md\n\n### content/en/docs/demo/feature-flags\n\n- [ ] content/en/docs/demo/feature-flags/_index.md\n- [ ] content/en/docs/demo/feature-flags/recommendation-cache/index.md\n\n### content/en/docs/demo/requirements\n\n- [ ] content/en/docs/demo/requirements/_index.md\n- [ ] content/en/docs/demo/requirements/application.md\n- [ ] content/en/docs/demo/requirements/architecture.md\n- [ ] content/en/docs/demo/requirements/opentelemetry.md\n- [ ] content/en/docs/demo/requirements/system.md\n\n### content/en/docs/demo/screenshots\n\n- [ ] content/en/docs/demo/screenshots/index.md\n\n### content/en/docs/demo/services\n\n- [ ] content/en/docs/demo/services/_index.md\n- [ ] content/en/docs/demo/services/accounting.md\n- [ ] content/en/docs/demo/services/ad.md\n- [ ] content/en/docs/demo/services/checkout.md\n- [ ] content/en/docs/demo/services/currency.md\n- [ ] content/en/docs/demo/services/email.md\n- [ ] content/en/docs/demo/services/fraud-detection.md\n- [ ] content/en/docs/demo/services/frontend-proxy.md\n- [ ] content/en/docs/demo/services/frontend.md\n- [ ] content/en/docs/demo/services/image-provider.md\n- [ ] content/en/docs/demo/services/kafka.md\n- [ ] content/en/docs/demo/services/load-generator.md\n- [ ] content/en/docs/demo/services/payment.md\n- [ ] content/en/docs/demo/services/product-catalog.md\n- [ ] content/en/docs/demo/services/quote.md\n- [ ] content/en/docs/demo/services/react-native-app.md\n- [ ] content/en/docs/demo/services/recommendation.md\n- [ ] content/en/docs/demo/services/shipping.md\n- [ ] content/en/docs/demo/services/cart/index.md\n\n## How to contribute\n\n1. Read [this guide](https://vasconcellos.dev/posts/2024-07-26-guia-contribuicao-otel-docs-pt) to familiarize yourself with the contribution process.\n2. Comment on this issue about which page you want to localize.\n3. If you have any questions, let us know at [#otel-localization-ptbr](https://cloud-native.slack.com/archives/C076LET8YSK).",
+  "labels": [
+   "help wanted",
+   "good first issue",
+   "lang:pt",
+   "triage:accepted:needs-pr"
+  ],
+  "created_at": "2025-08-13T11:23:16Z",
+  "updated_at": "2026-09-18T14:07:57Z",
+  "comments_count": 7,
+  "stars": 0,
+  "language": null,
+  "repo_description": "",
+  "watched": false,
+  "welcomed_before": 0,
+  "signals": [
+   "open pull request linked: https://github.com/open-telemetry/opentelemetry.io/pull/11770",
+   "possible claim by @Mike-4-prog on 2025-09-17",
+   "possible claim by @adity-a34 on 2025-09-18"
+  ],
+  "comments": [
+   {
+    "author": "Mike-4-prog",
+    "association": "NONE",
+    "created_at": "2025-09-17T22:48:05Z",
+    "body": "Hi,\n I’d like to localize content/en/docs/demo/requirements/_index.md into Portuguese. Please assign it to me."
+   },
+   {
+    "author": "adity-a34",
+    "association": "NONE",
+    "created_at": "2025-09-18T05:49:53Z",
+    "body": "Hi @vitorvasc \nI would like to work on this, \nPlease assign it to me,\n\nThank you."
+   },
+   {
+    "author": "vitorvasc",
+    "association": "MEMBER",
+    "created_at": "2025-09-22T09:45:01Z",
+    "body": "Hi @Mike-4-prog @ADITYATIWARI342005!\n\nPlease, feel free to pick a page to work on and open a PR referring to this issue.\n\nThanks for the interest on contributing! 😄 "
+   },
+   {
+    "author": "adity-a34",
+    "association": "NONE",
+    "created_at": "2025-09-22T09:54:34Z",
+    "body": "@vitorvasc Thank you, I will start working and open PRs soon."
+   },
+   {
+    "author": "adity-a34",
+    "association": "NONE",
+    "created_at": "2025-09-22T22:10:54Z",
+    "body": "Hi @vitorvasc \nI have successfully completed the Portuguese localization for the entire Demo documentation section as requested in issue #7544. Here's what was accomplished across 8 PRs:\nPR 1: Top-level Demo pages (index, architecture, development, docker-deployment, tests)\nPR 2: Kubernetes deployment page\nPR 3: Feature Flags section (index + recommendation-cache)\nPR 4: Requirements section (index + 4 subpages)\nPR 5: Screenshots index page\nPR 6: Services section (index + all 18 service pages)\nPR 7: Collector Data Flow Dashboard\nPR 8: Telemetry Features section (index + 4 coverage pages)\n\nI request you to review the implementation and if it passes the review, please merge it.\n\nThank you."
+   },
+   {
+    "author": "eduardofesilva",
+    "association": "NONE",
+    "created_at": "2025-10-18T09:38:11Z",
+    "body": "Hi @vitorvasc \nI would like to work on this issue\nI will start the PR next week"
+   },
+   {
+    "author": "vitorvasc",
+    "association": "MEMBER",
+    "created_at": "2025-10-20T09:39:51Z",
+    "body": "Hi @eduardofesilva, thanks for your interest in contributing!\n\nFeel free to pick any page from the list and submit a PR. Just keep in mind that smaller PRs are easier to review, we usually do one page per PR.\n\nIf you have any questions during the process, feel free to reach out to me or send a message in our channel [#otel-localization-ptbr](https://cloud-native.slack.com/archives/C076LET8YSK) on CNCF Slack."
+   }
+  ],
+  "open_prs": [
+   "https://github.com/open-telemetry/opentelemetry.io/pull/11770"
+  ],
+  "closed_prs": [
+   "https://github.com/open-telemetry/opentelemetry.io/pull/7827",
+   "https://github.com/open-telemetry/opentelemetry.io/pull/7828",
+   "https://github.com/open-telemetry/opentelemetry.io/pull/7829",
+   "https://github.com/open-telemetry/opentelemetry.io/pull/7830",
+   "https://github.com/open-telemetry/opentelemetry.io/pull/7831",
+   "https://github.com/open-telemetry/opentelemetry.io/pull/7832",
+   "https://github.com/open-telemetry/opentelemetry.io/pull/7833",
+   "https://github.com/open-telemetry/opentelemetry.io/pull/7834",
+   "https://github.com/open-telemetry/opentelemetry.io/pull/11782 (merged)"
+  ],
+  "heuristic": 0.0
+ },
+ "open-telemetry/opentelemetry.io#9427": {
+  "repo": "open-telemetry/opentelemetry.io",
+  "number": 9427,
+  "url": "https://github.com/open-telemetry/opentelemetry.io/issues/9427",
+  "title": "[pt] Localize content/en/docs/collector pages",
+  "body": "## Description\n\n**What needs to be changed?** \n\nThis issue is part of the Portuguese localization and tracks the localization for pages under the Collector directory.\n\nURL: https://opentelemetry.io/pt/docs/collector/\n\n**What is the name + path of the page that needs changed?** \n\n### Top-level pages\n\n- [x] content/en/docs/collector/_index.md - #9372 \n- [x] content/en/docs/collector/architecture.md - #10030\n- [ ] content/en/docs/collector/benchmarks.md\n- [x] content/en/docs/collector/configuration.md - #11145\n- [x] content/en/docs/collector/distributions.md - #11692\n- [ ] content/en/docs/collector/internal-telemetry.md\n- [ ] content/en/docs/collector/management.md\n- [x] content/en/docs/collector/quick-start.md - #9428\n- [x] content/en/docs/collector/registry.md - #11348\n- [ ] content/en/docs/collector/resiliency.md\n- [x] content/en/docs/collector/scaling.md - #11349 \n- [ ] content/en/docs/collector/transforming-telemetry.md\n- [ ] content/en/docs/collector/troubleshooting.md\n\n### content/en/docs/collector/components\n\n- [x] content/en/docs/collector/components/_index.md - #9413 \n- [x] content/en/docs/collector/components/connector.md - #9413\n- [x] content/en/docs/collector/components/exporter.md - #9413\n- [x] content/en/docs/collector/components/extension.md - #9413\n- [x] content/en/docs/collector/components/processor.md - #9413\n- [x] content/en/docs/collector/components/receiver.md - #9413\n\n### content/en/docs/collector/install\n\n- [x] content/en/docs/collector/install/_index.md - #9464 \n- [x] content/en/docs/collector/install/docker.md - #9464\n- [x] content/en/docs/collector/install/kubernetes.md - #9464\n\n#### content/en/docs/collector/install/binary\n\n- [ ] content/en/docs/collector/install/binary/_index.md\n- [x] content/en/docs/collector/install/binary/linux.md - #11148\n- [ ] content/en/docs/collector/install/binary/macos.md\n- [ ] content/en/docs/collector/install/binary/windows.md\n\n### content/en/docs/collector/deploy\n\n- [x] content/en/docs/collector/deploy/_index.md - #9648\n- [x] content/en/docs/collector/deploy/agent.md - #9649\n- [x] content/en/docs/collector/deploy/choose.md - #9649\n- [x] content/en/docs/collector/deploy/gateway.md - #9882\n\n#### content/en/docs/collector/deploy/other\n\n- [ ] content/en/docs/collector/deploy/other/_index.md\n- [ ] content/en/docs/collector/deploy/other/agent-to-gateway.md\n- [ ] content/en/docs/collector/deploy/other/no-collector.md\n\n### content/en/docs/collector/extend\n\n- [x] content/en/docs/collector/extend/_index.md - #9470 \n- [x] content/en/docs/collector/extend/build-from-source.md - #9470\n- [x] content/en/docs/collector/extend/ocb.md - #9470\n\n#### content/en/docs/collector/extend/custom-component\n\n- [ ] content/en/docs/collector/extend/custom-component/_index.md\n- [ ] content/en/docs/collector/extend/custom-component/connector/index.md\n- [ ] content/en/docs/collector/extend/custom-component/receiver.md\n\n##### content/en/docs/collector/extend/custom-component/extension\n\n- [ ] content/en/docs/collector/extend/custom-component/extension/_index.md\n- [ ] content/en/docs/collector/extend/custom-component/extension/authenticator.md\n\n## How to contribute\n\n1. Read [this guide](https://github.com/open-telemetry/opentelemetry.io/blob/main/projects/localization-portuguese.md#portuguese-specific-contribution-guide) to familiarize yourself with the contribution process.\n2. Comment on this issue about which page you want to localize.\n3. If you have any questions, let us know at [#otel-localization-ptbr](https://cloud-native.slack.com/archives/C076LET8YSK).\n",
+  "labels": [
+   "help wanted",
+   "good first issue",
+   "lang:pt",
+   "triage:accepted:needs-pr"
+  ],
+  "created_at": "2026-03-16T15:58:03Z",
+  "updated_at": "2026-10-19T14:19:06Z",
+  "comments_count": 17,
+  "stars": 0,
+  "language": null,
+  "repo_description": "",
+  "watched": false,
+  "welcomed_before": 0,
+  "signals": [
+   "open pull request linked: https://github.com/open-telemetry/opentelemetry.io/pull/11349",
+   "possible claim by @vijaysaikia05 on 2026-08-01",
+   "possible claim by @DevPorfirio on 2026-08-02"
+  ],
+  "comments": [
+   {
+    "author": "Ywtoo",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-03-16T17:13:49Z",
+    "body": "Hi! I would like to work on translating content/en/docs/collector/quick-start.md to Portuguese.\n"
+   },
+   {
+    "author": "vitorvasc",
+    "association": "MEMBER",
+    "created_at": "2026-03-16T17:25:23Z",
+    "body": "Hi @Ywtoo! Please feel free to work on the translations for `content/en/docs/collector/quick-start.md` and submit a PR, we'd be happy to review it. 🙂  "
+   },
+   {
+    "author": "nalucode",
+    "association": "NONE",
+    "created_at": "2026-04-10T19:20:07Z",
+    "body": "Hi everyone! I'm starting work on `content/en/docs/collector/architecture.md`"
+   },
+   {
+    "author": "GRISONRF",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-04-13T21:42:25Z",
+    "body": "Hello! I’d like to work on the files in `content/en/docs/collector/deploy`, starting with `content/en/docs/collector/install/binary/_index.md`.\n\nCan I submit multiple PRs concurrently, or should I wait for each to be merged before opening a new one?"
+   },
+   {
+    "author": "vitorvasc",
+    "association": "MEMBER",
+    "created_at": "2026-04-14T10:08:16Z",
+    "body": "Hi @GRISONRF, you're welcome to submit multiple PRs concurrently"
+   },
+   {
+    "author": "Catskhi",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-07-26T22:12:30Z",
+    "body": "Hi! I would like to work on the Portuguese localization of `content/en/docs/collector/configuration.md`.\n\nI’ve checked the issue and did not find a linked PR or separate issue for this page. Please let me know if it is still available before I begin."
+   },
+   {
+    "author": "vitorvasc",
+    "association": "MEMBER",
+    "created_at": "2026-07-27T05:46:37Z",
+    "body": "Hi @Catskhi! The page hasn't been localized yet, feel free to go ahead and open a PR for it. 🙂 "
+   },
+   {
+    "author": "DevPorfirio",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-07-28T13:18:48Z",
+    "body": "Hi @vitorvasc I’d love to contribute to this as well. Would there be room for me to help?\n"
+   },
+   {
+    "author": "vitorvasc",
+    "association": "MEMBER",
+    "created_at": "2026-07-29T05:29:33Z",
+    "body": "Hey @DevPorfirio - of course! Please feel free to pick a page from the list and open a PR for it. Let me know if you have any questions during the process! "
+   },
+   {
+    "author": "tomatotomata",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-07-31T08:19:06Z",
+    "body": "I'm taking `content/en/docs/collector/architecture.md` for the Portuguese localization. I checked the issue comments and don't see a claim or PR for that page. I'll keep this PR limited to that page and preserve the existing docs structure and links."
+   },
+   {
+    "author": "vijaysaikia05",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-08-01T16:01:57Z",
+    "body": "Hi, I'd like to work on this issue. I'll take a look at the current homepage feature image and figure out what a more accurate replacement should be, then open a PR."
+   },
+   {
+    "author": "DevPorfirio",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-08-02T20:51:56Z",
+    "body": "Hi @vitorvasc I've submitted the Portuguese localization of content/en/docs/collector/benchmarks.md: #11141 "
+   },
+   {
+    "author": "DevPorfirio",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-08-02T21:05:36Z",
+    "body": "I've started working on the Portuguese localization of content/en/docs/collector/scaling.md and content/en/docs/collector/registry.md. I'll open the PRs soon."
+   },
+   {
+    "author": "rodri-oliveira-dev",
+    "association": "NONE",
+    "created_at": "2026-08-04T19:33:44Z",
+    "body": "Hi! I’d like to work on the Portuguese localization of `content/en/docs/collector/internal-telemetry.md`.\n\nI’m a software architect with experience in .NET, Kubernetes, distributed systems, and observability. I checked the issue and the page still appears to be available.\n\nPlease let me know if I can take it. Thank you!\n"
+   },
+   {
+    "author": "gabrielldn",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-09-11T18:59:55Z",
+    "body": "Hi everyone! I'm Gael, a Brazilian Portuguese speaker, and this will be my first contribution to OpenTelemetry.\n\nI'd like to translate `content/en/docs/collector/distributions.md` into Brazilian Portuguese. I've checked the issue comments and open PRs and couldn't find anyone currently working on this page. Please let me know if I missed anything.\n\nI'll follow the Portuguese localization guide and glossary and keep the PR focused on this page.\n\nThank you!\n"
+   },
+   {
+    "author": "tomatotomata",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-09-17T08:39:26Z",
+    "body": "@gabrielldn I don't see a conflict from my side. My localization was for content/en/docs/collector/architecture.md, and it merged in #11121 on Sep 12. content/en/docs/collector/distributions.md is a separate page, so the scopes look independent."
+   },
+   {
+    "author": "r2WillDev",
+    "association": "NONE",
+    "created_at": "2026-10-19T14:19:05Z",
+    "body": "Hi everyone! I like to contribute to the Brazilian Portuguese localization of content/en/docs/collector/deploy/other/no-collector.md\n\nWould it be okay for me to take this one?"
+   }
+  ],
+  "open_prs": [
+   "https://github.com/open-telemetry/opentelemetry.io/pull/11349"
+  ],
+  "closed_prs": [
+   "https://github.com/open-telemetry/opentelemetry.io/pull/9428 (merged)",
+   "https://github.com/open-telemetry/opentelemetry.io/pull/9464 (merged)",
+   "https://github.com/open-telemetry/opentelemetry.io/pull/9470 (merged)",
+   "https://github.com/open-telemetry/opentelemetry.io/pull/9648 (merged)",
+   "https://github.com/open-telemetry/opentelemetry.io/pull/9649 (merged)",
+   "https://github.com/open-telemetry/opentelemetry.io/pull/9882 (merged)",
+   "https://github.com/open-telemetry/opentelemetry.io/pull/11121 (merged)",
+   "https://github.com/open-telemetry/opentelemetry.io/pull/11140",
+   "https://github.com/open-telemetry/opentelemetry.io/pull/11141 (merged)",
+   "https://github.com/open-telemetry/opentelemetry.io/pull/11145 (merged)",
+   "https://github.com/open-telemetry/opentelemetry.io/pull/11148 (merged)",
+   "https://github.com/open-telemetry/opentelemetry.io/pull/11348 (merged)",
+   "https://github.com/open-telemetry/opentelemetry.io/pull/11686",
+   "https://github.com/open-telemetry/opentelemetry.io/pull/11692 (merged)",
+   "https://github.com/open-telemetry/opentelemetry.io/pull/11298 (merged)"
+  ],
+  "heuristic": 0.0
+ },
+ "open-telemetry/opentelemetry.io#6899": {
+  "repo": "open-telemetry/opentelemetry.io",
+  "number": 6899,
+  "url": "https://github.com/open-telemetry/opentelemetry.io/issues/6899",
+  "title": "Go language docs: Add documentation for how to test instrumentation",
+  "body": "**What needs to be changed?**\n\nWe document how to instrument a library, but not what to use to test instrumentation.  This seems important enough to have some basic documentation for.\n\n**What is the name + path of the page that needs changed?**\n\nhttps://opentelemetry.io/docs/languages/go/\n\n**Additional context**: anything else you can think about that would be helpful.\n\nContext: https://cloud-native.slack.com/archives/C01NPAXACKT/p1747330549116979?thread_ts=1747174039.804719&cid=C01NPAXACKT\n\ncc @open-telemetry/go-approvers \n",
+  "labels": [
+   "help wanted",
+   "sig:go",
+   "triage:accepted:needs-pr"
+  ],
+  "created_at": "2025-05-15T17:38:38Z",
+  "updated_at": "2026-04-13T08:33:25Z",
+  "comments_count": 7,
+  "stars": 0,
+  "language": null,
+  "repo_description": "",
+  "watched": false,
+  "welcomed_before": 0,
+  "signals": [
+   "open pull request linked: https://github.com/open-telemetry/opentelemetry.io/pull/11675",
+   "possible claim by @lavishpal on 2026-04-08"
+  ],
+  "comments": [
+   {
+    "author": "svrnm",
+    "association": "MEMBER",
+    "created_at": "2025-07-16T09:19:18Z",
+    "body": "Added `help wanted`, might be something someone can pick up and help with. \n\n"
+   },
+   {
+    "author": "pellared",
+    "association": "MEMBER",
+    "created_at": "2025-07-16T09:34:37Z",
+    "body": "For testing trace instrumentation this can be helpful:\n- https://pkg.go.dev/go.opentelemetry.io/otel/sdk/trace/tracetest (we should add a package example)\n\nFor testing metrics instrumentation this can be helpful:\n- https://pkg.go.dev/go.opentelemetry.io/otel/sdk/metric/metrictest (we should add a package example)\n\nFor testing logs instrumentation this can be helpful:\n- https://pkg.go.dev/go.opentelemetry.io/otel/log/logtest (there already is a package example)"
+   },
+   {
+    "author": "svrnm",
+    "association": "MEMBER",
+    "created_at": "2025-11-20T07:19:32Z",
+    "body": "@open-telemetry/go-approvers double checking on that, I assume this is still a valid request?"
+   },
+   {
+    "author": "lavishpal",
+    "association": "NONE",
+    "created_at": "2026-04-08T22:24:51Z",
+    "body": "Can i work on this issue?"
+   },
+   {
+    "author": "lavishpal",
+    "association": "NONE",
+    "created_at": "2026-04-08T23:18:44Z",
+    "body": "I'm thinking of creating a new `testing.md` page under `content/en/docs/languages/go/` covering how to test trace, metric, and log instrumentation. \nWDYT @svrnm , @pellared "
+   },
+   {
+    "author": "pellared",
+    "association": "MEMBER",
+    "created_at": "2026-04-13T07:36:31Z",
+    "body": "@lavishpal, works for me. You could also include guidance on how to test additional components, such as custom resource detectors, trace/metric/log processors. It would be helpful to keep one PR per aspect being tested to make reviews clearer and more focused."
+   },
+   {
+    "author": "lavishpal",
+    "association": "NONE",
+    "created_at": "2026-04-13T08:33:08Z",
+    "body": "Will raise the PR shortly. 😊"
+   }
+  ],
+  "open_prs": [
+   "https://github.com/open-telemetry/opentelemetry.io/pull/11675"
+  ],
+  "closed_prs": [],
+  "heuristic": 0.0
+ },
+ "open-telemetry/opentelemetry.io#7545": {
+  "repo": "open-telemetry/opentelemetry.io",
+  "number": 7545,
+  "url": "https://github.com/open-telemetry/opentelemetry.io/issues/7545",
+  "title": "[pt] Localize content/en/docs/platforms pages",
+  "body": "## Description\n\n**What needs to be changed?** \n\nThis issue is part of the Portuguese localization and tracks the localization for pages under the Demo directory.\n\nURL: https://opentelemetry.io/pt/docs/platforms/\n\n**What is the name + path of the page that needs changed?** \n\n- [x] content/en/docs/platforms/_index.md - #10524\n\n### content/en/docs/platforms/client-apps\n\n- [ ] content/en/docs/platforms/client-apps/_index.md\n- [ ] content/en/docs/platforms/client-apps/overview.md\n- [ ] content/en/docs/platforms/client-apps/android/_index.md\n- [ ] content/en/docs/platforms/client-apps/ios/_index.md\n- [ ] content/en/docs/platforms/client-apps/web/_index.md\n\n### content/en/docs/platforms/faas\n\n- [x] content/en/docs/platforms/faas/_index.md - #10646 \n- [x] content/en/docs/platforms/faas/lambda-auto-instrument.md - #11540\n- [x] content/en/docs/platforms/faas/lambda-collector.md - #11541\n- [x] content/en/docs/platforms/faas/lambda-manual-instrument.md - #11550\n\n### content/en/docs/platforms/kubernetes\n\n- [x] content/en/docs/platforms/kubernetes/_index.md - #10581 \n- [x] content/en/docs/platforms/kubernetes/getting-started.md - #11652\n- [x] content/en/docs/platforms/kubernetes/collector/_index.md - #11632\n- [x] content/en/docs/platforms/kubernetes/collector/components.md - #11651\n- [x] content/en/docs/platforms/kubernetes/helm/_index.md - #10583 \n- [ ] content/en/docs/platforms/kubernetes/helm/collector.md\n- [x] content/en/docs/platforms/kubernetes/helm/demo.md - #10647 \n- [x] content/en/docs/platforms/kubernetes/helm/operator.md - #10542 \n- [ ] content/en/docs/platforms/kubernetes/operator/_index.md\n- [ ] content/en/docs/platforms/kubernetes/operator/automatic.md\n- [ ] content/en/docs/platforms/kubernetes/operator/horizontal-pod-autoscaling.md\n- [ ] content/en/docs/platforms/kubernetes/operator/target-allocator.md\n- [ ] content/en/docs/platforms/kubernetes/operator/troubleshooting/_index.md\n- [ ] content/en/docs/platforms/kubernetes/operator/troubleshooting/automatic.md\n- [ ] content/en/docs/platforms/kubernetes/operator/troubleshooting/prometheus-alerts-runbooks.md\n- [ ] content/en/docs/platforms/kubernetes/operator/troubleshooting/target-allocator.md\n\n## How to contribute\n\n1. Read [this guide](https://vasconcellos.dev/posts/2024-07-26-guia-contribuicao-otel-docs-pt) to familiarize yourself with the contribution process.\n2. Comment on this issue about which page you want to localize.\n3. If you have any questions, let us know at [#otel-localization-ptbr](https://cloud-native.slack.com/archives/C076LET8YSK).",
+  "labels": [
+   "help wanted",
+   "good first issue",
+   "lang:pt",
+   "triage:accepted:needs-pr"
+  ],
+  "created_at": "2025-08-13T11:28:51Z",
+  "updated_at": "2026-10-18T14:27:16Z",
+  "comments_count": 11,
+  "stars": 0,
+  "language": null,
+  "repo_description": "",
+  "watched": false,
+  "welcomed_before": 0,
+  "signals": [
+   "possible claim by @mohankrishnaalavala on 2025-08-13",
+   "possible claim by @panagiotisbellias on 2025-09-24",
+   "possible claim by @reetig on 2026-10-12"
+  ],
+  "comments": [
+   {
+    "author": "mohankrishnaalavala",
+    "association": "NONE",
+    "created_at": "2025-08-13T22:05:28Z",
+    "body": "Hi @vitorvasc , I can work on this. can you please assign it to me?"
+   },
+   {
+    "author": "panagiotisbellias",
+    "association": "NONE",
+    "created_at": "2025-09-24T13:09:20Z",
+    "body": "I would like to work on it, can you assign it to me?"
+   },
+   {
+    "author": "svrnm",
+    "association": "MEMBER",
+    "created_at": "2025-09-29T06:46:40Z",
+    "body": "> I would like to work on it, can you assign it to me?\n\nwe do not assign issues, so please go ahead and provide a PR"
+   },
+   {
+    "author": "vitorvasc",
+    "association": "MEMBER",
+    "created_at": "2025-09-29T10:04:43Z",
+    "body": "Hi @mohankrishnaalavala @panagiotisbellias! Sorry I missed the comments.\n\nAs @svrnm mentioned, we don't assign issues unless it's part of a mentorship or onboarding process. You can find more details about that in the Contributing section of our docs: https://opentelemetry.io/docs/contributing/issues/\n\nIt's also important noting this is a localization-related issue. Localization requires knowledge on the language you're working, along with following its specific guidelines, glossary, and style conventions. \n\nWith that in mind, I'd also like to share our [GenAI contributing policy](https://github.com/open-telemetry/community/blob/main/guides/contributor/genai.md). It has some useful guidante on how GenAI can be used in the OpenTelemetry project. We don't discourage the use of these tools, but contributors are expected to carefully review and validate any AI-assisted changes before submitting them - which is why prior knowledge of the language is so important.\n "
+   },
+   {
+    "author": "panagiotisbellias",
+    "association": "NONE",
+    "created_at": "2025-09-29T10:15:17Z",
+    "body": "Just a heads-up — I’m stepping away from this project/repo and won’t be contributing further. Wishing the community all the best going forward!"
+   },
+   {
+    "author": "juliafmorgado",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-08-31T16:05:52Z",
+    "body": "Will work on these 3:\n`content/en/docs/platforms/faas/lambda-auto-instrument.md`\n\n`content/en/docs/platforms/faas/lambda-collector.md`\n\n`content/en/docs/platforms/faas/lambda-manual-instrument.md`"
+   },
+   {
+    "author": "juliafmorgado",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-09-01T14:14:08Z",
+    "body": "Going to work on \n\n`content/en/docs/platforms/kubernetes/getting-started.md`\n\n`content/en/docs/platforms/kubernetes/collector/_index.md`\n\n`content/en/docs/platforms/kubernetes/collector/components.md`"
+   },
+   {
+    "author": "reetig",
+    "association": "NONE",
+    "created_at": "2026-10-12T20:23:53Z",
+    "body": "can i take this up?"
+   },
+   {
+    "author": "otelbot-docs[bot]",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-10-12T20:24:08Z",
+    "body": "Thank you for your interest in contributing to this project, @reetig! 🙏\n\nIf this is your first time contributing, please read [First time contributing](https://opentelemetry.io/docs/contributing/#first-time-contributing) and [Fixing an existing issue](https://opentelemetry.io/docs/contributing/issues/#fixing-an-existing-issue).\n\nAs noted there, **we don't assign issues** unless you're a regular contributor. If you don't see any linked PRs and no one else has said they are working on the issue, feel free to submit a draft PR early to signal that you're working on it."
+   },
+   {
+    "author": "svrnm",
+    "association": "MEMBER",
+    "created_at": "2026-10-16T07:18:57Z",
+    "body": "@open-telemetry/docs-pt-approvers please take a look at @reetig's request to help"
+   },
+   {
+    "author": "maryliag",
+    "association": "MEMBER",
+    "created_at": "2026-10-18T14:27:15Z",
+    "body": "@reetig thank you for your interest. There are several pages listed here, so you can open a PR for each one, we don't assign the issue itself so several people can work on them at the same time.\nOne thing to keep in mind, we want native speakers for this type of contribution. Are you a native portuguese speaker? If not, I would suggest you find another issue that would be a better fit. Thanks"
+   }
+  ],
+  "open_prs": [],
+  "closed_prs": [
+   "https://github.com/open-telemetry/opentelemetry.io/pull/11540 (merged)",
+   "https://github.com/open-telemetry/opentelemetry.io/pull/11541 (merged)",
+   "https://github.com/open-telemetry/opentelemetry.io/pull/11550 (merged)",
+   "https://github.com/open-telemetry/opentelemetry.io/pull/11632 (merged)",
+   "https://github.com/open-telemetry/opentelemetry.io/pull/11651 (merged)",
+   "https://github.com/open-telemetry/opentelemetry.io/pull/11652 (merged)"
+  ],
+  "heuristic": 0.0
+ },
+ "fatiando/harmonica#586": {
+  "repo": "fatiando/harmonica",
+  "number": 586,
+  "url": "https://github.com/fatiando/harmonica/issues/586",
+  "title": "harmonica.reduction_to_pole  flipping the output in north-south",
+  "body": "Using harmonica.reduction_to_pole (v 0.7.0) with input TMI data read from an ERmapper ERS grid to an xarray. Data is in the north hemisphere in a UTM projection.Plotted input using a matplotlib helper - OK. Pass the xarray to harmonica.reduction_to_pole; plot the output (rtp) with same matplotlib helper). The RTP was computed but the data is flipped north to south. Both data arrays have similar spatial attributes (pasted below). Note that the CRS is dropped in the output. \n\n[AMF_38N_TestArea_Harmonica.zip](https://github.com/user-attachments/files/22538024/AMF_38N_TestArea_Harmonica.zip)\n\n\n",
+  "labels": [
+   "bug"
+  ],
+  "created_at": "2025-09-25T13:35:02Z",
+  "updated_at": "2025-09-25T18:59:40Z",
+  "comments_count": 2,
+  "stars": 0,
+  "language": null,
+  "repo_description": "",
+  "watched": false,
+  "welcomed_before": 0,
+  "signals": [],
+  "comments": [
+   {
+    "author": "santisoler",
+    "association": "MEMBER",
+    "created_at": "2025-09-25T17:27:09Z",
+    "body": "Hi @fearaschiarrai. Thanks for opening this Issue. I was able to reproduce the bug. I'm leaving here a smaller example that reproduces it, just to make it easier to test in the future. It downloads the [Lightning Creek Sill Complex magnetic grid available in Ensaio](https://www.fatiando.org/ensaio/latest/gallery/lightning-creek-magnetic.html#sphx-glr-gallery-lightning-creek-magnetic-py), flips the northing coordinate and computes the RTP. We can see how the RTP flips the grid as you pointed out.\n\n```python\nimport numpy as np\nimport xrft\nimport xarray as xr\nimport matplotlib.pyplot as plt\n\nimport ensaio\nimport harmonica as hm\n\nfname = ensaio.fetch_lightning_creek_magnetic(version=1)\n\ntf = xr.load_dataset(fname).total_field_anomaly\n\n# Flip the northing coordinate in the data array\ntf = tf[::-1, :]\nprint(\"Total field anomaly grid after flipping the northing coordinate:\")\nprint(tf)\n\n# Pad the grid\npad_width = {\n    \"easting\": tf.easting.size // 3,\n    \"northing\": tf.northing.size // 3,\n}\ntf_padded = xrft.pad(tf.drop_vars(\"height\"), pad_width)\n\n# Plot padded grid\nscale = 0.5 * np.max(np.abs(tf_padded))\ntf_padded.plot(vmin=-scale, vmax=scale, cmap=\"RdBu_r\")\nplt.gca().set_aspect(\"equal\")\nplt.title(\"Padded TFA grid\")\nplt.show()\n\n# Compute RTP\ninclination, declination = -52.98, 6.51\nrtp = hm.reduction_to_pole(tf_padded, inclination=inclination, declination=declination)\n\n# Plot RTP grid\nscale = 0.5 * np.max(np.abs(rtp))\nrtp.plot(vmin=-scale, vmax=scale, cmap=\"RdBu_r\")\nplt.gca().set_asp"
+   },
+   {
+    "author": "fearaschiarrai",
+    "association": "NONE",
+    "created_at": "2025-09-25T18:59:40Z",
+    "body": "Many thanks @santisoler "
+   }
+  ],
+  "open_prs": [],
+  "closed_prs": [
+   "https://github.com/fatiando/harmonica/pull/683"
+  ],
+  "heuristic": 0.0
+ },
+ "open-telemetry/opentelemetry.io#7841": {
+  "repo": "open-telemetry/opentelemetry.io",
+  "number": 7841,
+  "url": "https://github.com/open-telemetry/opentelemetry.io/issues/7841",
+  "title": "[es] Spanish folder localization zero-code",
+  "body": "This issue is to track the translation pages for the[ folder `zero-code`](https://opentelemetry.io/docs/zero-code/)\n\nBelow is the list of pages we recommend translating. \n\nKindly comment on this issue if you are translating a page or section.\n\n**Please open a unique PR for each page**\n\n### List\n- [X]  opentelemetry.io/content/en/docs/zero-code/index.md --> https://github.com/open-telemetry/opentelemetry.io/pull/7840\n- [x] [opentelemetry.io/content/en/docs/zero-code/OBI](https://opentelemetry.io/docs/zero-code/obi/) --> https://github.com/open-telemetry/opentelemetry.io/pull/7976\n- [x] opentelemetry.io/content/en/docs/zero-code/go --> https://github.com/open-telemetry/opentelemetry.io/pull/7915\n- [x] opentelemetry.io/content/en/docs/zero-code/go/augosdk.md --> https://github.com/open-telemetry/opentelemetry.io/pull/7915\n- [ ] opentelemetry.io/content/en/docs/zero-code/go/autosdk/\n- [x] opentelemetry.io/content/en/docs/zero-code/dotnet/index.md --> https://github.com/open-telemetry/opentelemetry.io/pull/8089\n- [x] opentelemetry.io/content/en/docs/zero-code/dotnet/getting-started --> https://github.com/open-telemetry/opentelemetry.io/pull/8535\n- [x] opentelemetry.io/content/en/docs/zero-code/dotnet/instrumentations --> https://github.com/open-telemetry/opentelemetry.io/pull/8381\n- [ ] opentelemetry.io/content/en/docs/zero-code/dotnet/configuration\n- [x] opentelemetry.io/content/en/docs/zero-code/dotnet/custom --> https://github.com/open-telemetry/opentelemetry.io/pull/8446\n- [x] opentelemetry.io/content/en/docs/zero-code/dotnet/nuget-packages --> https://github.com/open-telemetry/opentelemetry.io/pull/8417\n- [ ] opentelemetry.io/content/en/docs/zero-code/dotnet/troubleshooting\n- [x] opentelemetry.io/content/en/docs/zero-code/PHP/index.md --> https://github.com/open-telemetry/opentelemetry.io/pull/11912\n- [x] opentelemetry.io/content/en/docs/zero-code/Python/_index.md --> https://github.com/open-telemetry/opentelemetry.io/pull/11220\n- [ ] opentelemetry.io/content/en/docs/zero-code/Python/configuration\n- [ ] opentelemetry.io/content/en/docs/zero-code/Python/example\n- [ ] opentelemetry.io/content/en/docs/zero-code/Python/logs-example\n- [ ] opentelemetry.io/content/en/docs/zero-code/Python/operator\n- [ ] opentelemetry.io/content/en/docs/zero-code/Python/troubleshooting \n- [x] opentelemetry.io/content/en/docs/zero-code/Java/index.md --> https://github.com/open-telemetry/opentelemetry.io/pull/11134\n- [ ] opentelemetry.io/content/en/docs/zero-code/Java/agent/_index.md --> https://github.com/open-telemetry/opentelemetry.io/pull/11138\n- [ ] opentelemetry.io/content/en/docs/zero-code/Java/agent/getting-started\n- [ ] opentelemetry.io/content/en/docs/zero-code/Java/agent/configuration\n- [ ] opentelemetry.io/content/en/docs/zero-code/Java/agent/declarative-comfiguration\n- [ ] opentelemetry.io/content/en/docs/zero-code/Java/agent/supported-libraries\n- [ ] opentelemetry.io/content/en/docs/zero-code/Java/agent/disable\n- [ ] opentelemetry.io/content/en/docs/zero-code/Java/agent/annotations\n- [ ] opentelemetry.io/content/en/docs/zero-code/Java/agent/api\n- [ ] opentelemetry.io/content/en/docs/zero-code/Java/agent/instrumentation\n- [ ] opentelemetry.io/content/en/docs/zero-code/Java/agent/instrumentation/http\n- [ ] opentelemetry.io/content/en/docs/zero-code/Java/agent/server-config\n- [ ] opentelemetry.io/content/en/docs/zero-code/Java/agent/extensions\n- [ ] opentelemetry.io/content/en/docs/zero-code/Java/agent/performance\n- [ ] opentelemetry.io/content/en/docs/zero-code/Java/quarkus\n- [x] opentelemetry.io/content/en/docs/zero-code/Java/spring-boot-starter/_index.md --> https://github.com/open-telemetry/opentelemetry.io/pull/11139\n- [x] opentelemetry.io/content/en/docs/zero-code/Java/spring-boot-starter/getting-started/ --> https://github.com/open-telemetry/opentelemetry.io/pull/12081\n- [ ] opentelemetry.io/content/en/docs/zero-code/Java/spring-boot-starter/api\n- [ ] opentelemetry.io/content/en/docs/zero-code/Java/spring-boot-starter/declarative-configuration\n- [ ] opentelemetry.io/content/en/docs/zero-code/Java/spring-boot-starter/sdk-configuration\n- [ ] opentelemetry.io/content/en/docs/zero-code/Java/spring-boot-starter/programmatic-configuration\n- [ ] opentelemetry.io/content/en/docs/zero-code/Java/spring-boot-starter/out-of-the-box-instrumentation\n- [ ] opentelemetry.io/content/en/docs/zero-code/Java/spring-boot-starter/annotations\n- [ ] opentelemetry.io/content/en/docs/zero-code/Java/spring-boot-starter/additional-instrumentation\n- [ ] opentelemetry.io/content/en/docs/zero-code/Java/spring-boot-starter/other-spring-autoconfig\n- [x] opentelemetry.io/content/en/docs/zero-code/js/index.md --> https://github.com/open-telemetry/opentelemetry.io/pull/10897\n- [x] opentelemetry.io/content/en/docs/zero-code/js/configuration --> https://github.com/open-telemetry/opentelemetry.io/pull/11344",
+  "labels": [
+   "help wanted",
+   "good first issue",
+   "docs",
+   "lang:es"
+  ],
+  "created_at": "2025-09-23T16:55:01Z",
+  "updated_at": "2026-10-16T12:44:12Z",
+  "comments_count": 12,
+  "stars": 0,
+  "language": null,
+  "repo_description": "",
+  "watched": false,
+  "welcomed_before": 0,
+  "signals": [
+   "possible claim by @manduinca on 2026-08-16"
+  ],
+  "comments": [
+   {
+    "author": "abrahamVado",
+    "association": "CONTRIBUTOR",
+    "created_at": "2025-09-24T23:39:50Z",
+    "body": "could u considere my traduction?\nhttps://github.com/open-telemetry/opentelemetry.io/pull/7864\n\ni keep some english technical words to make sense"
+   },
+   {
+    "author": "abalso0",
+    "association": "CONTRIBUTOR",
+    "created_at": "2025-09-27T18:30:57Z",
+    "body": "Hello team, hope you are doing well.\n\nI am going to translate the page [“Go zero-code instrumentation”](https://opentelemetry.io/es/docs/zero-code/go/) "
+   },
+   {
+    "author": "abalso0",
+    "association": "CONTRIBUTOR",
+    "created_at": "2025-10-01T00:51:23Z",
+    "body": "Hello team, hope you are doing well.\nI am going to translate the page [.NET zero-code instrumentation](https://opentelemetry.io/es/docs/zero-code/dotnet/)"
+   },
+   {
+    "author": "doniaassembler",
+    "association": "CONTRIBUTOR",
+    "created_at": "2025-10-01T19:35:48Z",
+    "body": "Hello Team,\nI can help with the translation of the page [OpenTelemetry eBPF Instrumentation](https://opentelemetry.io/docs/zero-code/obi/)\n \nHope you are having a lovely day."
+   },
+   {
+    "author": "doniaassembler",
+    "association": "CONTRIBUTOR",
+    "created_at": "2025-10-02T22:21:56Z",
+    "body": "Hello team, \nJust sent the [PR](https://github.com/open-telemetry/opentelemetry.io/pull/7976) for [OpenTelemetry eBPF Instrumentation](https://opentelemetry.io/docs/zero-code/obi/)\nHope you're having a lovely day."
+   },
+   {
+    "author": "abalso0",
+    "association": "CONTRIBUTOR",
+    "created_at": "2025-10-14T13:54:07Z",
+    "body": "Hello team, hope you are doing well.\nI am going to translate the page [.NET zero-code instrumentation](https://opentelemetry.io/es/docs/zero-code/dotnet/)\n\ncc: @krol3 "
+   },
+   {
+    "author": "manduinca",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-07-19T23:50:11Z",
+    "body": "Hi! I'd like to translate the `zero-code/js/_index.md` page (JavaScript zero-code instrumentation) to Spanish. It's still unchecked in the list, so I'll open a single PR for it shortly."
+   },
+   {
+    "author": "immavalls",
+    "association": "MEMBER",
+    "created_at": "2026-08-02T04:37:41Z",
+    "body": "I'm translating\n- opentelemetry.io/content/en/docs/zero-code/Java/_index.md\n- opentelemetry.io/content/en/docs/zero-code/Java/agent/_index.md\n- opentelemetry.io/content/en/docs/zero-code/Java/spring-boot-starter/_index.md"
+   },
+   {
+    "author": "slegarraga",
+    "association": "NONE",
+    "created_at": "2026-08-06T05:24:10Z",
+    "body": "I translated `docs/zero-code/python` in PR #11220."
+   },
+   {
+    "author": "manduinca",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-08-16T02:42:14Z",
+    "body": "Hi! Following up on the `zero-code/js/_index.md` page I translated in #10897, I'd like to take `zero-code/js/configuration` next. It's still unchecked in the list. I'll open a separate PR for it."
+   },
+   {
+    "author": "shaneM50",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-09-08T13:56:30Z",
+    "body": "Hello, I'm translating:\n\n- opentelemetry.io/content/en/docs/zero-code/dotnet/troubleshooting"
+   },
+   {
+    "author": "AZapata27",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-10-13T14:32:44Z",
+    "body": "Hi! I translated `content/en/docs/zero-code/java/spring-boot-starter/getting-started.md` to Spanish in #12081. I would also like to continue with the rest of the `zero-code/java/spring-boot-starter/*` pages, one PR per page."
+   }
+  ],
+  "open_prs": [],
+  "closed_prs": [
+   "https://github.com/open-telemetry/opentelemetry.io/pull/7840 (merged)",
+   "https://github.com/open-telemetry/opentelemetry.io/pull/7915 (merged)",
+   "https://github.com/open-telemetry/opentelemetry.io/pull/7974",
+   "https://github.com/open-telemetry/opentelemetry.io/pull/7976 (merged)",
+   "https://github.com/open-telemetry/opentelemetry.io/pull/8089 (merged)",
+   "https://github.com/open-telemetry/opentelemetry.io/pull/8158 (merged)",
+   "https://github.com/open-telemetry/opentelemetry.io/pull/8381 (merged)",
+   "https://github.com/open-telemetry/opentelemetry.io/pull/8417 (merged)",
+   "https://github.com/open-telemetry/opentelemetry.io/pull/8446 (merged)",
+   "https://github.com/open-telemetry/opentelemetry.io/pull/8535 (merged)",
+   "https://github.com/open-telemetry/opentelemetry.io/pull/10897 (merged)",
+   "https://github.com/open-telemetry/opentelemetry.io/pull/11134 (merged)",
+   "https://github.com/open-telemetry/opentelemetry.io/pull/11138 (merged)",
+   "https://github.com/open-telemetry/opentelemetry.io/pull/11139 (merged)",
+   "https://github.com/open-telemetry/opentelemetry.io/pull/11220 (merged)",
+   "https://github.com/open-telemetry/opentelemetry.io/pull/11344 (merged)",
+   "https://github.com/shaneM50/opentelemetry.io/pull/1",
+   "https://github.com/open-telemetry/opentelemetry.io/pull/11663 (merged)",
+   "https://github.com/open-telemetry/opentelemetry.io/pull/11912 (merged)",
+   "https://github.com/open-telemetry/opentelemetry.io/pull/12081 (merged)"
+  ],
+  "heuristic": 0.0
+ },
+ "dapr/java-sdk#1509": {
+  "repo": "dapr/java-sdk",
+  "number": 1509,
+  "url": "https://github.com/dapr/java-sdk/issues/1509",
+  "title": "Support Native compilation for the Java SDK",
+  "body": "## Expected Behavior\n\nYou should be able to do native compilation with GraalVM for the Java SDK code. \n\n\n## Actual Behavior\n\nIf your application includes the Java SDK, you cannot compile to native. \n\n\n## Steps to Reproduce the Problem\n\nCreate a simple application with Spring Boot or Quarkus and try to compile the application natively. \n\n## Release Note\n\n<!-- How should the fix for this issue be communicated in our release notes? It can be populated later. -->\n<!-- Keep it as a single line. Examples: -->\n\n<!-- RELEASE NOTE: **ADD** New feature in Dapr. -->\n<!-- RELEASE NOTE: **FIX** Bug in runtime. -->\n<!-- RELEASE NOTE: **UPDATE** Runtime dependency. -->\n\nRELEASE NOTE:",
+  "labels": [
+   "kind/bug"
+  ],
+  "created_at": "2025-08-19T15:55:01Z",
+  "updated_at": "2025-09-20T20:11:01Z",
+  "comments_count": 4,
+  "stars": 0,
+  "language": null,
+  "repo_description": "",
+  "watched": false,
+  "welcomed_before": 0,
+  "signals": [],
+  "comments": [
+   {
+    "author": "salaboy",
+    "association": "CONTRIBUTOR",
+    "created_at": "2025-08-19T15:55:32Z",
+    "body": "@mcruzdev @ThomasVitale I've opened this one to refine when we know exactly where the issues with dependencies are. "
+   },
+   {
+    "author": "cicoyle",
+    "association": "CONTRIBUTOR",
+    "created_at": "2025-08-19T16:01:00Z",
+    "body": "If you closed the other issue, can you add more of the details from the other issue to this issue? There seems to be more details in the other issue that are missing in this one"
+   },
+   {
+    "author": "salaboy",
+    "association": "CONTRIBUTOR",
+    "created_at": "2025-08-19T18:58:51Z",
+    "body": "All the info in the previous issue is misleading and out dated. We need to investigate further the issues with the current versions of the dependencies that we are using in the latest version of the sdk "
+   },
+   {
+    "author": "mathecruz",
+    "association": "CONTRIBUTOR",
+    "created_at": "2025-09-20T20:11:01Z",
+    "body": "@salaboy I think testing a Quarkus application here might be a bit tricky, since the Dapr extension for Quarkus lives under quarkiverse/quarkus-dapr. That said, I totally agree that we should at least have a Spring application compiled in native mode."
+   }
+  ],
+  "open_prs": [],
+  "closed_prs": [],
+  "heuristic": 0.0
+ },
+ "fatiando/harmonica#646": {
+  "repo": "fatiando/harmonica",
+  "number": 646,
+  "url": "https://github.com/fatiando/harmonica/issues/646",
+  "title": "Issue with xrft for next release",
+  "body": "**Description of the problem:**\n<!--\nPlease be as detailed as you can when describing an issue. The more information\nwe have, the easier it will be for us to track this down.\n-->\nI'm trying to publish a new package on conda-forge which relies on harmonica and am having issues creating a working recipl.yml due to an issues with the latest release of `xrft`, v1.0.2. I think this is linked to this issue: https://github.com/xgcm/xrft/issues/221. When this version is installed, the system seems to think the installed version is actually 0.0.0 instead of 1.0.2 which then causes compatibility errors since harmonica requires >1.0. Before we make our less release, hopefully the above linked issues is fixed, or if not we may need to pin our dependecy to >1.0,<1.0.2. \n\nNot sure if this is an actually issue that requires a fix now, or just before the next release. I can  try and create an  new environment and see if I get an issue. ",
+  "labels": [
+   "bug"
+  ],
+  "created_at": "2026-03-25T07:46:49Z",
+  "updated_at": "2026-04-27T23:31:13Z",
+  "comments_count": 11,
+  "stars": 0,
+  "language": null,
+  "repo_description": "",
+  "watched": false,
+  "welcomed_before": 0,
+  "signals": [],
+  "comments": [
+   {
+    "author": "mdtanker",
+    "association": "MEMBER",
+    "created_at": "2026-03-25T07:57:50Z",
+    "body": "~~Nevermind I think this was just a local issue, closing while I confirm.~~\n\nOk can confirm now this is not a local issue. I have asked for help on the conda-forge feedstock [here](https://github.com/conda-forge/staged-recipes/pull/32728) and will see what they suggest as a solution."
+   },
+   {
+    "author": "santisoler",
+    "association": "MEMBER",
+    "created_at": "2026-03-25T21:43:20Z",
+    "body": "Thanks for reporting this, @mdtanker! This might be a problem on our end since we depend on `xrft`. Our [latest tests](https://github.com/fatiando/harmonica/actions/runs/23550964724/job/68564546871) are still installing `xrft` `1.0.1`, so apparently we are not testing Harmonica against it yet. Not sure why it's not installing `1.0.2` though.\n\nIt might be a good idea to exclude 1.0.2. I wouldn't constrain on `xrft>=1.0,<1.0.2` because we might want to allow future users to install `1.0.3`. Maybe we can do [exclusion](https://packaging.python.org/en/latest/specifications/version-specifiers/#id5) instead: `xrft >=1.0, !=1.0.2`"
+   },
+   {
+    "author": "santisoler",
+    "association": "MEMBER",
+    "created_at": "2026-03-25T21:44:33Z",
+    "body": "I suspect that since the issue is with the released wheel, they'll have to patch it, release `1.0.3`, and yank `1.0.2` so it never gets installed."
+   },
+   {
+    "author": "mdtanker",
+    "association": "MEMBER",
+    "created_at": "2026-03-26T05:54:37Z",
+    "body": "After a bit of testing, I was getting the same issue of having a pip version 0.0.0 when I installed xrft with conda for versions 1.0.0, 1.0.1  and 1.0.2, so im not sure its just an issue with 1.0.2. "
+   },
+   {
+    "author": "santisoler",
+    "association": "MEMBER",
+    "created_at": "2026-04-22T19:29:54Z",
+    "body": "I tried rerunning the build process in the conda-forge feedstock repo and apparently I don't get any error: https://github.com/conda-forge/harmonica-feedstock/pull/16. [This build](https://github.com/conda-forge/harmonica-feedstock/runs/72564634623) was run without any change to the recipe.\n\n@mdtanker, have you check recently if your package is building now? Or are you still facing the same issue with `xrft`?"
+   },
+   {
+    "author": "mdtanker",
+    "association": "MEMBER",
+    "created_at": "2026-04-24T07:40:39Z",
+    "body": "Looks to still be failing, with this error: [harmonica 0.7.0 has requirement xrft>=1.0, but you have xrft 0.0.0.](https://dev.azure.com/conda-forge/feedstock-builds/_build/results?buildId=1510528&view=logs&j=4cabe686-70ae-553a-7fd0-310379f2cbac&t=6a4fc7c9-c31a-5115-eff9-6479d72b69ff&l=1272)\n\nI'm using the new version of the conda-forge recipe (`recipe.yaml` instead of meta.yaml`) and harmonica host requirements have `setuptools` and `setuptools_scm` which I don't have, so maybe it's something to do with that? \n\nEdit: I just add `setuptools` and still recieved the same error."
+   },
+   {
+    "author": "leouieda",
+    "association": "MEMBER",
+    "created_at": "2026-04-24T10:37:13Z",
+    "body": "I think the issue is that the xrft feedstock is fetching from GitHub instead of PyPI. The version number isn’t present in GitHub and is only generated when a source dist or wheel is built. A solution would be to change the xrft recipe to fetch from PyPI."
+   },
+   {
+    "author": "leouieda",
+    "association": "MEMBER",
+    "created_at": "2026-04-24T12:51:06Z",
+    "body": "Another solution would be for us to internalize the code for doing the FT of a DataArray. We could probably have a much simpler version of the xrft code since we don't need all of the options they provide. Right now, we may only need to add the implementation of the two functions in https://github.com/fatiando/harmonica/blob/main/src/harmonica/filters/_fft.py and add a padding function (which we call directly from xrft)."
+   },
+   {
+    "author": "santisoler",
+    "association": "MEMBER",
+    "created_at": "2026-04-27T16:11:32Z",
+    "body": "> I think the issue is that the xrft feedstock is fetching from GitHub instead of PyPI. The version number isn’t present in GitHub and is only generated when a source dist or wheel is built. A solution would be to change the xrft recipe to fetch from PyPI.\n\nThat was my last suggestion in https://github.com/xgcm/xrft/issues/221. The issue is that `xrft 1.0.2` is not yet available in PyPI.\n\n> Another solution would be for us to internalize the code for doing the FT of a DataArray. We could probably have a much simpler version of the xrft code since we don't need all of the options they provide. Right now, we may only need to add the implementation of the two functions in https://github.com/fatiando/harmonica/blob/main/src/harmonica/filters/_fft.py and add a padding function (which we call directly from xrft).\n\nI was considering the same thing last week. I wanted to make sure that this is going to be an issue for the release of Harmonica v0.8.0 before spending time on it right now. Considering that [this run](https://github.com/conda-forge/harmonica-feedstock/runs/72564634623) is not failing, I doubt this is going to be an issue for us at the moment, but I'm not certain. What do you think @leouieda?"
+   },
+   {
+    "author": "leouieda",
+    "association": "MEMBER",
+    "created_at": "2026-04-27T17:04:06Z",
+    "body": "It seems like it's not blocking our release but it's causing problems downstream for @mdtanker right? Maybe it's worth handling before v0.8 and then we remove the dependency and fix Matt's problem in one go?"
+   },
+   {
+    "author": "santisoler",
+    "association": "MEMBER",
+    "created_at": "2026-04-27T23:31:13Z",
+    "body": "I've started #677 to give it a try."
+   }
+  ],
+  "open_prs": [],
+  "closed_prs": [
+   "https://github.com/conda-forge/xrft-feedstock/pull/21",
+   "https://github.com/fatiando/harmonica/pull/677 (merged)"
+  ],
+  "heuristic": 0.0
+ },
+ "testcontainers/testcontainers-go#3867": {
+  "repo": "testcontainers/testcontainers-go",
+  "number": 3867,
+  "url": "https://github.com/testcontainers/testcontainers-go/issues/3867",
+  "title": "[Bug]: reaper reuse finds an exited ryuk container and times out instead of creating a new one",
+  "body": "### Testcontainers version\n\nv0.44.0\n\n### Using the latest Testcontainers version?\n\nYes\n\n### Host OS\n\nLinux (Ubuntu 22.04.5 LTS, CircleCI machine executor)\n\n### Host arch\n\namd64\n\n### Go version\n\n1.26.0\n\n### Docker version\n\nThe failure occurs on CircleCI (Linux amd64, machine executor), where the ephemeral VM was destroyed before full output could be captured. From the testcontainers-go banner on the failing host: Server Version 28.4.0, API Version 1.51. The output below is from my local dev machine, not the failing host:\n\n```shell\nClient:\n Version:           28.3.2\n API version:       1.51\n Go version:        go1.24.5\n Git commit:        578ccf6\n Built:             Wed Jul  9 16:12:57 2025\n OS/Arch:           darwin/arm64\n Context:           default\n\nServer: Docker Desktop 4.43.2 (199162)\n Engine:\n  Version:          28.3.2\n  API version:      1.51 (minimum version 1.24)\n  Go version:       go1.24.5\n  Git commit:       e77ff99\n  Built:            Wed Jul  9 16:13:56 2025\n  OS/Arch:          linux/arm64\n  Experimental:     false\n containerd:\n  Version:          1.7.27\n  GitCommit:        05044ec0a9a75232cad458027ca83437aae3f4da\n runc:\n  Version:          1.2.5\n  GitCommit:        v1.2.5-0-g59923ef\n docker-init:\n  Version:          0.19.0\n  GitCommit:        de40ad0\n```\n\n### Docker info\n\nNot captured on the failing CI host (ephemeral VM). From the testcontainers-go banner: Ubuntu 22.04.5 LTS, Total Memory 15706 MB, docker host unix:///var/run/docker.sock, ryuk image testcontainers/ryuk:0.14.0. The output below is from my local dev machine:\n\n```shell\nClient:\n Version:    28.3.2\n Context:    default\n Debug Mode: false\n Plugins:\n  ai: Docker AI Agent - Ask Gordon (Docker Inc.)\n    Version:  v1.6.0\n    Path:     /Users/sunilkartikey/.docker/cli-plugins/docker-ai\n  buildx: Docker Buildx (Docker Inc.)\n    Version:  v0.25.0-desktop.1\n    Path:     /Users/sunilkartikey/.docker/cli-plugins/docker-buildx\n  cloud: Docker Cloud (Docker Inc.)\n    Version:  v0.4.2\n    Path:     /Users/sunilkartikey/.docker/cli-plugins/docker-cloud\n  compose: Docker Compose (Docker Inc.)\n    Version:  v2.38.2-desktop.1\n    Path:     /Users/sunilkartikey/.docker/cli-plugins/docker-compose\n  debug: Get a shell into any image or container (Docker Inc.)\n    Version:  0.0.41\n    Path:     /Users/sunilkartikey/.docker/cli-plugins/docker-debug\n  desktop: Docker Desktop commands (Docker Inc.)\n    Version:  v0.1.11\n    Path:     /Users/sunilkartikey/.docker/cli-plugins/docker-desktop\n  extension: Manages Docker extensions (Docker Inc.)\n    Version:  v0.2.29\n    Path:     /Users/sunilkartikey/.docker/cli-plugins/docker-extension\n  init: Creates Docker-related starter files for your project (Docker Inc.)\n    Version:  v1.4.0\n    Path:     /Users/sunilkartikey/.docker/cli-plugins/docker-init\n  mcp: Docker MCP Plugin (Docker Inc.)\n    Version:  v0.9.9\n    Path:     /Users/sunilkartikey/.docker/cli-plugins/docker-mcp\n  model: Docker Model Runner (EXPERIMENTAL) (Docker Inc.)\n    Version:  v0.1.33\n    Path:     /Users/sunilkartikey/.docker/cli-plugins/docker-model\n  sbom: View the packaged-based Software Bill Of Materials (SBOM) for an image (Anchore Inc.)\n    Version:  0.6.0\n    Path:     /Users/sunilkartikey/.docker/cli-plugins/docker-sbom\n  scout: Docker Scout (Docker Inc.)\n    Version:  v1.18.1\n    Path:     /Users/sunilkartikey/.docker/cli-plugins/docker-scout\nWARNING: Plugin \"/Users/sunilkartikey/.docker/cli-plugins/docker-dev\" is not valid: failed to fetch metadata: fork/exec /Users/sunilkartikey/.docker/cli-plugins/docker-dev: no such file or directory\nWARNING: Plugin \"/Users/sunilkartikey/.docker/cli-plugins/docker-feedback\" is not valid: failed to fetch metadata: fork/exec /Users/sunilkartikey/.docker/cli-plugins/docker-feedback: no such file or directory\n\nServer:\n Containers: 4\n  Running: 0\n  Paused: 0\n  Stopped: 4\n Images: 108\n Server Version: 28.3.2\n Storage Driver: overlayfs\n  driver-type: io.containerd.snapshotter.v1\n Logging Driver: json-file\n Cgroup Driver: cgroupfs\n Cgroup Version: 2\n Plugins:\n  Volume: local\n  Network: bridge host ipvlan macvlan null overlay\n  Log: awslogs fluentd gcplogs gelf journald json-file local splunk syslog\n CDI spec directories:\n  /etc/cdi\n  /var/run/cdi\n Swarm: inactive\n Runtimes: io.containerd.runc.v2 runc\n Default Runtime: runc\n Init Binary: docker-init\n containerd version: 05044ec0a9a75232cad458027ca83437aae3f4da\n runc version: v1.2.5-0-g59923ef\n init version: de40ad0\n Security Options:\n  seccomp\n   Profile: builtin\n  cgroupns\n Kernel Version: 6.10.14-linuxkit\n Operating System: Docker Desktop\n OSType: linux\n Architecture: aarch64\n CPUs: 14\n Total Memory: 7.653GiB\n Name: docker-desktop\n ID: 18b3abd9-fc10-4562-8b54-6a32dae2e3f9\n Docker Root Dir: /var/lib/docker\n Debug Mode: false\n HTTP Proxy: http.docker.internal:3128\n HTTPS Proxy: http.docker.internal:3128\n No Proxy: hubproxy.docker.internal\n Labels:\n  com.docker.desktop.address=unix:///Users/sunilkartikey/Library/Containers/com.docker.docker/Data/docker-cli.sock\n Experimental: false\n Insecure Registries:\n  hubproxy.docker.internal:5555\n  ::1/128\n  127.0.0.0/8\n Live Restore Enabled: false\n\nWARNING: DOCKER_INSECURE_NO_IPTABLES_RAW is set\n```\n\n### What happened?\n\nWe run `go test -run Integration ./...` over a large repo (influxdata/telegraf, several hundred packages, a few dozen of which start containers). All package test processes of one `go test ./...` invocation share a session ID, so they share a single ryuk container. Ryuk exits 10 seconds after its last client disconnects (RYUK_RECONNECTION_TIMEOUT default), and a full `./...` run has natural gaps where no package currently holds a ryuk connection, so ryuk legitimately exits mid-run.\n\nWhen the next package needs a container, `reaperSpawner.lookupContainer` lists containers with `All: true` and no running-state filter, and the health-status switch accepts an empty health status, so the exited ryuk container is returned as reusable. `fromContainer` then waits for `wait.ForLog(\"Started\")",
+  "labels": [
+   "bug"
+  ],
+  "created_at": "2026-09-01T13:00:04Z",
+  "updated_at": "2026-10-07T13:09:35Z",
+  "comments_count": 8,
+  "stars": 0,
+  "language": null,
+  "repo_description": "",
+  "watched": false,
+  "welcomed_before": 0,
+  "signals": [
+   "open pull request linked: https://github.com/testcontainers/testcontainers-go/pull/3868, https://github.com/testcontainers/testcontainers-go/pull/3898"
+  ],
+  "comments": [
+   {
+    "author": "topcoder1",
+    "association": "NONE",
+    "created_at": "2026-09-16T19:44:32Z",
+    "body": "Independent reproduction of this on GitHub Actions (`ubuntu-latest`, 4 vCPU, Docker 28.0.4, testcontainers-go v0.44.0, ryuk 0.14.0), plus two details that may help shape the fix.\n\n**Same mechanism, same signature.** Our `go test ./... -race` run has 37 packages that start containers through one shared Postgres helper, and the compile-only stretch between two groups of them is 11–13s in every run we timed. Ryuk's reconnection timer fires, and the next package to call `lookupContainer` gets:\n\n```\ncreate container: reaper: from container \"0a284fa3\": wait for reaper 0a284fa3: context deadline exceeded\n```\n\nexactly 60s after `⏳ Waiting for Reaper \"0a284fa3\" to be ready`. Red or green depends only on when the next package arrives relative to Ryuk's exit: arrivals ~1.5–3s after the timer failed, an arrival ~3.5s after (the container already gone) took the `newReaper` path and passed.\n\n**Why it is a bare 60s `context deadline exceeded` and not a fast \"container exited\".** In `fromContainer`, `wait.ForLog(\"Started\")` runs first. `LogStrategy.WaitUntilReady` calls `checkTarget` but then, when `target.Logs(ctx)` returns an error, it `continue`s without consulting that state error (`wait/log.go`, the `// TODO: fix as this will wait for timeout if the logs are not available` branch). A reaper container that has exited but is still present has readable logs, so that case would pass `ForLog` (it already logged `Started`) and fail fast in `ForExposedPort` via `checkTarget`. The 60s bare dead"
+   },
+   {
+    "author": "skartikey",
+    "association": "NONE",
+    "created_at": "2026-09-17T07:25:00Z",
+    "body": "Thanks, that explains why we always saw the full 60s rather than a fast failure. I checked v0.44.0 and `LogStrategy.WaitUntilReady` does skip `checkTarget`'s error whenever `Logs()` fails, so a reaper in the AutoRemove window can only end in a bare deadline.\n\n#3868 already covers the lookup side. `lookupContainer` only reuses a running reaper, removes one that is exited, dead or being removed and creates a new one, and `fromContainer` checks the state again right before the wait. It would be great if you could try it against your workload. The `LogStrategy` change is useful on its own, since it affects every log wait and not just the reaper, so I'd keep it as a separate PR.\n"
+   },
+   {
+    "author": "skartikey",
+    "association": "NONE",
+    "created_at": "2026-09-17T07:50:58Z",
+    "body": "@topcoder1 I've opened #3898 for the `LogStrategy` change, so a container that stops during a log wait now fails right away instead of running out the timeout.\n\n#3868 also picked up two more fixes. A reaper that exits during the readiness wait is now retried and recreated, and one still being auto-removed no longer stalls the lookup. If you can run your workload against #3868, that would be the most useful check, since it's the one that fixes this issue.\n"
+   },
+   {
+    "author": "lusoris",
+    "association": "NONE",
+    "created_at": "2026-09-20T05:31:41Z",
+    "body": "A third independent reproduction occurred in [golusoris/golusoris run 35457421096](https://github.com/golusoris/golusoris/actions/runs/35457421096/job/105935072053) on 2026-09-19 with testcontainers-go v0.44.0 and Ryuk 0.14.0. At 23:05:08 the next package logged `Waiting for Reaper \"4b66ec5c\" to be ready`; exactly 60 seconds later it failed with `reaper: from container \"4b66ec5c\": wait for reaper 4b66ec5c: context deadline exceeded`. The following call immediately created fresh Ryuk `b888c3ef4fc2`, which became ready in about five seconds, and its TimescaleDB test passed. The two package tests share the same session ID. This is the stopped/AutoRemove reuse sequence described here, not a dependency-update regression. We can validate #3868 against the same hosted matrix once its workflow is approved or a release containing it is available."
+   },
+   {
+    "author": "skartikey",
+    "association": "NONE",
+    "created_at": "2026-09-28T17:13:45Z",
+    "body": "@lusoris thanks, that's exactly the case #3868 fixes. Its workflows are green now (the minio failure is an unrelated Docker Hub pull denial), so you can test it before a release with:\n\n```\ngo mod edit -replace github.com/testcontainers/testcontainers-go=github.com/skartikey/testcontainers-go@4153ad13227e358bcfb2fe1e093b2c2065ad29bf && go mod tidy\n```\n"
+   },
+   {
+    "author": "lusoris",
+    "association": "NONE",
+    "created_at": "2026-10-07T10:19:11Z",
+    "body": "Sorry for going quiet on this, @skartikey, and thank you for the replace line.\n\nI haven't run #3868 yet. The branch has moved since your comment, so I'll test the current head (`72158f4e`, which includes the retry and in-progress-removal fixes) rather than `4153ad13`. I'll run it against the same hosted workflow as the failing run and post the result here with the run link."
+   },
+   {
+    "author": "lusoris",
+    "association": "NONE",
+    "created_at": "2026-10-07T12:17:45Z",
+    "body": "\n@skartikey, #3868 at `72158f4e` fixes our case. A forced reproduction that fails every\ntime on v0.44.0 passes every time with it, both locally and on the runner set that ran\nrun 35457421096, and three runs of that workflow with the replace applied were green.\n\n**Forced reproduction** ([harness](https://github.com/golusoris/golusoris/tree/cc594117562a8a7da11f28ed89d9884cf58a411e/.github/tc3868-repro)):\npackage A starts a container and exits; package B waits for the session's Ryuk `die`\nevent, then starts a container. Ryuk's writable layer is padded with 150,000 small\nfiles so its AutoRemove takes seconds instead of milliseconds.\n\n- **v0.44.0:** 7 of 7 failed locally (Docker 29.8.2) and 6 of 6 on the hosted runner\n  (Docker 29.8.2, dind). Each failure is the reported one: `⏳ Waiting for Reaper \"<id>\"`\n  on the exited container, then `wait for reaper <id>: context deadline exceeded`\n  about 60 s later.\n- **`72158f4e`:** 8 of 8 passed locally (1.7–9.4 s) and 6 of 6 on the hosted runner\n  (6.1–15.5 s). The exited reaper was never waited on; a fresh Ryuk came up as soon as\n  the old one's removal finished, after several create attempts that hit the name\n  conflict.\n\n**Hosted workflow:** the same Test job (`go test -race -p 4 ./...`, default reconnection\ntimeout) in [run 37609615670](https://github.com/golusoris/golusoris/actions/runs/37609615670/job/112753770465)\nand run 37613636683 ([attempt 1](https://github.com/golusoris/golusoris/actions/runs/37613636683/job/112767375574),\n[at"
+   },
+   {
+    "author": "skartikey",
+    "association": "NONE",
+    "created_at": "2026-10-07T13:09:35Z",
+    "body": "\n@lusoris thank you, that's a really thorough validation. The padded writable layer is a nice way to force the AutoRemove window, and seeing the exited reaper never waited on in 14 of 14 forced runs is exactly the behaviour #3868 is meant to pin.\n\nOn the 20 s limit: that's the existing backoff for reaper creation (`MaxElapsedTime` in `reaperSpawner`), which already bounded the name-conflict retries before this PR. The fix reuses it rather than adding a second timer, so a removal slower than 20 s would have failed on v0.44.0 too, just with a different error. If someone does hit that in practice it would be easy to make the bound configurable, but as you say real removals are two orders of magnitude below it.\n\nI'll link your results from the PR so the maintainers have them when they get to it."
+   }
+  ],
+  "open_prs": [
+   "https://github.com/testcontainers/testcontainers-go/pull/3868",
+   "https://github.com/testcontainers/testcontainers-go/pull/3898"
+  ],
+  "closed_prs": [],
+  "heuristic": 0.0
+ },
+ "GlacioHack/xdem#986": {
+  "repo": "GlacioHack/xdem",
+  "number": 986,
+  "url": "https://github.com/GlacioHack/xdem/issues/986",
+  "title": "Blockwise with a coregistration pipeline",
+  "body": "Blockwise can normaly be done with CoregPipeline but :\n\n```\nimport xdem\n\nref_dem = xdem.DEM(xdem.examples.get_path_test(\"longyearbyen_ref_dem\"))\ntba_dem = xdem.DEM(xdem.examples.get_path_test(\"longyearbyen_tba_dem\"))\n\nblockwise = xdem.coreg.BlockwiseCoreg(xdem.coreg.NuthKaab() + xdem.coreg.NuthKaab()  ,\n                                      block_size_fit=500,\n                                      block_size_apply=100,\n                                      parent_path=\"\")\n\n```\n\ngives :\n\n```\nTraceback (most recent call last):\n  File \"/home/mbouchet/Documents/xDem_project/new_xdem/xdem/bug/859_bw_info.py\", line 6, in <module>\n    blockwise = xdem.coreg.BlockwiseCoreg(xdem.coreg.NuthKaab() + xdem.coreg.NuthKaab()  ,\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/mbouchet/Documents/xDem_project/new_xdem/xdem/xdem/coreg/blockwise.py\", line 84, in __init__\n    if not step.is_affine:\n           ^^^^^^^^^^^^^^\n  File \"/home/mbouchet/Documents/xDem_project/new_xdem/xdem/xdem/coreg/base.py\", line 2028, in is_affine\n    self.to_matrix()\n  File \"/home/mbouchet/Documents/xDem_project/new_xdem/xdem/xdem/coreg/base.py\", line 3189, in to_matrix\n    return self._to_matrix_func()\n           ^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/mbouchet/Documents/xDem_project/new_xdem/xdem/xdem/coreg/base.py\", line 3196, in _to_matrix_func\n    new_matrix = coreg.to_matrix()\n                 ^^^^^^^^^^^^^^^^^\n  File \"/home/mbouchet/Documents/xDem_project/new_xdem/xdem/xdem/coreg/affine.py\", line 1840, in to_matrix\n    return self._to_matrix_func()\n           ^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/mbouchet/Documents/xDem_project/new_xdem/xdem/xdem/coreg/affine.py\", line 2538, in _to_matrix_func\n    matrix[0, 3] += self._meta[\"outputs\"][\"affine\"][\"shift_x\"]\n                    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^\nKeyError: 'affine'\n```\n",
+  "labels": [
+   "bug"
+  ],
+  "created_at": "2026-08-06T09:29:16Z",
+  "updated_at": "2026-08-17T11:59:01Z",
+  "comments_count": 4,
+  "stars": 0,
+  "language": null,
+  "repo_description": "",
+  "watched": false,
+  "welcomed_before": 0,
+  "signals": [],
+  "comments": [
+   {
+    "author": "marinebcht",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-08-06T09:56:35Z",
+    "body": "Can you confirm me that Blockwise + CoregPipeline can/need to be done ? @belletva @rhugonnet \nCause I see severals adjustments to do. \nI relied on the signature : \n\n```\nclass BlockwiseCoreg:\n    \"\"\"\n    A processing class of choice is run on a subdivision of the raster. When later applying the step\n    the optimal warping is interpolated based on X/Y/Z shifts from the coreg algorithm at the grid points.\n    \"\"\"\n\n    def __init__(\n        self,\n        step: Coreg | CoregPipeline,\n```"
+   },
+   {
+    "author": "marinebcht",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-08-06T13:13:53Z",
+    "body": "(Temporary) fixe here https://github.com/GlacioHack/xdem/pull/988"
+   },
+   {
+    "author": "rhugonnet",
+    "association": "MEMBER",
+    "created_at": "2026-08-13T21:34:52Z",
+    "body": "I guess it would be good to support but is not a priority.\nWhat about a Pipeline of Blockwise, that should work out-of-the-box?"
+   },
+   {
+    "author": "marinebcht",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-08-17T11:59:01Z",
+    "body": "Absolutely !! @rhugonnet "
+   }
+  ],
+  "open_prs": [],
+  "closed_prs": [
+   "https://github.com/GlacioHack/xdem/pull/988 (merged)"
+  ],
+  "heuristic": 0.0
+ },
+ "GlacioHack/xdem#943": {
+  "repo": "GlacioHack/xdem",
+  "number": 943,
+  "url": "https://github.com/GlacioHack/xdem/issues/943",
+  "title": "Problems with settings for blockwise blocks",
+  "body": "Hello,\n\nWhile working on the QGIS plugin, I noticed a few strange thing in `blockwise.py`, concerning block sizes.\n\nDuring the fit the DEM is divided into a grid of tiles and a specific shift is calculated for each tile. Then we extracts the coordinates of the center of each tile and associates them with the calculated shift. Next, these results are fed into the RANSAC, it is designed to model this shift as a single equation.\n\nCurrently, the advanced examples in the documentation only use the `chunk_size`. The problem is that the center of the tile will not be calculated based on `chunk_size`, but rather on the `block_size_fit`. The default value of  `block_size_fit` will then be used (500).\n\nline 174 `blockwise.py`\n```python\noutputs_coreg = map_multiproc_collect(\n            self._coreg_wrapper,\n            reference_elev,\n            self.mp_config,\n            to_be_aligned_elev,\n            self.procstep,\n            inlier_mask,\n            return_tile=True,\n        )\n\nself.shape_tiling_grid = compute_tiling(\n            self.block_size_fit, reference_elev.shape, to_be_aligned_elev.shape\n        ).shape\n```\n\nThe RANSAC therefore receives shifts and coordinates that do not match which invalidates the results.\n\n///\n\nThere is another similar issue, this time with the `.apply`.\n\nline 390 `blockwise.py`\n```python\nself.mp_config.chunk_size = self.block_size_apply\n```\nSimilar situation, if you only specify `chunk_size`, `.apply` will use the default value of `block_size_apply` (500)\n\n///\n\nCurrently, best practice is to specify all parameters.\nHere is an example:\n```python\nmp_config = MultiprocConfig(chunk_size=400, outfile=\"aligned_dem.tif\", cluster=None)\nblockwise = xdem.coreg.BlockwiseCoreg(xdem.coreg.NuthKaab(), mp_config=mp_config, block_size_fit=400, block_size_apply=800)\n```\n\nThis solution works, but I find it strange to ask the user to enter the same value twice.\nI think it’s possible to make the configuration much simpler.",
+  "labels": [
+   "bug"
+  ],
+  "created_at": "2026-04-07T10:23:33Z",
+  "updated_at": "2026-05-07T08:21:04Z",
+  "comments_count": 3,
+  "stars": 0,
+  "language": null,
+  "repo_description": "",
+  "watched": false,
+  "welcomed_before": 0,
+  "signals": [],
+  "comments": [
+   {
+    "author": "rhugonnet",
+    "association": "MEMBER",
+    "created_at": "2026-04-07T18:26:50Z",
+    "body": "@ould-a Thanks for looking into this! 🙂 \nI didn't write/test this module (only reviewed) so I'm catching up with what you find.\n\nQuick replies:\n1. Technically, `chunk_size` and `block_size_fit` are equal and represent the same thing, as defined [here](https://github.com/GlacioHack/xdem/blob/3e2294775d1dfb2c7a041ec312f0e8a78f25403f/xdem/coreg/blockwise.py#L107). If I understand your point correctly, the **chunk boundaries** (tuple of xmin/ymin/xmax/ymax) (that can differ near the edges of the DEM, if the DEM shape is not an exact multiple of `chunk_size`) will not necessarily align with the way the centers are currently defined? Is that the issue?\n\n2. Repeating `chunk_size`: The reason behind this is that `BlockwiseCoreg` does not necessarily have to run in Multiprocessing (at least that the design we aim for, like for all the other features).  It could simply run in a for loop without parallelization (no `mp_config` passed). Or, it could run each block out-of-memory respecting the array chunks (`chunk_size` smaller than `fit_block_size`), which will be available once we link the GeoUtils functionalities. So `chunk_size != block_size` (or one can be undefined) in the general case. It could definitely default to the same when `chunk_size` exists, though.\n\n@belletva That reminds me that a lot of things we planned to modify in `BlockwiseCoreg` are on hold since Alice stopped? We need to discuss this tonight. The vision was clear for me there but it was a bit difficult to iterate "
+   },
+   {
+    "author": "marinebcht",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-05-06T14:53:16Z",
+    "body": "Hi @ould-a \n\nWe did not have the time to talk this morning about this issue + the BlockwiseCoreg modification.\nI looked at the first problem you mention.\n\nActually, you're right, in the fit part : \n1. we call map_multiproc_collect on the full dem, with the mp_config chunk size to have one coreg / chunk\n2. for each of this chunck we compute the center BUT using block_size_fit / 2 and not chunk_size / 2\n\nSo yes you can, depending on the values, have some area not covered by the fit in the output coreg blockwize coord info !\n\n<img width=\"1168\" height=\"595\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/86fde3c0-1621-4407-8f67-1852c27ecac5\" />\n\nPlus, block_size_fit needs to be < chunks_size due to an index error between the chunk grid and the block_size_fit grid.\n"
+   },
+   {
+    "author": "marinebcht",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-05-07T08:21:04Z",
+    "body": "Link https://github.com/GlacioHack/xdem/issues/913"
+   }
+  ],
+  "open_prs": [],
+  "closed_prs": [],
+  "heuristic": 0.0
+ },
+ "wailsapp/wails#6215": {
+  "repo": "wailsapp/wails",
+  "number": 6215,
+  "url": "https://github.com/wailsapp/wails/issues/6215",
+  "title": "[v3] Wails/Vite cannot find bindings. Failed to resolve import ... Does the file exist?",
+  "body": "### Wails version family\n\nv3\n\n### Exact Wails version\n\nv3.0.0-beta.25\n\n### Operating System\n\nmacOS\n\n### Description\n\nI'm constantly getting typescript import errors.\n\nFor some reason, sometimes I'm changing some of the typescript files, and my project stops building.\n\nIt is a lot of headache to make it build again, and often I don't really understand what I did to fix, just trial and error.\n\n```\n10:57:01 PM [vite] Internal server error: Failed to resolve import \"@/changeme/internal/serviceV2\" from \"src/main.ts\". Does the file exist?\n  Plugin: vite:import-analysis\n  File: /Users/jack/code/frontend/src/main.ts:4:7\n  1  |  import \"@/changeme/internal/serviceV2\";\n```\n\nYes, the file exists, my bindings are generated correctly.\nHowever, for whatever reason vite or wails3 decided to stop working.\n\nI'm a little bit ignorant about vite, there's any configuration I should be looking forward to change?\nIt was working just fine before, and apart from typescript and go files, I didn't touch anything to change the build process behaviour like this...\n\n### To Reproduce\n\nEXTRA_TAGS=private_mac_apis wails3 dev\n\n### Expected behaviour\n\nShould compile correcty, since the bindings exist and are all there.\n\n### Screenshots\n\n_No response_\n\n### Attempted Fixes\n\n_No response_\n\n### System Details\n\n```shell\nWails v3.0.0-beta.25 › Wails Doctor\n                                                                                                                                               \n# System\n        \n┌──────────────────────────────┐\n| Name          | MacOS        |\n| Version       | 26.5.2       |\n| ID            | 25F84        |\n| Branding      | MacOS 26.5.2 |\n| Platform      | darwin       |\n| Architecture  | arm64        |\n| Apple Silicon | true         |\n| CPU           | Apple M1     |\n| CPU           | Apple M1     |\n| GPU           | 7 cores      |\n| Memory        | 8 GB         |\n└──────────────────────────────┘\n                   \n# Build Environment\n                   \n┌──────────────────────────────────────────────────────────────────────┐\n| Wails CLI      | v3.0.0-beta.25                                      |\n| Go Version     | go1.26.8                                            |\n| -buildmode     | exe                                                 |\n| -compiler      | gc                                                  |\n| CGO_CFLAGS     |                                                     |\n| CGO_CPPFLAGS   |                                                     |\n| CGO_CXXFLAGS   |                                                     |\n| CGO_ENABLED    | 1                                                   |\n| CGO_LDFLAGS    |                                                     |\n| DefaultGODEBUG | cryptocustomrand=1,tlssecpmlkem=0,urlstrictcolons=0 |\n| GOARCH         | arm64                                               |\n| GOARM64        | v8.0                                                |\n| GOOS           | darwin                                              |\n└──────────────────────────────────────────────────────────────────────┘\n              \n# Dependencies\n              \n┌──────────────────────────────────────────────────────────────────────────────────────────────────────────┐\n| *Android SDK       | Not found. Set ANDROID_HOME (install via Android Studio or the command-line tools). |\n| *NSIS              | Not Installed. Install with `brew install makensis`.                                |\n| *Xcode (iOS)       | Xcode 26.6, Build version 17F113                                                    |\n| *iOS Device SDK    | 26.5                                                                                |\n| *iOS Simulator SDK | 26.5                                                                                |\n| Xcode cli tools    | 2416                                                                                |\n| npm                | 10.9.2                                                                              |\n| docker             | *Not installed (optional - for cross-compilation)                                   |\n|                                                                                                          |\n└──────────────────────────────────────── * - Optional Dependency ─────────────────────────────────────────┘\n         \n# Signing\n         \n┌────────────────────────────────────────┐\n| macOS Signing   | Not configured       |\n| Windows Signing | Not configured       |\n| Linux Signing   | Not configured (GPG) |\n└────────────────────────────────────────┘\n                     \n# Checking for issues\n                     \n SUCCESS  No issues found\n           \n# Diagnosis\n           \n SUCCESS  Your system is ready for Wails development!\n```\n\n### Additional context\n\n_No response_",
+  "labels": [
+   "Bug",
+   "v3"
+  ],
+  "created_at": "2026-10-02T21:01:52Z",
+  "updated_at": "2026-10-17T01:30:08Z",
+  "comments_count": 2,
+  "stars": 0,
+  "language": null,
+  "repo_description": "",
+  "watched": false,
+  "welcomed_before": 0,
+  "signals": [],
+  "comments": [
+   {
+    "author": "taliesin-ai",
+    "association": "COLLABORATOR",
+    "created_at": "2026-10-15T10:58:21Z",
+    "body": "Hi there! Thanks for the report. I've queued this for a reproduction check on Wails v3. We'll keep this open while we investigate."
+   },
+   {
+    "author": "taliesin-ai",
+    "association": "COLLABORATOR",
+    "created_at": "2026-10-17T01:30:08Z",
+    "body": "Hi there! I couldn't reproduce this with the test below; that doesn't rule out the report. Thanks!\n\n<details>\n<summary>Test evidence</summary>\n\nTested master ([pinned source](https://github.com/wailsapp/wails/commit/d8f3336d53149059061558a39d58f65e5ee3e63f)). Each VM started from its clean test snapshot and ran offline.\n\nTrigger: Run the real bindings sync entry point syncDirs(src, dst), which GenerateBindings invokes when Clean is active, with a populated temp generation directory containing the generated binding module paths (including internal/serviceV2.ts) that the report says could not be resolved, plus a pre-existing output directory, then measure whether every expected file resolves in the output directory immediately after syncDirs returns.\n\nExpected: After syncDirs returns, every expected binding module path (including internal/serviceV2.ts) exists as a file in the output directory, and stale entries are removed, so an import resolver scanning the directory would find the imported module.\n\n**macOS 26.6.2 ARM64 — not reproduced**\n\n```text\ngo test -json -count=1 -timeout=90s -run ^TestWorkflowRepro$ ./internal/commands\nProductVersion:\t\t26.6.2\nBuildVersion:\t\t25G83\ngo version go1.27.1 darwin/arm64\nREPRO_OBSERVATION: positive control reached, src tree present, files=4\nREPRO_OBSERVATION: syncDirs complete, dst entries missing=0 of 4\n```\n\nScope: a Go package test against this pinned version, simulating the reported failure. It does not establish behavior in every release or"
+   }
+  ],
+  "open_prs": [],
+  "closed_prs": [],
+  "heuristic": 0.0
+ },
+ "wailsapp/wails#5160": {
+  "repo": "wailsapp/wails",
+  "number": 5160,
+  "url": "https://github.com/wailsapp/wails/issues/5160",
+  "title": "bind gen App.d.ts inconsistent with modules.ts",
+  "body": "### Description\n\n```go\ntype Message[T any] struct {\n\tMsg  string\n\tData T\n}\n\nfunc (a *App) Userinfo() Message[*string] {\n\treturn Message[*string]{}\n}\n```\n\nApp.d.ts\n```ts\nexport function Userinfo():Promise<main.Message_string_>;\n```\n\nmodules.ts\n```ts\nexport class Message__string_ \n```\n\n### To Reproduce\n\n_\n\n### Expected behaviour\n\n_\n\n### Screenshots\n\n_No response_\n\n### Attempted Fixes\n\n_No response_\n\n### System Details\n\n```shell\nWails Doctor\n\n\n\n# Wails\nVersion | v2.12.0\n\n\n# System\n┌────────────────────────────────────────────────────────────────────────────┐\n| OS           | Windows 10 Pro                                              |\n| Version      | 2009 (Build: 19045)                                         |\n| ID           | 22H2                                                        |\n| Branding     | Windows 10 专业版                                           |\n| Go Version   | go1.26.2                                                    |\n| Platform     | windows                                                     |\n| Architecture | amd64                                                       |\n| CPU          | Intel(R) Xeon(R) CPU E5-2698 v3 @ 2.30GHz                   |\n| GPU          | NVIDIA GeForce GTX 1060 3GB (NVIDIA) - Driver: 32.0.15.7652 |\n| Memory       | 32GB                                                        |\n└────────────────────────────────────────────────────────────────────────────┘\n\n# Dependencies\n┌───────────────────────────────────────────────────────┐\n| Dependency | Package Name | Status    | Version       |\n| WebView2   | N/A          | Installed | 147.0.3912.60 |\n| Nodejs     | N/A          | Installed | 24.14.1       |\n| npm        | N/A          | Installed | 11.11.0       |\n| *upx       | N/A          | Available |               |\n| *nsis      | N/A          | Installed | v3.09         |\n|                                                       |\n└─────────────── * - Optional Dependency ───────────────┘\n\n# Diagnosis\nOptional package(s) installation details:\n  - upx : Available at https://upx.github.io/\n\n SUCCESS  Your system is ready for Wails development!\n\n ♥   If Wails is useful to you or your company, please consider sponsoring the project:\nhttps://github.com/sponsors/leaanthony\n```\n\n### Additional context\n\n_No response_",
+  "labels": [
+   "Bug",
+   "Good First Issue",
+   "Typescript",
+   "Feel free to fix this!",
+   "v2",
+   "P2"
+  ],
+  "created_at": "2026-04-17T01:09:11Z",
+  "updated_at": "2026-10-15T19:51:24Z",
+  "comments_count": 5,
+  "stars": 0,
+  "language": null,
+  "repo_description": "",
+  "watched": false,
+  "welcomed_before": 0,
+  "signals": [
+   "open pull request linked: https://github.com/wailsapp/wails/pull/5599"
+  ],
+  "comments": [
+   {
+    "author": "lysShub",
+    "association": "NONE",
+    "created_at": "2026-04-17T01:09:59Z",
+    "body": "simple code\n\n[wails-project.zip](https://github.com/user-attachments/files/26806008/wails-project.zip)"
+   },
+   {
+    "author": "lysShub",
+    "association": "NONE",
+    "created_at": "2026-04-17T01:19:24Z",
+    "body": "App.d.ts use\n```go\nfunc arrayifyValue(valueArray string, valueType string) string {\n\tvalueType = strings.ReplaceAll(valueType, \"*\", \"\")\n\tgidx := strings.IndexRune(valueType, '[')\n\tif gidx > 0 { // its a generic type\n\t\trem := strings.SplitN(valueType, \"[\", 2)\n\t\tvalueType = rem[0] + \"_\" + jsVariableUnsafeChars.ReplaceAllLiteralString(rem[1], \"_\")\n\t}\n\n\tif len(valueArray) == 0 {\n\t\treturn valueType\n\t}\n\n\treturn \"Array<\" + valueType + \">\"\n}\n```\n\nmodules.ts use\n```go\nfunc nameTypeOf(typeOf reflect.Type) string {\n\ttname := typeOf.Name()\n\tgidx := strings.IndexRune(tname, '[')\n\tif gidx > 0 { // its a generic type\n\t\trem := strings.SplitN(tname, \"[\", 2)\n\t\ttname = rem[0] + \"_\" + jsVariableUnsafeChars.ReplaceAllLiteralString(rem[1], \"_\")\n\t}\n\treturn tname\n}\n```\n\nI think `nameTypeOf` is missing `tname = strings.ReplaceAll(tname, \"*\", \"\")`"
+   },
+   {
+    "author": "leaanthony",
+    "association": "MEMBER",
+    "created_at": "2026-05-05T14:02:13Z",
+    "body": "**Triage notes:**\n\n- **Classification**: Bug (v3, Typescript) — `nameTypeOf()` in modules.ts binding generator is missing `strings.ReplaceAll(tname, \"*\", \"\")` which `arrayifyValue()` in App.d.ts already does, causing inconsistent type names for pointer types in generic bindings.\n- **Labels applied**: Bug ✓ (already), Typescript ✓, v3 ✓ (added)\n- **Action**: Comment-only — the reporter has already identified the root cause with a specific code fix. Good candidate for community contribution.\n"
+   },
+   {
+    "author": "leaanthony",
+    "association": "MEMBER",
+    "created_at": "2026-06-10T22:43:06Z",
+    "body": "Relabelled **v3 → v2**: the affected code is the v2 binding generator (your `wails doctor` also shows v2.12.0). The v3 generator is a different implementation and handles generic pointer params consistently.\n\nExact root cause for anyone picking this up:\n\n- `v2/internal/binding/generate.go` → `arrayifyValue()` strips `*` **before** mangling generic brackets, producing `main.Message_string_` in `App.d.ts`.\n- `v2/internal/typescriptify/typescriptify.go` → `nameTypeOf()` does **not** strip `*`, so `Message[*string]` becomes `Message__string_` in `models.ts` (the `*` turns into a second underscore).\n\nThe generated declaration and the reference therefore never match for generic types instantiated with pointer type arguments.\n\n**Fix**: in `nameTypeOf()`, add `tname = strings.ReplaceAll(tname, \"*\", \"\")` after `typeOf.Name()` (mirroring `arrayifyValue`), plus a regression test with a `type Message[T any]` instantiated as `Message[*string]` asserting both generators emit `Message_string_`. Marked as a good first issue — happy to review a PR."
+   },
+   {
+    "author": "taliesin-ai",
+    "association": "COLLABORATOR",
+    "created_at": "2026-10-15T19:51:24Z",
+    "body": "Hi there! Thanks for the report. I've queued this for a reproduction check on Wails v2. We'll keep this open while we investigate."
+   }
+  ],
+  "open_prs": [
+   "https://github.com/wailsapp/wails/pull/5599"
+  ],
+  "closed_prs": [],
+  "heuristic": 0.0
+ },
+ "wailsapp/wails#5799": {
+  "repo": "wailsapp/wails",
+  "number": 5799,
+  "url": "https://github.com/wailsapp/wails/issues/5799",
+  "title": "Expose WebView navigation interception (with URL + cancel) and cookie access API in v3",
+  "body": "### Wails version family\n\nv3\n\n### Operating System\n\nWindows\n\n### Description\n\nIn Wails v3 (v3.0.0-alpha2.117), the WebView is the only way to render a third-party login / SAML / SSO page inside the app. A common auth flow is: open an external auth URL in the WebView → the provider finishes login and redirects to a callback URL that carries a token (e.g. .../callback?token=... or http://localhost:PORT/callback?token=...) → the app must capture that token and close the WebView.\n\nCurrently there is no supported way to capture a token delivered via a redirect URL or a cookie from inside the WebView. This blocks two real scenarios:\n\n- Mobile (iOS/Android): the app sandbox forbids binding a localhost port, so a localhost callback listener is impossible. The token must be captured from within the WebView.\n- Desktop: without navigation/cookie access, the only fallback is running a localhost listener, which we want to avoid.\n\n### To Reproduce\n\n1. Create a Wails v3 app with a WebView.\n2. Load an external URL that, after some interaction, redirects to a custom callback URL containing a token (e.g. myapp://callback?token=abc).\n3. Try to detect that navigation from Go/TS to extract the token and stop the navigation.\n4. Observe that no public API provides the target URL during navigation, and the only navigation event (WebViewNavigationCompleted) does not include the URL.\n5. Alternatively, try to read the WebView's cookies after auth completes — no public cookie API exists.\n\n### Expected behaviour\n\n- A navigation hook that exposes the target URL and allows cancelling the navigation, e.g.\n```go\nwebview.OnNavigationStarting(func(url string) bool {\n    if strings.HasPrefix(url, \"myapp://callback\") {\n        token := extract(url)\n        return false // cancel\n    }\n    return true\n})\n```\n- A cookie access API, e.g. webview.GetCookies() / webview.SetCookie(...).\n\n### Screenshots\n\n_No response_\n\n### Attempted Fixes\n\n- Used the internal navigationStarting handler — it exists but is not exposed to Go/TS with the URL and cannot cancel navigation.\n- Used the public WebViewNavigationCompleted event — it fires but does not include the URL.\n- Worked around it on desktop by running a localhost callback listener to catch the redirect — works on desktop but is impossible on mobile (sandbox forbids port binding).\n\n### System Details\n\n```shell\n- Wails v3: v3.0.0-alpha2.117\n- Go: (fill your version, e.g. go1.22.x)\n- OS / Platform: macOS / Windows / Linux (desktop) + iOS / Android (mobile)\n- Frontend: (e.g. vanilla JS / React / etc.)\n```\n\n### Additional context\n\nThis is required for SSO / SAML / OAuth flows where the token is delivered via a post-login redirect or a session cookie. On mobile especially, a localhost listener is not an option, so in-WebView capture (navigation interception or cookie read) is the only viable path. A minimal, unified API across desktop and mobile would let the same auth code run everywhere.",
+  "labels": [
+   "Bug",
+   "v3"
+  ],
+  "created_at": "2026-07-20T13:26:05Z",
+  "updated_at": "2026-10-18T15:17:27Z",
+  "comments_count": 7,
+  "stars": 0,
+  "language": null,
+  "repo_description": "",
+  "watched": false,
+  "welcomed_before": 0,
+  "signals": [
+   "open pull request linked: https://github.com/wailsapp/wails/pull/6300"
+  ],
+  "comments": [
+   {
+    "author": "mortenolsrud",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-07-20T16:23:20Z",
+    "body": "\nHey, we ran into this exact problem in our Wails v3 app (OIDC PKCE auth on desktop + iOS + Android). Here's what worked for us:\n\n**Short version: skip the WebView for auth entirely. Use the system browser + platform-specific callback capture.**\n\n### Why system browser instead of WebView\n\nRFC 8252 (OAuth 2.0 for Native Apps) recommends the system browser. It gives users SSO (shared cookies/sessions), and some IdPs like Google and Microsoft actively block WebView-based auth. No navigation interception or cookie APIs needed.\n\n### How we did it\n\n**Desktop (Windows/macOS/Linux):**\n- Open the auth URL in the system browser via `platform.OpenBrowser(authURL)`\n- Start a temporary localhost HTTP server listening for the callback\n- IdP redirects to `http://localhost:PORT/callback?code=...`\n- Extract the code, exchange for tokens, kill the server\n\nThis is what you already have as your desktop workaround. It's actually the \"correct\" approach, not a hack.\n\n**Mobile (iOS/Android):**\n- Localhost doesn't work in the sandbox, as you noted\n- Instead: claimed HTTPS redirects via Universal Links (iOS) / App Links (Android)\n- You register your app to handle a specific HTTPS URL (like `https://yourapp.example.com/auth/callback`)\n- The IdP redirects there, and the OS routes it to your app instead of the browser\n- Your Go code receives the callback URL through a channel\n\n**What you need to set up:**\n- iOS: Associated Domains entitlement + `apple-app-site-association` JSON file hosted on the domain\n"
+   },
+   {
+    "author": "taliesin-ai",
+    "association": "COLLABORATOR",
+    "created_at": "2026-10-15T01:54:20Z",
+    "body": "Hi there! Thanks for the suggestion. I'll leave this open for us to consider when planning future work."
+   },
+   {
+    "author": "jorgen-k",
+    "association": "NONE",
+    "created_at": "2026-10-18T08:58:40Z",
+    "body": "We need the macOS half of this for security. The content our window renders is sanitised by a model, so a link or a form can slip through and navigate the main frame off the app's origin. We want the host to refuse that.\n\nOn macOS there is no way to do it today. `webview_window_darwin.m` (checked on v3.0.0-beta.16 and beta.31) only implements the after-the-fact `WKNavigationDelegate` notifications, which carry no URL. There is no `webView:decidePolicyForNavigationAction:decisionHandler:`.\n\nWhat would cover it is a callback that runs before the navigation, with the target URL and whether it is the main frame, and can allow or cancel it.\n"
+   },
+   {
+    "author": "taliesin-ai",
+    "association": "COLLABORATOR",
+    "created_at": "2026-10-18T09:08:36Z",
+    "body": "On it! 👍\r\n\r\nOn Sun, 18 Oct 2026 at 7:59 pm, Jörgen Karlsson ***@***.***>\r\nwrote:\r\n\r\n> *jorgen-k* left a comment (wailsapp/wails#5799)\r\n> <https://github.com/wailsapp/wails/issues/5799#issuecomment-6247962966>\r\n>\r\n> We need the macOS half of this for security. The content our window\r\n> renders is sanitised by a model, so a link or a form can slip through and\r\n> navigate the main frame off the app's origin. We want the host to refuse\r\n> that.\r\n>\r\n> On macOS there is no way to do it today. webview_window_darwin.m (checked\r\n> on v3.0.0-beta.16 and beta.31) only implements the after-the-fact\r\n> WKNavigationDelegate notifications, which carry no URL. There is no\r\n> webView:decidePolicyForNavigationAction:decisionHandler:.\r\n>\r\n> What would cover it is a callback that runs before the navigation, with\r\n> the target URL and whether it is the main frame, and can allow or cancel it.\r\n>\r\n> —\r\n> Reply to this email directly, view it on GitHub\r\n> <https://github.com/wailsapp/wails/issues/5799?email_source=notifications&email_token=CDDUFL2LTGRFAF3NLOZ3XMT5USA5PA5CNFSNUABFM5UWIORPF5TWS5BNNB2WEL2JONZXKZKDN5WW2ZLOOQXTMMRUG44TMMRZGY3KM4TFMFZW63VHMNXW23LFNZ2KKZLWMVXHJLDGN5XXIZLSL5RWY2LDNM#issuecomment-6247962966>,\r\n> or unsubscribe\r\n> <https://github.com/notifications/unsubscribe-auth/CDDUFLZSRQNANGJGSEW6WWT5USA5PAVCNFSNUABFKJSXA33TNF2G64TZHMYTMMJZGUYTEMJZHNEXG43VMU5TIOJSHEZTSMZYGQZKC5QC>\r\n> .\r\n> Triage notifications, keep track of coding agent tasks and review pull\r\n> requests on the go with Git"
+   },
+   {
+    "author": "leaanthony",
+    "association": "MEMBER",
+    "created_at": "2026-10-18T10:43:40Z",
+    "body": "@jorgen-k - the linked PR is ready for testing. Is this roughly what you were thinking of?\n"
+   },
+   {
+    "author": "jorgen-k",
+    "association": "NONE",
+    "created_at": "2026-10-18T11:01:43Z",
+    "body": "Yes, i will test and come back."
+   },
+   {
+    "author": "jorgen-k",
+    "association": "NONE",
+    "created_at": "2026-10-18T15:17:27Z",
+    "body": "@leaanthony I have tested with the PR and it seems to work really good!"
+   }
+  ],
+  "open_prs": [
+   "https://github.com/wailsapp/wails/pull/6300"
+  ],
+  "closed_prs": [],
+  "heuristic": 0.0
+ },
+ "testcontainers/testcontainers-go#3157": {
+  "repo": "testcontainers/testcontainers-go",
+  "number": 3157,
+  "url": "https://github.com/testcontainers/testcontainers-go/issues/3157",
+  "title": "[Bug]: Permission denied reading redpanda.yaml stopping container from proper start",
+  "body": "### Testcontainers version\n\n0.37.0\n\n### Using the latest Testcontainers version?\n\nYes\n\n### Host OS\n\nMac\n\n### Host arch\n\nARM\n\n### Go version\n\ngo1.24.2 darwin/arm64\n\n### Docker version\n\n```shell\nClient:\n Version:           28.0.1\n API version:       1.48\n Go version:        go1.23.6\n Git commit:        068a01e\n Built:             Wed Feb 26 10:38:16 2025\n OS/Arch:           darwin/arm64\n Context:           desktop-linux\n\nServer: Docker Desktop 4.39.0 (184744)\n Engine:\n  Version:          28.0.1\n  API version:      1.48 (minimum version 1.24)\n  Go version:       go1.23.6\n  Git commit:       bbd0a17\n  Built:            Wed Feb 26 10:40:57 2025\n  OS/Arch:          linux/arm64\n  Experimental:     false\n containerd:\n  Version:          1.7.25\n  GitCommit:        bcc810d6b9066471b0b6fa75f557a15a1cbf31bb\n runc:\n  Version:          1.2.4\n  GitCommit:        v1.2.4-0-g6c52b3f\n docker-init:\n  Version:          0.19.0\n  GitCommit:        de40ad0\n```\n\n### Docker info\n\n```shell\nClient:\n Version:    28.0.1\n Context:    desktop-linux\n Debug Mode: false\n Plugins:\n  ai: Docker AI Agent - Ask Gordon (Docker Inc.)\n    Version:  v0.9.4\n    Path:     /Users/borja/.docker/cli-plugins/docker-ai\n  buildx: Docker Buildx (Docker Inc.)\n    Version:  v0.21.1-desktop.2\n    Path:     /Users/borja/.docker/cli-plugins/docker-buildx\n  compose: Docker Compose (Docker Inc.)\n    Version:  v2.33.1-desktop.1\n    Path:     /Users/borja/.docker/cli-plugins/docker-compose\n  debug: Get a shell into any image or container (Docker Inc.)\n    Version:  0.0.38\n    Path:     /Users/borja/.docker/cli-plugins/docker-debug\n  desktop: Docker Desktop commands (Beta) (Docker Inc.)\n    Version:  v0.1.5\n    Path:     /Users/borja/.docker/cli-plugins/docker-desktop\n  dev: Docker Dev Environments (Docker Inc.)\n    Version:  v0.1.2\n    Path:     /Users/borja/.docker/cli-plugins/docker-dev\n  extension: Manages Docker extensions (Docker Inc.)\n    Version:  v0.2.27\n    Path:     /Users/borja/.docker/cli-plugins/docker-extension\n  feedback: Provide feedback, right in your terminal! (Docker Inc.)\n    Version:  v1.0.5\n    Path:     /Users/borja/.docker/cli-plugins/docker-feedback\n  init: Creates Docker-related starter files for your project (Docker Inc.)\n    Version:  v1.4.0\n    Path:     /Users/borja/.docker/cli-plugins/docker-init\n  sbom: View the packaged-based Software Bill Of Materials (SBOM) for an image (Anchore Inc.)\n    Version:  0.6.0\n    Path:     /Users/borja/.docker/cli-plugins/docker-sbom\n  scout: Docker Scout (Docker Inc.)\n    Version:  v1.16.3\n    Path:     /Users/borja/.docker/cli-plugins/docker-scout\n\nServer:\n Containers: 0\n  Running: 0\n  Paused: 0\n  Stopped: 0\n Images: 2\n Server Version: 28.0.1\n Storage Driver: overlay2\n  Backing Filesystem: extfs\n  Supports d_type: true\n  Using metacopy: false\n  Native Overlay Diff: true\n  userxattr: false\n Logging Driver: json-file\n Cgroup Driver: cgroupfs\n Cgroup Version: 2\n Plugins:\n  Volume: local\n  Network: bridge host ipvlan macvlan null overlay\n  Log: awslogs fluentd gcplogs gelf journald json-file local splunk syslog\n CDI spec directories:\n  /etc/cdi\n  /var/run/cdi\n Swarm: inactive\n Runtimes: io.containerd.runc.v2 runc\n Default Runtime: runc\n Init Binary: docker-init\n containerd version: bcc810d6b9066471b0b6fa75f557a15a1cbf31bb\n runc version: v1.2.4-0-g6c52b3f\n init version: de40ad0\n Security Options:\n  seccomp\n   Profile: unconfined\n  cgroupns\n Kernel Version: 6.10.14-linuxkit\n Operating System: Docker Desktop\n OSType: linux\n Architecture: aarch64\n CPUs: 8\n Total Memory: 7.751GiB\n Name: docker-desktop\n ID: 88bc5eb8-5e29-42ee-8e31-e23464759f95\n Docker Root Dir: /var/lib/docker\n Debug Mode: false\n HTTP Proxy: http.docker.internal:3128\n HTTPS Proxy: http.docker.internal:3128\n No Proxy: hubproxy.docker.internal\n Labels:\n  com.docker.desktop.address=unix:///Users/borja/Library/Containers/com.docker.docker/Data/docker-cli.sock\n Experimental: false\n Insecure Registries:\n  hubproxy.docker.internal:5555\n  ::1/128\n  127.0.0.0/8\n Live Restore Enabled: false\n\nWARNING: daemon is not using the default seccomp profile\n```\n\n### What happened?\n\nWhen starting a redpanda container using `v0.37.0` it fails with `/etc/redpanda/redpanda.yaml: Permission denied`.\nThis works correctly up to `v0.36.0`.\n\n### Relevant log output\n\n```shell\n`grep: /etc/redpanda/redpanda.yaml: Permission denied`\n```\n\n### Additional information\n\nSimple reproduction code:\n```golang\npackage service\n\nimport (\n\t\"context\"\n\t\"log\"\n\t\"testing\"\n\n\t\"github.com/testcontainers/testcontainers-go\"\n\t\"github.com/testcontainers/testcontainers-go/modules/redpanda\"\n)\n\nfunc TestRedpanda(t *testing.T) {\n\tctx := context.Background()\n\n\tredpandaContainer, err := redpanda.Run(ctx,\n\t\t\"docker.redpanda.com/redpandadata/redpanda:latest\",\n\t)\n\tdefer func() {\n\t\tif err := testcontainers.TerminateContainer(redpandaContainer); err != nil {\n\t\t\tlog.Printf(\"failed to terminate container: %s\", err)\n\t\t}\n\t}()\n\tif err != nil {\n\t\tlog.Printf(\"failed to start container: %s\", err)\n\t\treturn\n\t}\n}\n```",
+  "labels": [
+   "bug"
+  ],
+  "created_at": "2025-05-07T09:07:22Z",
+  "updated_at": "2026-08-20T22:59:04Z",
+  "comments_count": 10,
+  "stars": 0,
+  "language": null,
+  "repo_description": "",
+  "watched": false,
+  "welcomed_before": 0,
+  "signals": [],
+  "comments": [
+   {
+    "author": "KenxinKun",
+    "association": "CONTRIBUTOR",
+    "created_at": "2025-05-07T09:37:04Z",
+    "body": "The file in question is owned by `root:root` but the exec command by default goes to the user `redpanda`:\n\n<img width=\"494\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/3a8bc11f-fb5c-4743-a70e-fc04e8031c3f\" />\n\nIs it possible that the user is incorrectly set @mdelapenya ?\n\n<img width=\"1174\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/eaed0a0b-e812-476a-8a65-e77e92698f36\" />"
+   },
+   {
+    "author": "mdelapenya",
+    "association": "MEMBER",
+    "created_at": "2025-05-07T10:21:17Z",
+    "body": "In v0.36.0, the module already used `root:root` as User: https://github.com/testcontainers/testcontainers-go/blob/v0.36.0/modules/redpanda/redpanda.go#L71, so not sure about this 🤔 \n\nCan you run your own code with the redpanda image that is used in the tests? I guess the \"bug\" could come from the `latest` tag"
+   },
+   {
+    "author": "mdelapenya",
+    "association": "MEMBER",
+    "created_at": "2025-05-07T10:24:33Z",
+    "body": "I've run all the tests using `latest` and they pass... weird 🤔 "
+   },
+   {
+    "author": "KenxinKun",
+    "association": "CONTRIBUTOR",
+    "created_at": "2025-05-07T11:06:08Z",
+    "body": "@mdelapenya after some more digging I have some code that can reproduce (I tried with the same image in the tests but that's not the issue). The code to reproduce:\n```golang\npackage experiment\n\nimport (\n\t\"context\"\n\t\"testing\"\n\n\t\"github.com/docker/docker/api/types/container\"\n\t\"github.com/stretchr/testify/require\"\n\t\"github.com/testcontainers/testcontainers-go\"\n\t\"github.com/testcontainers/testcontainers-go/modules/redpanda\"\n)\n\nfunc TestRedpanda(t *testing.T) {\n\tt.Parallel()\n\n\tctx := context.Background()\n\n\tredpandaContainer, err := redpanda.Run(ctx,\n\t\t\"docker.redpanda.com/redpandadata/redpanda:latest\",\n\t\ttestcontainers.WithConfigModifier(func(config *container.Config) {\n\t\t\t// Setting this config modifier overrides the existing one which applies the user\n\t\t\t// In my own code, I was just trying to add some labels here\n\t\t}),\n\t)\n\trequire.NoError(t, err)\n\n\tdefer func() {\n\t\trequire.NoError(t, testcontainers.TerminateContainer(redpandaContainer))\n\t}()\n}\n```\n\nThe cause seems to be that I was using `testcontainers.WithConfigModifier`, which I was doing just to add some labels. This seems to replace the original configuration from the screenshot above in the main code.\n\nWould you say this is expected behaviour? My intention wasn't to replace the entire config modifier originally, just add to it..."
+   },
+   {
+    "author": "mdelapenya",
+    "association": "MEMBER",
+    "created_at": "2025-05-07T11:49:14Z",
+    "body": "Ok then, the config modifier option overrides the existing one, it's not appending. We have a similar discussion when adding `WithCmd` and `WithCmdArgs`: should the options override, or append/merge?\n\nIn any case, you have now a `testcontainers.WithLabels` option, which is adding the labels to the existing map.\n\nI think we are victims here of the semantics in the names, as mentioned above: should the options override, or append/merge? It depends of the field that we are modifying. For CMD and ENTRYPOINT seemed easy to identify two different use cases. For maps and slices fields (Env, Labels, LifecycleHooks...) it seems easy to \"append\" values. For the rest, we can implicitly think that the user wanted to override.\n\nProbably a bug in the documentation, which is not explaining it correctly. cc/ @stevenh "
+   },
+   {
+    "author": "KenxinKun",
+    "association": "CONTRIBUTOR",
+    "created_at": "2025-05-07T11:55:33Z",
+    "body": "Oh at least for my use case I can definitely use the `testcontainers.WithLabels` option to get around this :) Thanks for the pointer!"
+   },
+   {
+    "author": "stevenh",
+    "association": "CONTRIBUTOR",
+    "created_at": "2025-05-07T12:22:32Z",
+    "body": "> Ok then, the config modifier option overrides the existing one, it's not appending. We have a similar discussion when adding `WithCmd` and `WithCmdArgs`: should the options override, or append/merge?\n> \n> In any case, you have now a `testcontainers.WithLabels` option, which is adding the labels to the existing map.\n> \n> I think we are victims here of the semantics in the names, as mentioned above: should the options override, or append/merge? It depends of the field that we are modifying. For CMD and ENTRYPOINT seemed easy to identify two different use cases. For maps and slices fields (Env, Labels, LifecycleHooks...) it seems easy to \"append\" values. For the rest, we can implicitly think that the user wanted to override.\n> \n> Probably a bug in the documentation, which is not explaining it correctly. cc/ [@stevenh](https://github.com/stevenh)\n\nYer I think we need to consider ensuring it's very obvious with naming. We have the same issue with `WithWaitStrategy` I just flagged [here](https://github.com/testcontainers/testcontainers-go/pull/3151#discussion_r2077479879)"
+   },
+   {
+    "author": "KenxinKun",
+    "association": "CONTRIBUTOR",
+    "created_at": "2025-05-07T20:53:58Z",
+    "body": "So just for completeness I fixed my issue by just using the suggested `WithLabels`. So it's up to you if you want to close or not this issue and or make those documentation clarifications 😮 "
+   },
+   {
+    "author": "mdelapenya",
+    "association": "MEMBER",
+    "created_at": "2025-06-11T13:52:21Z",
+    "body": "We are the following name convention for options:\n\n- WithAdditionalXXX -> add to existing\n- WithXXX -> overrides current value.\n\nThere are exceptions to this, like any option affecting maps and slices: they always append.\n\nWe probably need to make it explicit in the docs, so will close this one once updated."
+   },
+   {
+    "author": "mdelapenya",
+    "association": "MEMBER",
+    "created_at": "2025-06-12T08:10:19Z",
+    "body": "https://youtube.com/watch?v=5uM6z7RnReE&si=ItMgdN0DRx3xg4Y2 good watch to recall we are doing a not-that-bad job with the options, also pointing out that the docs must be crystal-clear about additivity or replaceability in the opts behavior, which aligns with the discussion here."
+   }
+  ],
+  "open_prs": [],
+  "closed_prs": [],
+  "heuristic": 0.0
+ },
+ "GlacioHack/xdem#942": {
+  "repo": "GlacioHack/xdem",
+  "number": 942,
+  "url": "https://github.com/GlacioHack/xdem/issues/942",
+  "title": "[BUG] Apply rotation matrix on a DEM with nan values and resample = cubic or quintic",
+  "body": "Current apply_matrix() in a case of a rotation can't deal with nan values in the input dem : \n\n```\n# Get a DEM + param \nfn = geoutils.examples.get_path_test(\"everest_landsat_b4\")\ndem = geoutils.Raster(fn)\ndem = dem.icrop((0, 0, 12, 10)) # 26, 24))\ndem = dem.astype(dtype=np.float32, convert_nodata=False)\ndem.set_nodata(-9999, update_array=False, update_mask=False)\nepc = dem.to_pointcloud(data_column_name=\"z\").ds\ncentroid = (np.mean(epc.geometry.x.values), np.mean(epc.geometry.y.values), 0.0)\n\n# Init rotation matrix\nrotation = np.deg2rad(1)\nmatrix_rotations = matrix_identity.copy()\nmatrix_rotations[1, 1] = np.cos(rotation)\nmatrix_rotations[2, 2] = np.cos(rotation)\nmatrix_rotations[2, 1] = -np.sin(rotation)\nmatrix_rotations[1, 2] = np.sin(rotation)\n\n# Turn DEM to have some NaN values\ndem_tourne = xdem.coreg.apply_matrix(dem, matrix_rotations,  centroid=centroid, resampling=\"cubic\")\n\n# Apply matrix with error\nxdem.coreg.apply_matrix(dem_tourne, matrix_rotations,  centroid=centroid, resampling=\"cubic\")\n```\n\nIt gives : \n\n```\nTraceback (most recent call last):\n  File \"/home/mbouchet/Documents/xDem_project/new_xdem/xdem/bug/apply_matrix_multiprocess.py\", line 148, in <module>\n    print(xdem.coreg.apply_matrix(dem_tourne, matrix_rotations,\n          ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n                                  centroid=centroid, resampling=\"cubic\"))\n                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/mbouchet/Documents/xDem_project/new_xdem/xdem/xdem/coreg/base.py\", line 1750, in apply_matrix\n    applied_dem, out_transform = _apply_matrix_rst(\n                                 ~~~~~~~~~~~~~~~~~^\n        dem=dem,\n        ^^^^^^^^\n    ...<5 lines>...\n        **kwargs,\n        ^^^^^^^^^\n    )\n    ^\n  File \"/home/mbouchet/Documents/xDem_project/new_xdem/xdem/xdem/coreg/base.py\", line 1578, in _apply_matrix_rst\n    new_dem, transform = _iterate_affine_regrid_small_rotations(\n                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^\n        dem=dem, transform=transform, matrix=matrix, centroid=centroid, resampling=resampling\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    )\n    ^\n  File \"/home/mbouchet/Documents/xDem_project/new_xdem/xdem/xdem/coreg/base.py\", line 1419, in _iterate_affine_regrid_small_rotations\n    z_interp = scipy.interpolate.RegularGridInterpolator(\n        points=(np.flip(xycoords[1], axis=0), xycoords[0]), values=dem, method=resampling, bounds_error=False\n    )\n  File \"/home/mbouchet/Documents/xDem_project/new_xdem/xdem/venv/lib/python3.13/site-packages/scipy/interpolate/_rgi.py\", line 328, in __init__\n    self._spline = self._construct_spline(method, solver, **solver_args)\n                   ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/mbouchet/Documents/xDem_project/new_xdem/xdem/venv/lib/python3.13/site-packages/scipy/interpolate/_rgi.py\", line 339, in _construct_spline\n    spl = make_ndbspl(\n            self._grid, self._values, self._SPLINE_DEGREE_MAP[method],\n            solver=solver, **solver_args\n          )\n  File \"/home/mbouchet/Documents/xDem_project/new_xdem/xdem/venv/lib/python3.13/site-packages/scipy/interpolate/_ndbspline.py\", line 516, in make_ndbspl\n    coef = solver(matr, vals, **solver_args)\n  File \"/home/mbouchet/Documents/xDem_project/new_xdem/xdem/venv/lib/python3.13/site-packages/scipy/interpolate/_ndbspline.py\", line 438, in _iter_solve\n    res, info = solver(a, b, **solver_args)\n                ~~~~~~^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/mbouchet/Documents/xDem_project/new_xdem/xdem/venv/lib/python3.13/site-packages/scipy/sparse/linalg/_isolve/_gcrotmk.py\", line 279, in gcrotmk\n    raise ValueError(\"RHS must contain only finite numbers\")\nValueError: RHS must contain only finite numbers\n```\n\n",
+  "labels": [
+   "bug"
+  ],
+  "created_at": "2026-04-03T07:55:09Z",
+  "updated_at": "2026-08-31T13:53:01Z",
+  "comments_count": 7,
+  "stars": 0,
+  "language": null,
+  "repo_description": "",
+  "watched": false,
+  "welcomed_before": 0,
+  "signals": [
+   "open pull request linked: https://github.com/GlacioHack/xdem/pull/953"
+  ],
+  "comments": [
+   {
+    "author": "marinebcht",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-04-03T09:53:10Z",
+    "body": "[Research in progress] \n\nThe problem occurs when NaN values are detected here : https://github.com/GlacioHack/xdem/blob/3e2294775d1dfb2c7a041ec312f0e8a78f25403f/xdem/coreg/base.py#L1418\nhttps://github.com/GlacioHack/xdem/blob/3e2294775d1dfb2c7a041ec312f0e8a78f25403f/xdem/coreg/base.py#L1419\n\nThought playing with [RegularGridInterpolator](https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.RegularGridInterpolator.html) parameters would be efficiant but its was not :(\n\nHere a little test : \n\n```\n    import scipy\n    points = (([3098570., 3098540., 3098510., 3098480.]), ([489340., 489370., 489400., 489430.]))\n    dem = [[251., 255., 251., 255.],\n           [249., 253., 251., 255.],\n           [244., 234., 251., 255.],\n           [235., 227., 283., np.nan]]\n    resampling = \"cubic\"\n\n    z_interp = scipy.interpolate.RegularGridInterpolator(\n        points=points,\n        values=dem,\n        method=resampling,\n        bounds_error=False,\n        fill_value=None,\n    )\n```\n\nI saw this issue : https://github.com/scipy/scipy/issues/20387\nSeems that the problem can't be solve easely with RegularGridInterpolator"
+   },
+   {
+    "author": "marinebcht",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-04-03T10:13:26Z",
+    "body": "Same issue on \"gizeh_dem\", containing NaN values : \n\n```\n File \"/home/mbouchet/Documents/xDem_project/new_xdem/xdem/xdem/coreg/base.py\", line 1421, in _iterate_affine_regrid_small_rotations\n    z_interp = scipy.interpolate.RegularGridInterpolator(\n        points=(np.flip(xycoords[1], axis=0), xycoords[0]), values=dem, method=resampling, bounds_error=False, fill_value=None\n    )\n  File \"/home/mbouchet/Documents/xDem_project/new_xdem/xdem/venv/lib/python3.13/site-packages/scipy/interpolate/_rgi.py\", line 328, in __init__\n    self._spline = self._construct_spline(method, solver, **solver_args)\n                   ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/mbouchet/Documents/xDem_project/new_xdem/xdem/venv/lib/python3.13/site-packages/scipy/interpolate/_rgi.py\", line 339, in _construct_spline\n    spl = make_ndbspl(\n            self._grid, self._values, self._SPLINE_DEGREE_MAP[method],\n            solver=solver, **solver_args\n          )\n  File \"/home/mbouchet/Documents/xDem_project/new_xdem/xdem/venv/lib/python3.13/site-packages/scipy/interpolate/_ndbspline.py\", line 516, in make_ndbspl\n    coef = solver(matr, vals, **solver_args)\n  File \"/home/mbouchet/Documents/xDem_project/new_xdem/xdem/venv/lib/python3.13/site-packages/scipy/interpolate/_ndbspline.py\", line 438, in _iter_solve\n    res, info = solver(a, b, **solver_args)\n                ~~~~~~^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/mbouchet/Documents/xDem_project/new_xdem/xdem/venv/lib/python3.13/site-packa"
+   },
+   {
+    "author": "rhugonnet",
+    "association": "MEMBER",
+    "created_at": "2026-04-03T19:17:36Z",
+    "body": "@marinebcht The fix here is to use GeoUtils' `_interp_points` with `return_interpolator=True`.\n\nWe already deal with NaN propagation in `_interp_points`, with a lot of tests. The direct call to `RegularGridInterpolator` must be a relic of ancient code that we didn't update."
+   },
+   {
+    "author": "marinebcht",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-04-03T19:46:51Z",
+    "body": "@rhugonnet I'm not surprise that something exists already ^^ ... perfect thank you ! :)"
+   },
+   {
+    "author": "marinebcht",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-04-08T14:31:11Z",
+    "body": "Possible linked issue: https://github.com/rasterio/rasterio/issues/674 (2016) + PR: https://github.com/rasterio/rasterio/issues/1272 (2018)"
+   },
+   {
+    "author": "marinebcht",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-05-04T15:13:58Z",
+    "body": "```\nimport xdem\nimport geoutils\nimport numpy as np\nimport rasterio as rio\nfrom xdem.coreg.base import apply_matrix\n\n\ndem_arr = np.linspace(0, 2, 120).reshape(10, 12)\ndem_arr[8:10, 8:10] = np.nan\n\ntransform = rio.transform.from_origin(0, 5, 1, 1)\nraster_base = geoutils.Raster.from_array(dem_arr, transform=transform, crs=4326, nodata=999)\nepc = raster_base.to_pointcloud(data_column_name=\"z\").ds\ncentroid = (np.mean(epc.geometry.x.values), np.mean(epc.geometry.y.values), 0.0)\n\nmatrix_identity = np.diag(np.ones(4, float))\nrotation = np.deg2rad(5)\nmatrix_rotations = matrix_identity.copy()\nmatrix_rotations[1, 1] = np.cos(rotation)\nmatrix_rotations[2, 2] = np.cos(rotation)\nmatrix_rotations[2, 1] = -np.sin(rotation)\nmatrix_rotations[1, 2] = np.sin(rotation)\n\nresampling = \"cubic\"\nbase_am = apply_matrix(raster_base, matrix_rotations, centroid=centroid, resample=True, resampling=resampling)\n```\n\nError : \n\n```\nTraceback (most recent call last):\n  File \"/home/mbouchet/Documents/xDem_project/new_xdem/xdem/bug/test_cubic.py\", line 25, in <module>\n    base_am = apply_matrix(\n        raster_base,\n    ...<3 lines>...\n        resampling=resampling,\n    )\n  File \"/home/mbouchet/Documents/xDem_project/new_xdem/xdem/xdem/coreg/base.py\", line 1745, in apply_matrix\n    applied_dem, out_transform = _apply_matrix_rst(\n                                 ~~~~~~~~~~~~~~~~~^\n        dem=dem,\n        ^^^^^^^^\n    ...<5 lines>...\n        **kwargs,\n        ^^^^^^^^^\n    )\n    ^\n  File \"/home/mbouchet/Documents/"
+   },
+   {
+    "author": "rhugonnet",
+    "association": "MEMBER",
+    "created_at": "2026-05-04T19:13:38Z",
+    "body": "@marinebcht As per message above, we should be able to use `geoutils.interp_points()` instead in `_iterate_affine_z_interp`?\nThis should solve most of these issues."
+   }
+  ],
+  "open_prs": [
+   "https://github.com/GlacioHack/xdem/pull/953"
+  ],
+  "closed_prs": [],
+  "heuristic": 0.0
+ },
+ "openrewrite/rewrite-testing-frameworks#723": {
+  "repo": "openrewrite/rewrite-testing-frameworks",
+  "number": 723,
+  "url": "https://github.com/openrewrite/rewrite-testing-frameworks/issues/723",
+  "title": "UpgradeSpringBoot_3_3 removes imports for ArgumentMatchers and Mockito from groovy tests",
+  "body": "## What version of OpenRewrite are you using?\n<!--\nWhenever possible please try to replicate your issue with the latest versions of OpenRewrite.\nThe latest major and minor versions of OpenRewrite projects are usually listed here:\nhttps://docs.openrewrite.org/reference/latest-versions-of-every-openrewrite-module\nFor patch releases check the GitHub Releases page for the respective project.\n\nWe release every few weeks, so it's possible that your issue has already been fixed.\n\nIf you want to try the most recent changes that haven't been fully released yet, you can check out our snapshot releases\nhttps://docs.openrewrite.org/reference/snapshot-instructions\n-->\nI am using\n\n- org.openrewrite.maven:rewrite-maven-plugin:6.7.0\n- org.openrewrite.recipe:rewrite-spring:6.6.0\n- Apache Maven 3.8.7\n- org.spockframework:spock-spring:2.4-M6-groovy-4.0\n- org.spockframework:spock-core:2.4-M6-groovy-4.0\n\n## How are you running OpenRewrite?\n\nI am using the Maven plugin, and my project is a single module project. \nrun `mvn rewrite:run`\n```xml\n<project xmlns=\"http://maven.apache.org/POM/4.0.0\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n\txsi:schemaLocation=\"http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd\">\n\t<modelVersion>4.0.0</modelVersion>\n\n\t<groupId>org.spring-projects.spring-data-jpa</groupId>\n\t<artifactId>test-case-query-sum-enumeration</artifactId>\n\t<version>1.0.0.Final</version>\n\n\t<parent>\n\t\t<groupId>org.springframework.boot</groupId>\n\t\t<artifactId>spring-boot-starter-parent</artifactId>\n\t\t<!-- Test works w/ 3.2.12 -->\n\t\t<version>3.3.11</version>\n\t\t<!-- Test fails w/ 3.4.5 -->\n<!--\t\t<version>3.4.5</version>-->\n\t</parent>\n\t<properties>\n\t\t<java.version>21</java.version>\n\t</properties>\n\n\t<dependencies>\n\t\t<dependency>\n\t\t\t<groupId>org.springframework.boot</groupId>\n\t\t\t<artifactId>spring-boot-starter-data-jpa</artifactId>\n\t\t</dependency>\n\t\t<dependency>\n\t\t\t<groupId>org.springframework.boot</groupId>\n\t\t\t<artifactId>spring-boot-starter-test</artifactId>\n\t\t\t<scope>test</scope>\n\t\t</dependency>\n\t\t<dependency>\n\t\t\t<groupId>com.h2database</groupId>\n\t\t\t<artifactId>h2</artifactId>\n\t\t\t<version>2.3.232</version>\n\t\t\t<scope>test</scope>\n\t\t</dependency>\n\t\t<dependency>\n\t\t\t<groupId>org.spockframework</groupId>\n\t\t\t<artifactId>spock-spring</artifactId>\n\t\t\t<version>2.4-M6-groovy-4.0</version>\n\t\t\t<scope>test</scope>\n\t\t</dependency>\n\t\t<dependency>\n\t\t\t<groupId>org.spockframework</groupId>\n\t\t\t<artifactId>spock-core</artifactId>\n\t\t\t<version>2.4-M6-groovy-4.0</version>\n\t\t\t<scope>test</scope>\n\t\t</dependency>\n\t</dependencies>\n\n\t<build>\n\t\t<plugins>\n\t\t\t<plugin>\n\t\t\t\t<groupId>org.apache.maven.plugins</groupId>\n\t\t\t\t<artifactId>maven-compiler-plugin</artifactId>\n\t\t\t\t<version>3.14.0</version>\n\t\t\t\t<configuration>\n\t\t\t\t\t<release>${java.version}</release>\n\t\t\t\t</configuration>\n\t\t\t</plugin>\n\t\t\t<plugin>\n\t\t\t\t<groupId>org.apache.maven.plugins</groupId>\n\t\t\t\t<artifactId>maven-surefire-plugin</artifactId>\n\t\t\t\t<configuration>\n\t\t\t\t\t<testFailureIgnore>false</testFailureIgnore>\n\t\t\t\t\t<argLine>-Xmx1024m -Djdk.net.URLClassPath.disableClassPathURLCheck=true @{surefireArgLine}\n\t\t\t\t\t</argLine>\n\t\t\t\t\t<useFile>false</useFile>\n\t\t\t\t\t<includes>\n\t\t\t\t\t\t<include>**/*Test.java</include>\n\t\t\t\t\t\t<include>**/*Spec.java</include>\n\t\t\t\t\t\t<include>**/*Spec.groovy</include>\n\t\t\t\t\t</includes>\n\t\t\t\t</configuration>\n\t\t\t</plugin>\n\t\t\t<plugin>\n\t\t\t\t<groupId>org.apache.maven.plugins</groupId>\n\t\t\t\t<artifactId>maven-failsafe-plugin</artifactId>\n\t\t\t\t<executions>\n\t\t\t\t\t<execution>\n\t\t\t\t\t\t<goals>\n\t\t\t\t\t\t\t<goal>integration-test</goal>\n\t\t\t\t\t\t\t<goal>verify</goal>\n\t\t\t\t\t\t</goals>\n\t\t\t\t\t</execution>\n\t\t\t\t</executions>\n\t\t\t\t<configuration>\n\t\t\t\t\t<argLine>--illegal-access=permit @{surefireArgLine}</argLine>\n\t\t\t\t\t<includes>\n\t\t\t\t\t\t<include>**/*Test.java</include>\n\t\t\t\t\t\t<include>**/*Spec.java</include>\n\t\t\t\t\t\t<include>**/*Spec.groovy</include>\n\t\t\t\t\t</includes>\n\t\t\t\t</configuration>\n\t\t\t</plugin>\n\n\t\t\t<!-- command: mvn rewrite:run -->\n\t\t\t<plugin>\n\t\t\t\t<groupId>org.openrewrite.maven</groupId>\n\t\t\t\t<artifactId>rewrite-maven-plugin</artifactId>\n\t\t\t\t<version>6.7.0</version>\n\t\t\t\t<configuration>\n\t\t\t\t\t<activeRecipes>\n\t\t\t\t\t\t<recipe>org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_3</recipe>\n<!--\t\t\t\t\t\t<recipe>org.openrewrite.java.testing.junit5.JUnit5BestPractices</recipe>-->\n\t\t\t\t\t</activeRecipes>\n\t\t\t\t</configuration>\n\t\t\t\t<dependencies>\n\t\t\t\t\t<dependency>\n\t\t\t\t\t\t<groupId>org.openrewrite.recipe</groupId>\n\t\t\t\t\t\t<artifactId>rewrite-spring</artifactId>\n\t\t\t\t\t\t<version>6.6.0</version>\n\t\t\t\t\t</dependency>\n\t\t\t\t</dependencies>\n\t\t\t</plugin>\n\t\t</plugins>\n\t</build>\n</project>\n```\n\n## What is the smallest, simplest way to reproduce the problem?\n\n```java\npackage org.spring.data.jpa.bugs;\n\nimport jakarta.persistence.EntityManager;\nimport org.springframework.stereotype.Component;\n\n@Component\npublic class OurService {\n\n    private final EntityManager entityManager;\n\n    public OurService(EntityManager entityManager) {\n        this.entityManager = entityManager;\n    }\n\n    public void doSomething(String name) {\n        OurEntity ourEntity = new OurEntity();\n        ourEntity.setName(name);\n\n        entityManager.persist(ourEntity);\n    }\n}\n```\n```java\npackage org.spring.data.jpa.bugs;\n\nimport jakarta.persistence.Column;\nimport jakarta.persistence.Entity;\nimport jakarta.persistence.GeneratedValue;\nimport jakarta.persistence.GenerationType;\nimport jakarta.persistence.Id;\nimport jakarta.persistence.SequenceGenerator;\n\n@Entity\npublic class OurEntity {\n\n    @Id\n    @SequenceGenerator(name = \"ourEntitySeq\", sequenceName = \"OUR_ENTITY_ID_SEQ\", allocationSize = 1)\n    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = \"ourEntitySeq\")\n    private Long id;\n    @Column(name = \"name\")\n    private String name;\n\n    public Long getId() {\n        return id;\n    }\n\n    public void setId(Long id) {\n        this.id = id;\n    }\n\n    public String getName() {\n        return name;\n    }\n\n    public void setName(String name) {\n        this.name = name;\n    }\n}\n```\n\n```groovy\npackage org.spring.data.jpa.bugs\n\nimport jakart",
+  "labels": [
+   "bug"
+  ],
+  "created_at": "2025-05-07T09:24:06Z",
+  "updated_at": "2025-05-09T06:25:57Z",
+  "comments_count": 2,
+  "stars": 0,
+  "language": null,
+  "repo_description": "",
+  "watched": false,
+  "welcomed_before": 0,
+  "signals": [],
+  "comments": [
+   {
+    "author": "timtebeek",
+    "association": "MEMBER",
+    "created_at": "2025-05-08T23:36:01Z",
+    "body": "Thanks for the report @stefan-schilling ; sorry to hear your Groovy files are negatively affected. The corresponding recipe is here, where we take care to only remove imports where we do not find any matching methods being used:\nhttps://github.com/openrewrite/rewrite-testing-frameworks/blob/258cc3f183185c2a4fd1751915e272f0b6615ced/src/main/java/org/openrewrite/java/testing/mockito/CleanupMockitoImports.java#L101-L106\n\nI wonder what would trip this up specifically for Groovy, as we had already worked out most of the quirks around Java and missing types. 🤔 "
+   },
+   {
+    "author": "stefan-schilling",
+    "association": "NONE",
+    "created_at": "2025-05-09T06:25:57Z",
+    "body": "Hello  @timtebeek ,\nmaybe one addition: I have the impression, it removes esp. imports such as\n\n`import static org.mockito.Mockito.*`\n\nAnd I don't know, why it's so keen to remove the static ArgumentMatcher imports.\n\nBut don't feel too bad: Intellij also has issues recommending the ArgumentMatcher imports when working w/ it. Those are the only imports I actually have to do manually.\n\nThanks.\nStefan"
+   }
+  ],
+  "open_prs": [],
+  "closed_prs": [],
+  "heuristic": 0.0
+ },
+ "GlacioHack/xdem#760": {
+  "repo": "GlacioHack/xdem",
+  "number": 760,
+  "url": "https://github.com/GlacioHack/xdem/issues/760",
+  "title": "Limit the number of decimal places when displaying floats with NumPy",
+  "body": "Currently, NumPy displays too many decimal places for floating point numbers by default.\n\nExemple : \n\n<img width=\"1161\" height=\"58\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/d23ec584-2764-4f54-9895-de76eca52aa8\" />\n\nPropositions : \n\n- Use [printoptions](https://numpy.org/doc/2.2/reference/generated/numpy.printoptions.html#numpy.printoptions) as a context manager to set the values temporarily.\n- Work directly for the iterations prints \n- Other proposition ? ",
+  "labels": [
+   "enhancement",
+   "help wanted",
+   "cli"
+  ],
+  "created_at": "2025-07-17T08:50:00Z",
+  "updated_at": "2026-05-29T08:54:25Z",
+  "comments_count": 10,
+  "stars": 0,
+  "language": null,
+  "repo_description": "",
+  "watched": false,
+  "welcomed_before": 0,
+  "signals": [
+   "open pull request linked: https://github.com/GlacioHack/xdem/pull/759"
+  ],
+  "comments": [
+   {
+    "author": "rhugonnet",
+    "association": "MEMBER",
+    "created_at": "2025-07-18T00:11:37Z",
+    "body": "I think we should use a consistent number of significant figures (3?) to ensure the number of various magnitude that we have always display correctly.\n\nApparently there's two ways of doing this, either Python `f\"{mynum:.3g}\"` or NumPy with `np.printoptions(precision=3)` you mention. However both of those will trigger scientific notation for small/large numbers (e.g. `1.234e+05`).\n\nIf we want to avoid scientific notation and still have right number of significant digits, apparently there aren't many options, it's only `np.format_float_positional` that is made just for this!\n\nI can deal with this in #759 "
+   },
+   {
+    "author": "adebardo",
+    "association": "CONTRIBUTOR",
+    "created_at": "2025-07-18T06:40:41Z",
+    "body": "Great ! Thanks :)"
+   },
+   {
+    "author": "adehecq",
+    "association": "MEMBER",
+    "created_at": "2025-07-30T09:33:33Z",
+    "body": "> I think we should use a consistent number of significant figures (3?) to ensure the number of various magnitude that we have always display correctly.\n> \n> Apparently there's two ways of doing this, either Python `f\"{mynum:.3g}\"` or NumPy with `np.printoptions(precision=3)` you mention. However both of those will trigger scientific notation for small/large numbers (e.g. `1.234e+05`).\n> \n> If we want to avoid scientific notation and still have right number of significant digits, apparently there aren't many options, it's only `np.format_float_positional` that is made just for this!\n> \n> I can deal with this in [#759](https://github.com/GlacioHack/xdem/pull/759)\n\nOf course, scientific notation is the only way if you want to always display 3 non 0 numbers. But if we know we wants only 3 digits, it is possible to use the format \".3f\" instead of \".3g\". For example, if the shift is 0.0001 pixels, it makes sense that the print is \"0.000\" (with .3f) instead of \"1e-4\" (with .3g). "
+   },
+   {
+    "author": "marinebcht",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-02-23T18:16:21Z",
+    "body": "@adehecq @adebardo @rhugonnet @belletva \n\n\n### Methods \n\n<img width=\"404\" height=\"183\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/0fb7657e-c5b8-434e-a2ee-a07fa76b5efb\" />\n\n<img width=\"918\" height=\"202\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/733c81c8-979e-48b6-bf2c-0fcbd0f3a203\" />\n\n- (1) = (2), except when the last(s) digit(s) before the cut is/are zero (ex: 0. / 0.000)\n- (3) keeps only for digit, no matter the decimal point (definitely not ok for the second-to-last example\n- others methods (4) (5) (6) are the same (% config), they always use scientific format\n\n### Adaptation\n\n\n#### X/Y/Z offsets + horizontal\n\nIn the case of the X/Y/Z offsets + horizontal tolerance prints here, (1) seems very good as a precision of 3 digits after the decimal point are superfluous (Here `tolerance = 0.001` but we can choose precision according to that!).\n\n<img width=\"686\" height=\"86\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/5385cfe6-874a-4684-9cf3-8dd611d6f3ba\" />\n\nAfter, a test with LZD, I am a little bit lost how to handle the offsets for each method : \n\n<img width=\"855\" height=\"433\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/fd019c8e-bfe3-4186-a8c2-6a7062ebde0b\" />\n\nMaybe afterall, it is ok to let it like this ?\n\n#### Stats \n\nCurrently : \n<img width=\"1283\" height=\"569\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/398a3880-9590-4922-99db-c286001e2f49\" />\n\nHere some feelings : \n- For large values, like `9"
+   },
+   {
+    "author": "marinebcht",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-02-23T18:19:12Z",
+    "body": "PS: I saw the double std/standarddeviation line, changed that in the configuration files :) "
+   },
+   {
+    "author": "rhugonnet",
+    "association": "MEMBER",
+    "created_at": "2026-02-23T22:14:39Z",
+    "body": "@marinebcht Thanks for the comprehensive summary! 🙂 \nI like the proposition for scientific format triggering only for values above 10e4/5 (and below 10e-3 too?).\n\nFor the display of values in `_iterate_method` with `LZD/CPD/IPC`: It's because of the old convergence mechanism that wasn't clearly defined, I've fixed it in #759 where I introduce independent tolerances for rotations, translations (and objective function for `CPD`). It's a lot of changes, so better not report them back here.\n\nIf you tell me what function to link for formatting when you finalize this PR, I can report it in #759, and it will be fixed once it's merged."
+   },
+   {
+    "author": "marinebcht",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-02-24T10:10:12Z",
+    "body": "Thank you :)\nSo I managed the format data for the stats here https://github.com/GlacioHack/xdem/pull/906 directely \n\nResume : \n- if \"count\": int\n- if \"percentage\": '{:.2f}'.format(val) + \"%\"\n- if abs(val) > 10E4 or abs(val) < 10E-4: np.format_float_scientific(val, precision=3)\n- else '{:.3f}'.format(val)\n\nWainting your PR, to propose somthing on the interation prints !"
+   },
+   {
+    "author": "rhugonnet",
+    "association": "MEMBER",
+    "created_at": "2026-02-25T00:34:18Z",
+    "body": "OK perfect! Better not wait for #759 (as it could take weeks/months still until it's merged), I will copy your logic there (adding a point in the TO-DO list!)"
+   },
+   {
+    "author": "adehecq",
+    "association": "MEMBER",
+    "created_at": "2026-03-04T10:19:57Z",
+    "body": "> Thank you :) So I managed the format data for the stats here [#906](https://github.com/GlacioHack/xdem/pull/906) directely\n> \n> Resume :\n> \n>     * if \"count\": int\n> \n>     * if \"percentage\": '{:.2f}'.format(val) + \"%\"\n> \n>     * if abs(val) > 10E4 or abs(val) < 10E-4: np.format_float_scientific(val, precision=3)\n> \n>     * else '{:.3f}'.format(val)\n> \n> \n> Wainting your PR, to propose somthing on the interation prints !\n\nSounds good!"
+   },
+   {
+    "author": "marinebcht",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-04-10T07:56:24Z",
+    "body": "Summary : \n\n- Case report CLI : https://github.com/GlacioHack/xdem/pull/906 (OK)\n- Case iteration in the coreg : https://github.com/GlacioHack/xdem/pull/759 (In progress)"
+   }
+  ],
+  "open_prs": [
+   "https://github.com/GlacioHack/xdem/pull/759"
+  ],
+  "closed_prs": [
+   "https://github.com/GlacioHack/xdem/pull/906 (merged)"
+  ],
+  "heuristic": 0.0
+ },
+ "tesseract-ocr/tesseract#4580": {
+  "repo": "tesseract-ocr/tesseract",
+  "number": 4580,
+  "url": "https://github.com/tesseract-ocr/tesseract/issues/4580",
+  "title": "Request: enable Private Vulnerability Reporting / security contact",
+  "body": "### Current Behavior\n\nHi maintainers\nI've identified and reproduced a memory-safety vulnerability in Tesseract (confirmed on v5.5.2) and want to report it privately under coordinated disclosure. This repo has no SECURITY.md and Private Vulnerability Reporting isn't enabled, so I have no confidential channel. Could you either:\n(a) enable Settings → Code security → Private vulnerability reporting, so I can file a private advisory, or\n(b) point me to a confidential contact?\nI'll withhold all technical detail (file/line, PoC) until a private channel exists. I'm following coordinated disclosure and will agree a fix window before any public disclosure. Also I reported it via CVE MITRE.\n Thanks.\n\nLoading a dictionary component from a crafted/malformed .traineddata file triggers an out-of-bounds memory access during model load, crashing the process (denial of service). It happens at load time, before any image is processed. (Exact location and a minimal reproducer withheld here for coordinated disclosure — I'll share them through a private channel.)\n\n### Expected Behavior\n\nUntrusted dictionary data should be validated during loading and rejected gracefully (load fails with an error) instead of causing an out-of-bounds read or crashing.\n\n### Suggested Fix\n\nBounds-check the count/length fields read from the file before they're used to size allocations or index the loaded arrays, and reject inputs whose structure is inconsistent with the declared sizes\n\n### tesseract -v\n\n_No response_\n\n### Operating System\n\n_No response_\n\n### Other Operating System\n\n_No response_\n\n### uname -a\n\n_No response_\n\n### Compiler\n\n_No response_\n\n### CPU\n\n_No response_\n\n### Virtualization / Containers\n\n_No response_\n\n### Other Information\n\n_No response_",
+  "labels": [
+   "bug"
+  ],
+  "created_at": "2026-07-12T09:58:08Z",
+  "updated_at": "2026-07-12T16:36:04Z",
+  "comments_count": 4,
+  "stars": 0,
+  "language": null,
+  "repo_description": "",
+  "watched": false,
+  "welcomed_before": 0,
+  "signals": [],
+  "comments": [
+   {
+    "author": "stweil",
+    "association": "MEMBER",
+    "created_at": "2026-07-12T10:42:09Z",
+    "body": "> (b) point me to a confidential contact?\n\nYou can contact me per e-mail (see git history for my address)."
+   },
+   {
+    "author": "stweil",
+    "association": "MEMBER",
+    "created_at": "2026-07-12T11:56:11Z",
+    "body": "@arexgodofwar, is the memory-safety vulnerability fixed with pull request #4581?"
+   },
+   {
+    "author": "arexgodofwar",
+    "association": "NONE",
+    "created_at": "2026-07-12T15:52:22Z",
+    "body": "Yes I sent all the details to your personal email. #4581 fixes the heap OOB read. I rebuilt with the patch and my minimized reproducer (the one hitting the ASan heap-buffer-overflow in num_forward_edges → last_edge) now loads cleanly with no OOB; the bounded edge < num_edges_ loops close it. Broader hardening (DeSerializeSkip, RecodedCharID, tessdatamanager offsets) looks good too. \n\nOne item from my report isn't covered yet: the unbounded-allocation DoS. In read_squished_dawg, new EDGE_RECORD[num_edges_] (dawg.cpp:367) is still driven by the unvalidated field, the new check only rejects num_edges_ == 0. A crafted num_edges_ = 0x7FFFFFFF still requests ~17 GB → uncaught bad_alloc/abort on memory-limited hosts (reproduced under ASan). Suggest bounding num_edges_ against the remaining component bytes before allocating (mirror the size limit you added for DeSerialize(vector<char>)), and the same guard on any other new T[count] where count comes from the file.\n\nThanks for the quick turnaround."
+   },
+   {
+    "author": "stweil",
+    "association": "MEMBER",
+    "created_at": "2026-07-12T16:35:38Z",
+    "body": "@arexgodofwar, pull request #4581 now addresses this additional item. Please test."
+   }
+  ],
+  "open_prs": [],
+  "closed_prs": [
+   "https://github.com/tesseract-ocr/tesseract/pull/4581 (merged)"
+  ],
+  "heuristic": 0.0
+ },
+ "dapr/python-sdk#853": {
+  "repo": "dapr/python-sdk",
+  "number": 853,
+  "url": "https://github.com/dapr/python-sdk/issues/853",
+  "title": "SDK Alignment of Workflow Examples",
+  "body": "The sdks should align. Currently the java and dotnet sdk include workflow patterns in their respective example directories. See the [java sdk workflow examples patterns directory here](https://github.com/dapr/java-sdk/tree/master/examples/src/main/java/io/dapr/examples/workflows) && [see dotnets here.](https://github.com/dapr/dotnet-sdk/tree/master/examples/Workflow)\n\nThe python-sdk should include a folder per workflow pattern as well for consistency across the sdks.\n\ndocs ref: https://docs.dapr.io/developing-applications/building-blocks/workflow/workflow-patterns/",
+  "labels": [
+   "kind/enhancement",
+   "good first issue",
+   "P2",
+   "dapr-ext-workflow"
+  ],
+  "created_at": "2025-10-21T19:54:12Z",
+  "updated_at": "2026-09-13T02:09:01Z",
+  "comments_count": 4,
+  "stars": 0,
+  "language": null,
+  "repo_description": "",
+  "watched": false,
+  "welcomed_before": 0,
+  "signals": [],
+  "comments": [
+   {
+    "author": "dapr-bot",
+    "association": "COLLABORATOR",
+    "created_at": "2025-12-20T20:01:15Z",
+    "body": "This issue has been automatically marked as stale because it has not had activity in the last 60 days. It will be closed in the next 7 days unless it is tagged (pinned, good first issue, help wanted or triaged/resolved) or other activity occurs. Thank you for your contributions."
+   },
+   {
+    "author": "dapr-bot",
+    "association": "COLLABORATOR",
+    "created_at": "2025-12-27T20:14:43Z",
+    "body": "This issue has been automatically closed because it has not had activity in the last 67 days. If this issue is still valid, please ping a maintainer and ask them to label it as pinned, good first issue, help wanted or triaged/resolved. Thank you for your contributions."
+   },
+   {
+    "author": "dapr-bot",
+    "association": "COLLABORATOR",
+    "created_at": "2026-03-25T23:42:06Z",
+    "body": "This issue has been automatically marked as stale because it has not had activity in the last 60 days. It will be closed in the next 7 days unless it is tagged (pinned, good first issue, help wanted or triaged/resolved) or other activity occurs. Thank you for your contributions."
+   },
+   {
+    "author": "Err0r-An0ma1y",
+    "association": "NONE",
+    "created_at": "2026-09-13T00:52:57Z",
+    "body": "Hello, My name is Jason. I'm a university student looking to broaden my programming knowledge and make an OSS contribution for a senior level course I am taking. May I try to contribute a workflow example on this issue If possible?"
+   }
+  ],
+  "open_prs": [],
+  "closed_prs": [
+   "https://github.com/dapr/python-sdk/pull/1254"
+  ],
+  "heuristic": 0.0
+ },
+ "dapr/python-sdk#836": {
+  "repo": "dapr/python-sdk",
+  "number": 836,
+  "url": "https://github.com/dapr/python-sdk/issues/836",
+  "title": "style: clarify workflow activity retry fields/defaults",
+  "body": "## Describe the WORKFLOW SDK feature\nThere are multiple gotchas in the workflow activity retry policies as described below:\n```\nACTIVITY_RETRY_POLICY = RetryPolicy(\n    first_retry_interval=timedelta(seconds=1),\n    \n   # max_number_of_attempts is the total attempt count, not the retry count\n    max_number_of_attempts=5,\n    backoff_coefficient=3,\n   \n    # Set max_retry_interval else there won't be any retries\n    max_retry_interval=timedelta(seconds=10),\n   \n    # DON'T set retry_timeout. If the timeout is hit, the entire workflow fails and the\n    # final activity isn't executed.\n)\n```\n\nhttps://github.com/dapr/python-sdk/blob/main/ext/dapr-ext-workflow/dapr/ext/workflow/retry_policy.py#L26\ngo-sdk ref https://github.com/dapr/durabletask-go/blob/main/workflow/workflow.go#L147\n\nacceptance criteria:\n- [ ] update the field values to sensible defaults if not provided\n- [ ] max_number_of_attempts can remain as is, or become deprecated (still supported) and a new field of max_attempts added that will eventuallyyyyy replace this field\n- [ ] all field docs strings updated to be clearer on what they do\n- [ ] ensure that retries still apply if max_retry_interval is set\n- [ ] update retry_timeout to indicate that if this fails then the workflow will fail\n\n## Release Note\n\nRELEASE NOTE: **ADD** Clarify workflow activity retry policies fields and defaults\n",
+  "labels": [
+   "kind/enhancement",
+   "good first issue",
+   "dapr-ext-workflow"
+  ],
+  "created_at": "2025-09-06T00:18:41Z",
+  "updated_at": "2026-05-31T22:43:56Z",
+  "comments_count": 5,
+  "stars": 0,
+  "language": null,
+  "repo_description": "",
+  "watched": false,
+  "welcomed_before": 0,
+  "signals": [
+   "possible claim by @vkbajpaii on 2026-05-31"
+  ],
+  "comments": [
+   {
+    "author": "dapr-bot",
+    "association": "COLLABORATOR",
+    "created_at": "2025-11-05T00:36:51Z",
+    "body": "This issue has been automatically marked as stale because it has not had activity in the last 60 days. It will be closed in the next 7 days unless it is tagged (pinned, good first issue, help wanted or triaged/resolved) or other activity occurs. Thank you for your contributions."
+   },
+   {
+    "author": "filintod",
+    "association": "CONTRIBUTOR",
+    "created_at": "2025-11-10T13:28:22Z",
+    "body": "one bug mentioned here is being fixed in https://github.com/dapr/durabletask-python/pull/33. Also the README.md in that PR mentions some of the information on the `gotchas` above, but it might be good to bring those to the docs here\n\n@passuied  please check this PR readme for comments https://github.com/dapr/durabletask-python/pull/33/commits/d9ed06e839cc597e4c11b298ea7a49ad3df19b9e#diff-b335630551682c19a781afebcf4d07bf978fb1f8ac04c6bf87428ed5106870f5"
+   },
+   {
+    "author": "dapr-bot",
+    "association": "COLLABORATOR",
+    "created_at": "2026-01-09T13:33:06Z",
+    "body": "This issue has been automatically marked as stale because it has not had activity in the last 60 days. It will be closed in the next 7 days unless it is tagged (pinned, good first issue, help wanted or triaged/resolved) or other activity occurs. Thank you for your contributions."
+   },
+   {
+    "author": "dapr-bot",
+    "association": "COLLABORATOR",
+    "created_at": "2026-03-25T23:42:04Z",
+    "body": "This issue has been automatically marked as stale because it has not had activity in the last 60 days. It will be closed in the next 7 days unless it is tagged (pinned, good first issue, help wanted or triaged/resolved) or other activity occurs. Thank you for your contributions."
+   },
+   {
+    "author": "vkbajpaii",
+    "association": "NONE",
+    "created_at": "2026-05-31T22:43:56Z",
+    "body": "Hi — I'd like to take a stab at this. My proposed scope for an initial PR (kept tight for reviewability):\n\n1. **Rewrite docstrings** in `ext/dapr-ext-workflow/dapr/ext/workflow/retry_policy.py` to clearly document the gotchas:\n   - `max_number_of_attempts` counts **total** attempts, not retries\n   - `retry_timeout`: when it fires, the task fails with the last error and the surrounding workflow fails unless wrapped in try/except\n   - `max_retry_interval` only caps the per-attempt delay; retries still happen when it is left as `None` (the historical \"won't retry unless max_retry_interval is set\" bug appears to have been fixed in the now-vendored `_durabletask` engine — verified in `_durabletask/task.py` `RetryableTask.compute_next_delay`)\n2. **Add a new `max_attempts` keyword-only field** as the preferred name; keep `max_number_of_attempts` as a deprecated alias (no runtime warning yet, just docs). Raise `ValueError` if both or neither are supplied.\n3. **Add a `max_attempts` property** alongside the existing `max_number_of_attempts` property.\n4. **Add unit tests** in `ext/dapr-ext-workflow/tests/test_retry_policy.py` covering construction, validation, and the new alias.\n5. **Update workflow examples** (`examples/workflow/simple.py`, `simple_aio_client.py`, `multi-app1.py`, `multi-app2.py`) to use `max_attempts`.\n\nI'm explicitly **leaving out** the \"sensible defaults if not provided\" item from the acceptance criteria for this PR — that's a behavior change with backward-compat ri"
+   }
+  ],
+  "open_prs": [],
+  "closed_prs": [
+   "https://github.com/dapr/durabletask-python/pull/33 (merged)",
+   "https://github.com/dapr/python-sdk/pull/1068"
+  ],
+  "heuristic": 0.0
+ },
+ "open-telemetry/opentelemetry-collector#16164": {
+  "repo": "open-telemetry/opentelemetry-collector",
+  "number": 16164,
+  "url": "https://github.com/open-telemetry/opentelemetry-collector/issues/16164",
+  "title": "[cmd/mdatagen] Generate docs for `exported_configs`",
+  "body": "According to [GUIDE.md](https://github.com/open-telemetry/opentelemetry-collector/blob/7b425533dfa04ff0a0d3b384381979e945a69b2a/cmd/mdatagen/docs/GUIDE.md#config-docs):\n\n```md\nThe \"Configuration\" table in your component's `README.md` is generated the same way as the Go\ncode: from the `config:`/`exported_configs:` schema.\n```\n But it does not generate docs if `metadata.yaml` file has only `exported_config` declared.",
+  "labels": [
+   "bug",
+   "help wanted",
+   "cmd/mdatagen"
+  ],
+  "created_at": "2026-10-13T12:38:58Z",
+  "updated_at": "2026-10-13T20:45:14Z",
+  "comments_count": 3,
+  "stars": 0,
+  "language": null,
+  "repo_description": "",
+  "watched": false,
+  "welcomed_before": 0,
+  "signals": [
+   "open pull request linked: https://github.com/open-telemetry/opentelemetry-collector/pull/16168"
+  ],
+  "comments": [
+   {
+    "author": "github-actions[bot]",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-10-13T12:39:12Z",
+    "body": "Pinging code owners:\n- cmd/mdatagen: @dmitryax\n\n See [Adding Labels via Comments](https://github.com/open-telemetry/opentelemetry-collector/blob/main/CONTRIBUTING.md#adding-labels-via-comments) if you do not have permissions to add labels yourself.\n"
+   },
+   {
+    "author": "Syedowais312",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-10-13T18:52:42Z",
+    "body": "I think the root cause looks like config_doc.md.tmpl only renders `.Metadata.Config`, so `exported_configs` never reaches the README. Since GUIDE.md says the table is generated from `config:`/`exported_configs:`, the fix would be to render `config:` first and then each `exported_configs:` entry, including when both are declared ?"
+   },
+   {
+    "author": "souvik-biswas-dev",
+    "association": "NONE",
+    "created_at": "2026-10-13T20:15:13Z",
+    "body": "I've opened #16168 for this. It renders object definitions under `exported_configs` in the README after the `config:` table, and components that declare only `exported_configs` no longer get an empty table. @dmitryax @Syedowais312 happy to adjust based on feedback."
+   }
+  ],
+  "open_prs": [
+   "https://github.com/open-telemetry/opentelemetry-collector/pull/16168"
+  ],
+  "closed_prs": [],
+  "heuristic": 0.0
+ },
+ "open-telemetry/opentelemetry-collector-contrib#51982": {
+  "repo": "open-telemetry/opentelemetry-collector-contrib",
+  "number": 51982,
+  "url": "https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/51982",
+  "title": "[receiver/k8sevents] watch stalls forever without logging: RetryWatcher retries every second and the observer never re-lists",
+  "body": "### Component(s)\n\nreceiver/k8sevents, internal/k8sinventory\n\n### What happened?\n\n## Description\n\nThe `k8s_events` receiver stops delivering events and never recovers, while the pod stays Running with no restarts and logs nothing at the collector's `WARN` log level (the retry loop described below logs only at klog V(1)/V(4)/V(5)). We found it on 8 of the 12 GKE clusters we checked, all running 0.158.0. Events kept being created on every affected cluster (`kubectl get events -A`), but the receiver's `otelcol_receiver_accepted_log_records` stayed flat for days. Restarting the collector is the only remedy.\n\n## Evidence from a stalled collector (7 days uptime)\n\n- **Export side healthy.** `accepted_log_records` equals `exporter_sent_log_records`. The queue is empty, nothing is in flight, and the receiver reports no refused or failed records. So the pipeline is not blocking the receiver.\n- **The apiserver keeps receiving the watch.** On one of the two apiserver replicas, `apiserver_request_total{resource=\"events\",verb=\"WATCH\",code=\"200\"}` grew by about 60 per minute while `apiserver_watch_events_total{resource=\"events\"}` did not move. A healthy cluster's apiserver showed no new events WATCH requests in the same minute. The counter stopped growing the moment the collector was restarted.\n- **A goroutine dump (SIGQUIT)** shows the observer blocked on the result channel and the RetryWatcher cycling its 1 s retry loop:\n\n```\ngithub.com/open-telemetry/opentelemetry-collector-contrib/internal/k8sinventory/watch.(*Observer).doWatch(...)\n\tinternal/k8sinventory@v0.158.0/watch/observer.go:326\ngithub.com/open-telemetry/opentelemetry-collector-contrib/internal/k8sinventory/watch.(*Observer).startWatch.func2(...)\n\tinternal/k8sinventory@v0.158.0/watch/observer.go:194\nk8s.io/apimachinery/pkg/util/wait.UntilWithContext(...)\n\nk8s.io/apimachinery/pkg/util/wait.BackoffUntilWithContext(..., 0x3b9aca00 /* 1s */, ...)\nk8s.io/apimachinery/pkg/util/wait.NonSlidingUntilWithContext(...)\nk8s.io/client-go/tools/watch.(*RetryWatcher).receive(...)\n\tk8s.io/client-go@v0.35.4/tools/watch/retrywatcher.go:295\n```\n\n## Why it never recovers\n\nSince #45442 the receiver uses `internal/k8sinventory/watch`, which wraps client-go's `RetryWatcher` (`watch.NewRetryWatcherWithContext`). `RetryWatcher.doReceive` treats every outcome except `410 Gone`, Forbidden/Unauthorized and an unrecognised event type as \"retry from `lastResourceVersion`\":\n- `io.EOF` and `io.ErrUnexpectedEOF`\n- a probable EOF or timeout\n- a closed result channel\n- 500 and 504 status errors\n- any unknown status code\n\nIt logs those retries only at klog V(1)/V(4)/V(5). `Observer.doWatch` re-lists for a fresh resourceVersion only after a 410. So when the apiserver keeps ending the watch from the stored resourceVersion without a 410, the observer waits forever on a channel that never delivers. Nothing logs, and no metric shows it.\n\nWe could not capture what the apiserver returned; the stored resourceVersion lived only in the process. On GKE the events resourceVersions are timestamp-like (e.g. `1791811504203408999`), and a watch from a resourceVersion ahead of what the server serves hangs silently, so we suspect the stored resourceVersion ended up unservable on one replica. A watch from a valid resourceVersion delivered events immediately.\n\n## Steps to Reproduce\n\nWe have no deterministic reproducer. It appeared on long-running collectors (days) on GKE regional clusters running Kubernetes 1.35.6-gke.1250001.\n\n## Expected Result\n\nWhen a watch delivers nothing for a long time, or keeps being re-established without progress, the observer re-lists and resumes. At minimum it should log a warning or expose a metric (watch restarts, last event age), so a stall can be detected.\n\n## Actual Result\n\nThe receiver delivers nothing indefinitely. The process is healthy by every signal the collector exposes except `otelcol_receiver_accepted_log_records` going flat.\n\n## Possible fixes\n\n- Bound the RetryWatcher: re-list after N consecutive restarts that brought no event, or after a configurable idle period.\n- Use an informer (`cache.NewSharedInformer` / reflector), which re-lists on watch errors. The receiver used one before #45442.\n- Expose watch-restart and last-event-timestamp metrics.\n\n### Collector version\n\nv0.158.0 (otel/opentelemetry-collector-contrib image)\n\n### Environment information\n\n## Environment\nGKE, Kubernetes 1.35, collector deployed by the OpenTelemetry Operator as a single-replica Deployment.\n\n### OpenTelemetry Collector configuration\n\n```yaml\nreceivers:\n  k8s_events:\n    auth_type: serviceAccount\nprocessors:\n  batch: {}\nexporters:\n  otlp_http:\n    endpoint: http://loki-gateway/otlp\nservice:\n  pipelines:\n    logs:\n      receivers: [k8s_events]\n      processors: [batch]\n      exporters: [otlp_http]\n  telemetry:\n    logs:\n      level: WARN\n```\n\n### Log output\n\n```shell\n(none: the collector logs nothing before or during the stall)\n```\n\n### Additional context\n\nThe two give-up paths the observer does log (`Watch channel closed unexpectedly` at WARN, and a failed `getResourceVersion` at ERROR) were not hit: the stalled pods' logs were empty.\n\n\n",
+  "labels": [
+   "bug",
+   "help wanted",
+   "receiver/k8sevents",
+   "internal/k8sinventory"
+  ],
+  "created_at": "2026-10-12T13:45:06Z",
+  "updated_at": "2026-10-13T19:32:24Z",
+  "comments_count": 3,
+  "stars": 0,
+  "language": null,
+  "repo_description": "",
+  "watched": false,
+  "welcomed_before": 0,
+  "signals": [
+   "open pull request linked: https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/52028",
+   "possible claim by @shubhayu-dev on 2026-10-13"
+  ],
+  "comments": [
+   {
+    "author": "github-actions[bot]",
+    "association": "CONTRIBUTOR",
+    "created_at": "2026-10-12T13:45:37Z",
+    "body": "Pinging code owners:\n- receiver/k8sevents: @dmitryax @TylerHelmuth @ChrsMark\n- internal/k8sinventory: @dmitryax @TylerHelmuth @ChrsMark @krisztianfekete\n\n See [Adding Labels via Comments](https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/CONTRIBUTING.md#adding-labels-via-comments) if you do not have permissions to add labels yourself.\n"
+   },
+   {
+    "author": "krisztianfekete",
+    "association": "MEMBER",
+    "created_at": "2026-10-13T15:19:34Z",
+    "body": "Thanks for the report, confirmed and reproduced; it also hits k8sobjects watch mode. Fix direction is the informer observer: k8sobjects gets it via the #50392 feature gate, k8sevents needs the same migration (help wanted, no one is actively working on it right now). \n\nOne \"workaround\" is until then, alert on a flat accepted_log_records and restart.\n"
+   },
+   {
+    "author": "shubhayu-dev",
+    "association": "NONE",
+    "created_at": "2026-10-13T19:32:24Z",
+    "body": "Hi @krisztianfekete, I'd like to work on this! I'll look into migrating k8sevents to use the informer observer pattern based on how it was done for k8sobjects in #50392. I'll open a draft PR once I have a working prototype."
+   }
+  ],
+  "open_prs": [
+   "https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/52028"
+  ],
+  "closed_prs": [],
+  "heuristic": 0.0
+ }
+}

@@ -1,0 +1,63 @@
+{
+  "repos": 39,
+  "pull_requests": 1595,
+  "features": [
+    "stars_log",
+    "repo_merge_rate",
+    "author_merged_before",
+    "first_time",
+    "linked_issue",
+    "issue_age_days_log",
+    "issue_comments",
+    "help_wanted",
+    "good_first",
+    "bug",
+    "size_log"
+  ],
+  "per_repo_time_split": {
+    "train": 1183,
+    "test": 412,
+    "merged_share_test": 0.777,
+    "test_from": "2026-04-20",
+    "models": {
+      "repo merge rate alone": {
+        "roc_auc": 0.739,
+        "brier": 0.143,
+        "merged_share_in_top_20pct": 0.927
+      },
+      "logistic": {
+        "roc_auc": 0.742,
+        "brier": 0.177,
+        "merged_share_in_top_20pct": 0.939
+      },
+      "tabpfn": {
+        "roc_auc": 0.776,
+        "brier": 0.128,
+        "merged_share_in_top_20pct": 0.915
+      }
+    }
+  },
+  "global_time_split": {
+    "train": 1196,
+    "test": 399,
+    "merged_share_test": 0.789,
+    "test_from": "2026-10-13",
+    "models": {
+      "repo merge rate alone": {
+        "roc_auc": 0.879,
+        "brier": 0.09,
+        "merged_share_in_top_20pct": 0.975
+      },
+      "logistic": {
+        "roc_auc": 0.889,
+        "brier": 0.144,
+        "merged_share_in_top_20pct": 0.987
+      },
+      "tabpfn": {
+        "roc_auc": 0.832,
+        "brier": 0.129,
+        "merged_share_in_top_20pct": 0.975
+      }
+    }
+  }
+}

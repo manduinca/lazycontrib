@@ -136,17 +136,19 @@ class Claim(BaseModel):
 
 class IssueDraft(BaseModel):
     summary: str = Field(max_length=400, description="one or two sentences: what the issue asks for")
-    must_do: list[str] = Field(max_length=6, description="every concrete thing a complete fix has to do, including "
-                                                          "parts the issue calls optional; one short line each")
+    must_do: list[str] = Field(default_factory=list, max_length=6,
+                               description="every concrete thing a complete fix has to do, including parts the "
+                                           "issue calls optional; one short line each")
     claims: list[Claim] = Field(default_factory=list, max_length=6,
                                 description="people who said they are working on it or asked to take it")
-    maintainer_go_ahead: bool = Field(description="a maintainer agreed with the proposed approach or asked for a PR")
+    clarity: Literal["clear", "needs_discussion", "vague"] = "clear"
+    effort: Literal["S", "M", "L"] = "M"
+    fit_reason: str = Field(default="", max_length=300)
+    fit: Literal["strong", "ok", "weak"] = "ok"
+    maintainer_go_ahead: bool = Field(default=False,
+                                      description="a maintainer agreed with the approach or asked for a PR")
     open_questions: list[str] = Field(default_factory=list, max_length=4,
                                       description="decisions still open in the thread")
-    clarity: Literal["clear", "needs_discussion", "vague"]
-    effort: Literal["S", "M", "L"]
-    fit: Literal["strong", "ok", "weak"]
-    fit_reason: str = Field(max_length=300)
 
 
 class IssueVerdict(BaseModel):

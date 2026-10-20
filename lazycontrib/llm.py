@@ -52,10 +52,15 @@ def _json(text: str) -> Any:
     fenced = re.search(r"```(?:json)?\s*(.*?)```", text, re.S)
     if fenced:
         text = fenced.group(1)
-    start, end = text.find("{"), text.rfind("}")
-    if start == -1 or end == -1:
+    start = text.find("{")
+    if start == -1:
         raise ValueError("the reply has no JSON object")
-    return json.loads(text[start:end + 1])
+    body = text[start:].rstrip()
+    try:
+        return json.loads(body[:body.rfind("}") + 1])
+    except ValueError:
+        # Constrained decoding sometimes pads with whitespace until the token limit instead of closing the object.
+        return json.loads(body.rstrip(", \n") + "}")
 
 
 def structured(system: str, user: str, model_cls: type[BaseModel]) -> tuple[Any, int]:
