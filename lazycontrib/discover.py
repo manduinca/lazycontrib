@@ -171,22 +171,43 @@ def enrich(gh: GitHub, candidate: Candidate) -> Candidate:
     return candidate
 
 
+LINKED_POLICY = re.compile(r"https://github\.com/([\w.-]+/[\w.-]+)/blob/[\w.-]+/([\w./-]*(?:AI|ai|Ai|AGENT|agent)[\w./-]*\.md)")
+
+
+def _read(gh: GitHub, repo: str, path: str) -> str | None:
+    try:
+        return gh.file(repo, path)
+    except GitHubError:
+        return None
+
+
 def repo_facts(gh: GitHub, repo: str) -> RepoFacts:
     facts = RepoFacts(repo=repo)
     for path in POLICY_FILES:
-        try:
-            text = gh.file(repo, path)
-        except GitHubError:
-            text = None
+        text = _read(gh, repo, path)
         if text:
             facts.policy_text[path] = text[:20000]
+    owner = repo.split("/", 1)[0]
+    if not any("CONTRIBUTING" in path for path in facts.policy_text):
+        for path in ["CONTRIBUTING.md", "AI_POLICY.md", "AI.md"]:
+            text = _read(gh, f"{owner}/.github", path)
+            if text:
+                facts.policy_text[f"{owner}/.github/{path}"] = text[:20000]
+    for text in list(facts.policy_text.values()):
+        for linked_repo, linked_path in LINKED_POLICY.findall(text)[:3]:
+            key = f"{linked_repo}/{linked_path}"
+            if linked_repo.split("/", 1)[0].lower() == owner.lower() and key not in facts.policy_text:
+                linked = _read(gh, linked_repo, linked_path)
+                if linked:
+                    facts.policy_text[key] = linked[:20000]
     for path, text in facts.policy_text.items():
         for paragraph in re.split(r"\n\s*\n", text):
-            if AI_WORDS.search(paragraph):
+            links = len(re.findall(r"\]\(#", paragraph))
+            if AI_WORDS.search(paragraph) and links < 4:
                 facts.ai_excerpts.append(f"[{path}] {paragraph.strip()[:1200]}")
         facts.dco = facts.dco or bool(re.search(r"Developer Certificate of Origin|Signed-off-by|\bDCO\b", text))
         facts.cla = facts.cla or bool(re.search(r"Contributor License Agreement|\bCLA\b", text))
-    facts.ai_excerpts = facts.ai_excerpts[:12]
+    facts.ai_excerpts = facts.ai_excerpts[:20]
     facts.maintainer_reply_hours, facts.replied_share = _responsiveness(gh, repo)
     return facts
 

@@ -1,0 +1,51 @@
+# Hand-labelled AI policies, read from each project's own files on 2026-10-19.
+# Flags follow lazycontrib.assess.Flag. A flag is true only when the text states it.
+# napari keeps its policy on its website, which lazycontrib does not fetch, so nothing should be found there.
+- repo: fatiando/harmonica
+  stance: discouraged
+  flags: [ai_discouraged, must_disclose, own_words_only, no_autonomous_agents]
+- repo: apache/lucene
+  stance: conditions
+  flags: [ai_welcome, own_words_only, no_autonomous_agents]
+- repo: lichess-org/lila
+  stance: conditions
+  flags: [ai_welcome, must_disclose, human_testing_required]
+- repo: open-telemetry/opentelemetry-python-contrib
+  stance: conditions
+  flags: [ai_welcome, own_words_only, no_autonomous_agents]
+- repo: keycloak/keycloak
+  stance: conditions
+  flags: [ai_welcome, must_disclose]
+- repo: torchgeo/torchgeo
+  stance: prohibited
+  flags: [ai_prohibited]
+- repo: testcontainers/testcontainers-go
+  stance: conditions
+  flags: [ai_welcome, must_disclose]
+- repo: napari/napari
+  stance: unspecified
+  flags: []
+- repo: ghostty-org/ghostty
+  stance: conditions
+  flags: [ai_welcome, must_disclose]
+- repo: curl/curl
+  stance: conditions
+  flags: [ai_welcome, own_words_only]
+- repo: simpeg/simpeg
+  stance: unspecified
+  flags: []
+- repo: tesseract-ocr/tesseract
+  stance: unspecified
+  flags: []
+- repo: OpenAPITools/openapi-generator
+  stance: unspecified
+  flags: []
+- repo: ReactiveX/RxJava
+  stance: conditions
+  flags: [ai_welcome, must_disclose]
+- repo: scikit-image/scikit-image
+  stance: conditions
+  flags: [must_disclose, own_words_only]
+- repo: obspy/obspy
+  stance: conditions
+  flags: [must_disclose]
